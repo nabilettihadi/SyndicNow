@@ -1,0 +1,14 @@
+package ma.Nabil.SyndicNow.model.enums;
+
+public enum TypeNotification {
+    PAIEMENT_RECU,
+    PAIEMENT_EN_RETARD,
+    INCIDENT_DECLARE,
+    MAINTENANCE_REQUISE,
+    ASSEMBLEE_PLANIFIEE,
+    DOCUMENT_AJOUTE,
+    ASSURANCE_EXPIRATION,
+    CONTRAT_EXPIRATION,
+    BUDGET_DEPASSEMENT,
+    AUTRE
+}

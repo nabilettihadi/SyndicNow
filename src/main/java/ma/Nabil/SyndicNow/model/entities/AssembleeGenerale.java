@@ -1,6 +1,5 @@
 package ma.Nabil.SyndicNow.model.entities;
 
-import ma.Nabil.SyndicNow.model.enums.TypeAssemblee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,21 +17,18 @@ public class AssembleeGenerale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date date;
-    
     private String sujet;
-    private String ordreJour;
-    private String lieuReunion;
-    
-    @Enumerated(EnumType.STRING)
-    private TypeAssemblee type;
     
     @Column(length = 2000)
+    private String ordreJour;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateAssemblee;
+    
+    @Column(length = 5000)
     private String decisions;
     
-    @Column(length = 2000)
-    private String procesVerbal;
+    private String lieu;
     
     @ManyToOne
     @JoinColumn(name = "immeuble_id")
@@ -40,12 +36,18 @@ public class AssembleeGenerale {
     
     @ManyToMany
     @JoinTable(
-        name = "presence_ag",
+        name = "presence_assemblee",
         joinColumns = @JoinColumn(name = "assemblee_id"),
         inverseJoinColumns = @JoinColumn(name = "copropriétaire_id")
     )
     private List<Copropriétaire> presents;
     
-    @OneToMany(mappedBy = "assembleeGenerale", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "assembleeGenerale")
     private List<Document> documents;
+    
+    @ElementCollection
+    @CollectionTable(name = "procurations_ag")
+    @MapKeyColumn(name = "copropriétaire_id")
+    @Column(name = "mandataire_id")
+    private List<String> procurations;
 }

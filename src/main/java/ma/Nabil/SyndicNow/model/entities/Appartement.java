@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -30,4 +32,13 @@ public class Appartement {
     @ManyToOne
     @JoinColumn(name = "copropriétaire_id")
     private Copropriétaire copropriétaire;
+    
+    @OneToMany(mappedBy = "appartement")
+    private List<Incident> incidents;
+    
+    @OneToMany(mappedBy = "appartement")
+    private List<Transaction> transactions;
+    
+    @OneToMany(mappedBy = "appartement")
+    private List<Document> documents;
 }

@@ -35,4 +35,13 @@ public class Copropriétaire {
     
     @OneToMany(mappedBy = "copropriétaire")
     private List<Incident> incidents;
+    
+    @OneToMany(mappedBy = "copropriétaire")
+    private List<Transaction> transactions;
+    
+    @OneToMany(mappedBy = "copropriétaire")
+    private List<Document> documents;
+    
+    @ManyToMany(mappedBy = "presents")
+    private List<AssembleeGenerale> assemblees;
 }

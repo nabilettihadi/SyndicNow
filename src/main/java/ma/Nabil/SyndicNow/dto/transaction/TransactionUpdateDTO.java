@@ -1,10 +1,8 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.transaction;
 
 import lombok.Data;
-import ma.Nabil.SyndicNow.model.enums.StatutTransaction;
-
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 
 @Data
@@ -17,7 +15,7 @@ public class TransactionUpdateDTO {
     @Size(max = 500, message = "La description ne peut pas dépasser 500 caractères")
     private String description;
     
-    private StatutTransaction statut;
+    private String statut;
     private Date dateEcheance;
     private Date datePaiement;
     

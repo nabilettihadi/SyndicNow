@@ -1,9 +1,9 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.ResolutionDTO;
-import ma.Nabil.SyndicNow.dto.ResolutionCreateDTO;
-import ma.Nabil.SyndicNow.dto.ResolutionUpdateDTO;
-import ma.Nabil.SyndicNow.dto.ValidationResolutionDTO;
+import ma.Nabil.SyndicNow.dto.resolution.ResolutionDTO;
+import ma.Nabil.SyndicNow.dto.resolution.ResolutionCreateDTO;
+import ma.Nabil.SyndicNow.dto.resolution.ResolutionUpdateDTO;
+import ma.Nabil.SyndicNow.dto.resolution.ValidationResolutionDTO;
 import ma.Nabil.SyndicNow.model.entities.Resolution;
 import ma.Nabil.SyndicNow.model.entities.MiseAJour;
 import org.mapstruct.*;

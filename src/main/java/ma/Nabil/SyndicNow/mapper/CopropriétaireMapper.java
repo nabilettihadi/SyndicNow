@@ -1,8 +1,8 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.CopropriétaireDTO;
-import ma.Nabil.SyndicNow.dto.CopropriétaireCreateDTO;
-import ma.Nabil.SyndicNow.dto.CopropriétaireUpdateDTO;
+import ma.Nabil.SyndicNow.dto.copropriétaire.CopropriétaireDTO;
+import ma.Nabil.SyndicNow.dto.copropriétaire.CopropriétaireCreateDTO;
+import ma.Nabil.SyndicNow.dto.copropriétaire.CopropriétaireUpdateDTO;
 import ma.Nabil.SyndicNow.model.entities.Copropriétaire;
 import ma.Nabil.SyndicNow.model.entities.Appartement;
 import ma.Nabil.SyndicNow.model.entities.Transaction;
@@ -10,6 +10,7 @@ import ma.Nabil.SyndicNow.model.enums.StatutTransaction;
 import ma.Nabil.SyndicNow.model.enums.TypeTransaction;
 import org.mapstruct.*;
 
+import java.util.Date;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -41,4 +42,8 @@ public class Appartement {
     
     @OneToMany(mappedBy = "appartement")
     private List<Document> documents;
+
+    public Collection<Object> getReclamations() {
+        return null;
+    }
 }

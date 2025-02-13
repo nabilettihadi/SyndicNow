@@ -1,8 +1,8 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.AppartementDTO;
-import ma.Nabil.SyndicNow.dto.AppartementCreateDTO;
-import ma.Nabil.SyndicNow.dto.AppartementUpdateDTO;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementDTO;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementCreateDTO;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementUpdateDTO;
 import ma.Nabil.SyndicNow.model.entities.Appartement;
 import ma.Nabil.SyndicNow.model.entities.Transaction;
 import ma.Nabil.SyndicNow.model.enums.StatutTransaction;
@@ -10,6 +10,7 @@ import ma.Nabil.SyndicNow.model.enums.TypeTransaction;
 import org.mapstruct.*;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, 

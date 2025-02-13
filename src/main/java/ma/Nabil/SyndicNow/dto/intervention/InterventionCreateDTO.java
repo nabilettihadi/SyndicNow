@@ -1,13 +1,13 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.intervention;
 
 import lombok.Data;
 import ma.Nabil.SyndicNow.model.enums.TypeIntervention;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 

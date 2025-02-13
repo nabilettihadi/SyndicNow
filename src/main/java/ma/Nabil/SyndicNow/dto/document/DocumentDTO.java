@@ -1,4 +1,4 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.document;
 
 import lombok.Data;
 import ma.Nabil.SyndicNow.model.enums.TypeDocument;

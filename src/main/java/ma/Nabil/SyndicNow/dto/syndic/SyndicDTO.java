@@ -1,4 +1,4 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.syndic;
 
 import ma.Nabil.SyndicNow.model.enums.StatutSyndic;
 import lombok.Data;

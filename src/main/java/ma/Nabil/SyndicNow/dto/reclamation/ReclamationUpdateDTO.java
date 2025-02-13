@@ -1,9 +1,9 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.reclamation;
 
 import lombok.Data;
 import ma.Nabil.SyndicNow.model.enums.StatutReclamation;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 @Data

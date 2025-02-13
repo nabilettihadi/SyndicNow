@@ -1,8 +1,8 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.ImmeubleDTO;
-import ma.Nabil.SyndicNow.dto.ImmeubleCreateDTO;
-import ma.Nabil.SyndicNow.dto.ImmeubleUpdateDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleCreateDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleUpdateDTO;
 import ma.Nabil.SyndicNow.model.entities.Immeuble;
 import ma.Nabil.SyndicNow.model.entities.Transaction;
 import org.mapstruct.*;

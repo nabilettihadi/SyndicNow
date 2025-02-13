@@ -1,12 +1,13 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.equipement;
 
 import lombok.Data;
 import ma.Nabil.SyndicNow.model.enums.TypeEquipement;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class EquipementCreateDTO {

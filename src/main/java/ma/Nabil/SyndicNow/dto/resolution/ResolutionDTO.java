@@ -1,6 +1,7 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.resolution;
 
 import lombok.Data;
+import ma.Nabil.SyndicNow.dto.document.DocumentMetadataDTO;
 import ma.Nabil.SyndicNow.model.enums.StatutResolution;
 import ma.Nabil.SyndicNow.model.enums.TypeResolution;
 

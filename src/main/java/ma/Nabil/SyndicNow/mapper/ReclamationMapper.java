@@ -1,9 +1,9 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.ReclamationDTO;
-import ma.Nabil.SyndicNow.dto.ReclamationCreateDTO;
-import ma.Nabil.SyndicNow.dto.ReclamationUpdateDTO;
-import ma.Nabil.SyndicNow.dto.CommentaireReclamationDTO;
+import ma.Nabil.SyndicNow.dto.reclamation.ReclamationDTO;
+import ma.Nabil.SyndicNow.dto.reclamation.ReclamationCreateDTO;
+import ma.Nabil.SyndicNow.dto.reclamation.ReclamationUpdateDTO;
+import ma.Nabil.SyndicNow.dto.reclamation.CommentaireReclamationDTO;
 import ma.Nabil.SyndicNow.model.entities.Reclamation;
 import ma.Nabil.SyndicNow.model.entities.StatutHistorique;
 import ma.Nabil.SyndicNow.model.entities.Commentaire;

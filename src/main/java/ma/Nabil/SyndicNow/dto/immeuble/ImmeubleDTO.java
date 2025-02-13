@@ -1,4 +1,4 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.immeuble;
 
 import lombok.Data;
 import java.util.Date;

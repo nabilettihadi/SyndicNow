@@ -1,10 +1,10 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.copropriétaire;
 
 import lombok.Data;
 import ma.Nabil.SyndicNow.model.enums.TypeProprietaire;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 
 @Data
 public class CopropriétaireUpdateDTO {

@@ -1,10 +1,10 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.appartement;
 
 import lombok.Data;
 import ma.Nabil.SyndicNow.model.enums.TypeAppartement;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Data
 public class AppartementUpdateDTO {

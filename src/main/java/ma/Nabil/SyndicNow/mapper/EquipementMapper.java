@@ -1,8 +1,8 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.EquipementDTO;
-import ma.Nabil.SyndicNow.dto.EquipementCreateDTO;
-import ma.Nabil.SyndicNow.dto.EquipementUpdateDTO;
+import ma.Nabil.SyndicNow.dto.equipement.EquipementDTO;
+import ma.Nabil.SyndicNow.dto.equipement.EquipementCreateDTO;
+import ma.Nabil.SyndicNow.dto.equipement.EquipementUpdateDTO;
 import ma.Nabil.SyndicNow.model.entities.Equipement;
 import ma.Nabil.SyndicNow.model.entities.Intervention;
 import org.mapstruct.*;

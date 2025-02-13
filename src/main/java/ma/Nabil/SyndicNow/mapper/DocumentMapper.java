@@ -1,9 +1,9 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.DocumentDTO;
-import ma.Nabil.SyndicNow.dto.DocumentCreateDTO;
-import ma.Nabil.SyndicNow.dto.DocumentUpdateDTO;
-import ma.Nabil.SyndicNow.dto.DocumentMetadataDTO;
+import ma.Nabil.SyndicNow.dto.document.DocumentDTO;
+import ma.Nabil.SyndicNow.dto.document.DocumentCreateDTO;
+import ma.Nabil.SyndicNow.dto.document.DocumentUpdateDTO;
+import ma.Nabil.SyndicNow.dto.document.DocumentMetadataDTO;
 import ma.Nabil.SyndicNow.model.entities.Document;
 import org.mapstruct.*;
 

@@ -1,9 +1,9 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.NotificationDTO;
-import ma.Nabil.SyndicNow.dto.NotificationCreateDTO;
-import ma.Nabil.SyndicNow.dto.NotificationUpdateDTO;
-import ma.Nabil.SyndicNow.dto.NotificationBatchDTO;
+import ma.Nabil.SyndicNow.dto.notification.NotificationDTO;
+import ma.Nabil.SyndicNow.dto.notification.NotificationCreateDTO;
+import ma.Nabil.SyndicNow.dto.notification.NotificationUpdateDTO;
+import ma.Nabil.SyndicNow.dto.notification.NotificationBatchDTO;
 import ma.Nabil.SyndicNow.model.entities.Notification;
 import org.mapstruct.*;
 

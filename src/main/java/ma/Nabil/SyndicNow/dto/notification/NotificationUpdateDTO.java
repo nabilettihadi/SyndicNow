@@ -1,9 +1,9 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.notification;
 
 import lombok.Data;
 import ma.Nabil.SyndicNow.model.enums.TypeNotification;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 
 @Data

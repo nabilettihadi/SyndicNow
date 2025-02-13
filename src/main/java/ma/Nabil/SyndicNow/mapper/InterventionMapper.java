@@ -1,9 +1,9 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.InterventionDTO;
-import ma.Nabil.SyndicNow.dto.InterventionCreateDTO;
-import ma.Nabil.SyndicNow.dto.InterventionUpdateDTO;
-import ma.Nabil.SyndicNow.dto.ValidationInterventionDTO;
+import ma.Nabil.SyndicNow.dto.intervention.InterventionDTO;
+import ma.Nabil.SyndicNow.dto.intervention.InterventionCreateDTO;
+import ma.Nabil.SyndicNow.dto.intervention.InterventionUpdateDTO;
+import ma.Nabil.SyndicNow.dto.intervention.ValidationInterventionDTO;
 import ma.Nabil.SyndicNow.model.entities.Intervention;
 import ma.Nabil.SyndicNow.model.entities.ActionIntervention;
 import org.mapstruct.*;
@@ -99,8 +99,9 @@ public interface InterventionMapper {
             
             // Mise à jour des dates selon le statut
             switch (dto.getStatut()) {
-                case EN_COURS -> intervention.setDateDebut(new Date());
-                case TERMINEE -> intervention.setDateFin(new Date());
+            case IN_PROGRESS -> intervention.setDateDebut(new Date());
+            case COMPLETED -> intervention.setDateFin(new Date());
+
             }
         }
     }

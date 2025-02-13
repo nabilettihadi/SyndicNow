@@ -59,4 +59,8 @@ public class Document {
     @ManyToOne
     @JoinColumn(name = "assemblee_id")
     private AssembleeGenerale assembleeGenerale;
+
+    public Date getDateExpiration() {
+        return null;
+    }
 }

@@ -1,10 +1,10 @@
-package ma.Nabil.SyndicNow.dto;
+package ma.Nabil.SyndicNow.dto.document;
 
 import lombok.Data;
 import ma.Nabil.SyndicNow.model.enums.StatutDocument;
 import ma.Nabil.SyndicNow.model.enums.TypeDocument;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 
 @Data

@@ -1,0 +1,30 @@
+package ma.Nabil.SyndicNow.domain.mapper;
+
+import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementCreateDTO;
+import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementResponseDTO;
+import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementUpdateDTO;
+import ma.Nabil.SyndicNow.domain.entity.Appartement;
+import org.mapstruct.*;
+
+import java.util.Set;
+
+@Mapper(componentModel = "spring", uses = {ProprietaireMapper.class})
+public interface AppartementMapper {
+    
+    AppartementMapper INSTANCE = org.mapstruct.factory.Mappers.getMapper(AppartementMapper.class);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "immeuble", ignore = true)
+    @Mapping(target = "proprietaire", ignore = true)
+    Appartement toEntity(AppartementCreateDTO dto);
+
+    @Mapping(target = "immeuble", ignore = true)
+    @Mapping(target = "proprietaire", ignore = true)
+    void updateEntityFromDto(AppartementUpdateDTO dto, @MappingTarget Appartement appartement);
+
+    @Mapping(target = "immeubleName", source = "immeuble.nom")
+    @Mapping(target = "immeubleId", source = "immeuble.id")
+    AppartementResponseDTO toResponseDto(Appartement appartement);
+
+    Set<AppartementResponseDTO> toResponseDtoSet(Set<Appartement> appartements);
+}

@@ -6,10 +6,16 @@ import ma.Nabil.SyndicNow.domain.dto.paiement.PaiementUpdateDTO;
 import ma.Nabil.SyndicNow.domain.entity.Paiement;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PaiementMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "appartement", ignore = true)
     @Mapping(target = "reference", expression = "java(generateReference())")
     @Mapping(target = "statut", constant = "EN_ATTENTE")

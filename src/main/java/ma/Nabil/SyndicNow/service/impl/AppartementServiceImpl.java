@@ -8,6 +8,8 @@ import ma.Nabil.SyndicNow.domain.mapper.AppartementMapper;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
 import ma.Nabil.SyndicNow.service.AppartementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,12 +46,15 @@ public class AppartementServiceImpl implements AppartementService {
     }
 
     @Override
-    public List<AppartementResponseDTO> getAllAppartements() {
-        return appartementRepository.findAll().stream().map(appartementMapper::toResponseDto).collect(Collectors.toList());
+    public Page<AppartementResponseDTO> getAllAppartements(Pageable pageable) {
+        return appartementRepository.findAll(pageable).map(appartementMapper::toResponseDto);
     }
 
     @Override
     public void deleteAppartement(Long id) {
+        if (!appartementRepository.existsById(id)) {
+            throw new RuntimeException("Appartement not found");
+        }
         appartementRepository.deleteById(id);
     }
 }

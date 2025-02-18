@@ -8,12 +8,19 @@ import org.mapstruct.*;
 
 import java.util.Set;
 
-@Mapper(componentModel = "spring", uses = {ProprietaireMapper.class})
+@Mapper(componentModel = "spring", 
+        uses = {ProprietaireMapper.class},
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AppartementMapper {
     
     AppartementMapper INSTANCE = org.mapstruct.factory.Mappers.getMapper(AppartementMapper.class);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
     @Mapping(target = "immeuble", ignore = true)
     @Mapping(target = "proprietaire", ignore = true)
     Appartement toEntity(AppartementCreateDTO dto);

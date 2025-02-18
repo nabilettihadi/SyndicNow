@@ -11,21 +11,26 @@ import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementCreateDTO;
 import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementResponseDTO;
 import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementUpdateDTO;
 import ma.Nabil.SyndicNow.service.AppartementService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/appartements")
 @RequiredArgsConstructor
 @Validated
-@Slf4j
 @Tag(name = "Appartement Management", description = "APIs for managing apartments")
+@PreAuthorize("isAuthenticated()")
 public class AppartementController {
-
+    private static final Logger log = LoggerFactory.getLogger(AppartementController.class);
     private final AppartementService appartementService;
 
     @PostMapping
@@ -33,6 +38,7 @@ public class AppartementController {
             description = "Creates a new apartment with the provided information")
     @ApiResponse(responseCode = "201", description = "Apartment successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppartementResponseDTO> createAppartement(@Valid @RequestBody AppartementCreateDTO dto) {
         log.info("Creating new apartment with data: {}", dto);
         AppartementResponseDTO response = appartementService.createAppartement(dto);
@@ -45,6 +51,7 @@ public class AppartementController {
             description = "Updates an apartment's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Apartment successfully updated")
     @ApiResponse(responseCode = "404", description = "Apartment not found")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AppartementResponseDTO> updateAppartement(
             @Parameter(description = "ID of the apartment to update") @PathVariable Long id,
             @Valid @RequestBody AppartementUpdateDTO dto) {
@@ -59,6 +66,7 @@ public class AppartementController {
             description = "Retrieves an apartment's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Apartment found and returned")
     @ApiResponse(responseCode = "404", description = "Apartment not found")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<AppartementResponseDTO> getAppartementById(
             @Parameter(description = "ID of the apartment to retrieve") @PathVariable Long id) {
         log.debug("Fetching apartment with ID: {}", id);
@@ -68,11 +76,12 @@ public class AppartementController {
 
     @GetMapping
     @Operation(summary = "Get all apartments",
-            description = "Retrieves a list of all apartments in the system")
+            description = "Retrieves a paginated list of all apartments in the system")
     @ApiResponse(responseCode = "200", description = "List of apartments retrieved successfully")
-    public ResponseEntity<List<AppartementResponseDTO>> getAllAppartements() {
-        log.debug("Fetching all apartments");
-        List<AppartementResponseDTO> response = appartementService.getAllAppartements();
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<Page<AppartementResponseDTO>> getAllAppartements(Pageable pageable) {
+        log.debug("Fetching all apartments with pagination: {}", pageable);
+        Page<AppartementResponseDTO> response = appartementService.getAllAppartements(pageable);
         return ResponseEntity.ok(response);
     }
 
@@ -81,6 +90,7 @@ public class AppartementController {
             description = "Deletes an apartment based on the provided ID")
     @ApiResponse(responseCode = "204", description = "Apartment successfully deleted")
     @ApiResponse(responseCode = "404", description = "Apartment not found")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteAppartement(
             @Parameter(description = "ID of the apartment to delete") @PathVariable Long id) {
         log.info("Deleting apartment with ID: {}", id);

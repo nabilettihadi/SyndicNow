@@ -6,13 +6,22 @@ import ma.Nabil.SyndicNow.domain.dto.syndic.SyndicUpdateDTO;
 import ma.Nabil.SyndicNow.domain.entity.Syndic;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = {ImmeubleMapper.class})
+@Mapper(componentModel = "spring", 
+        uses = {ImmeubleMapper.class},
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface SyndicMapper {
 
-    @Mapping(target = "immeubles", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "enabled", constant = "true")
-    @Mapping(target = "role", constant = "ROLE_SYNDIC")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "version", ignore = true)
+    @Mapping(target = "immeubles", ignore = true)
+    @Mapping(target = "accountNonExpired", constant = "true")
+    @Mapping(target = "accountNonLocked", constant = "true")
+    @Mapping(target = "credentialsNonExpired", constant = "true")
+    @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "dateDebutActivite", expression = "java(java.time.LocalDateTime.now())")
     Syndic toEntity(SyndicCreateDTO dto);
 

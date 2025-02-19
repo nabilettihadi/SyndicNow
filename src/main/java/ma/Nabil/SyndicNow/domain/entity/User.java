@@ -1,8 +1,13 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import ma.Nabil.SyndicNow.domain.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,9 +18,11 @@ import java.util.List;
 
 @Getter
 @Setter
+@SuperBuilder
+@NoArgsConstructor
 @MappedSuperclass
 public abstract class User extends BaseEntity implements UserDetails {
-    
+
     @Column(nullable = false)
     private String nom;
 
@@ -32,7 +39,7 @@ public abstract class User extends BaseEntity implements UserDetails {
     private String telephone;
 
     private String adresse;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

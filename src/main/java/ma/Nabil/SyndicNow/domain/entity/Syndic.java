@@ -1,7 +1,11 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import ma.Nabil.SyndicNow.domain.enums.Role;
 
 import java.time.LocalDateTime;
@@ -11,12 +15,12 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "syndics")
 public class Syndic extends User {
-    
+
     @Column(unique = true, nullable = false)
     private String cin;
 

@@ -1,7 +1,11 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import ma.Nabil.SyndicNow.domain.enums.Role;
 
 import java.util.HashSet;
@@ -10,7 +14,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "proprietaires")

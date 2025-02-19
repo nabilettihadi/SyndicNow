@@ -8,5 +8,6 @@ import java.util.Optional;
 @Repository
 public interface SyndicRepository extends BaseRepository<Syndic, Long> {
     Optional<Syndic> findByEmail(String email);
+
     boolean existsByEmail(String email);
 }

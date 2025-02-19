@@ -10,12 +10,13 @@ import java.util.Optional;
 @Repository
 public interface ProprietaireRepository extends BaseRepository<Proprietaire, Long> {
     Optional<Proprietaire> findByEmail(String email);
+
     boolean existsByEmail(String email);
-    
+
     @Query("SELECT DISTINCT p FROM Proprietaire p LEFT JOIN FETCH p.appartements WHERE p.id IN " +
-           "(SELECT DISTINCT a.proprietaire.id FROM Appartement a WHERE a.immeuble.syndic.id = :syndicId)")
+            "(SELECT DISTINCT a.proprietaire.id FROM Appartement a WHERE a.immeuble.syndic.id = :syndicId)")
     List<Proprietaire> findAllBySyndicId(Long syndicId);
-    
+
     @Query("SELECT p FROM Proprietaire p LEFT JOIN FETCH p.appartements WHERE p.id = :id")
     Optional<Proprietaire> findByIdWithAppartements(Long id);
 }

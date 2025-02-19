@@ -8,8 +8,12 @@ import java.util.List;
 
 public interface PaiementService {
     PaiementResponseDTO createPaiement(PaiementCreateDTO dto);
+
     PaiementResponseDTO updatePaiement(Long id, PaiementUpdateDTO dto);
+
     PaiementResponseDTO getPaiementById(Long id);
+
     List<PaiementResponseDTO> getAllPaiements();
+
     void deletePaiement(Long id);
 }

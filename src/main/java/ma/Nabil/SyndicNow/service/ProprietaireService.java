@@ -8,8 +8,12 @@ import java.util.List;
 
 public interface ProprietaireService {
     ProprietaireResponseDTO createProprietaire(ProprietaireCreateDTO dto);
+
     ProprietaireResponseDTO updateProprietaire(Long id, ProprietaireUpdateDTO dto);
+
     ProprietaireResponseDTO getProprietaireById(Long id);
+
     List<ProprietaireResponseDTO> getAllProprietaires();
+
     void deleteProprietaire(Long id);
 }

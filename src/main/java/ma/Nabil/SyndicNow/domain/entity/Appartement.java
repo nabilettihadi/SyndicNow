@@ -1,12 +1,19 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "appartements")
@@ -30,4 +37,7 @@ public class Appartement extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proprietaire_id")
     private Proprietaire proprietaire;
+
+    @OneToMany(mappedBy = "appartement", cascade = CascadeType.ALL)
+    private List<Paiement> paiements = new ArrayList<>();
 }

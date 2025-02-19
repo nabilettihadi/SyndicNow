@@ -8,8 +8,12 @@ import java.util.List;
 
 public interface ImmeubleService {
     ImmeubleResponseDTO createImmeuble(ImmeubleCreateDTO dto);
+
     ImmeubleResponseDTO updateImmeuble(Long id, ImmeubleUpdateDTO dto);
+
     ImmeubleResponseDTO getImmeubleById(Long id);
+
     List<ImmeubleResponseDTO> getAllImmeubles();
+
     void deleteImmeuble(Long id);
 }

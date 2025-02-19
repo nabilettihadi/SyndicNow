@@ -1,7 +1,11 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import ma.Nabil.SyndicNow.domain.enums.StatutPaiement;
 import ma.Nabil.SyndicNow.domain.enums.TypePaiement;
 
@@ -11,7 +15,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "paiements")

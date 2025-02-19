@@ -6,7 +6,7 @@ import ma.Nabil.SyndicNow.domain.dto.proprietaire.ProprietaireUpdateDTO;
 import ma.Nabil.SyndicNow.domain.entity.Proprietaire;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", 
+@Mapper(componentModel = "spring",
         uses = {AppartementMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ProprietaireMapper {
@@ -21,7 +21,6 @@ public interface ProprietaireMapper {
     @Mapping(target = "accountNonExpired", constant = "true")
     @Mapping(target = "accountNonLocked", constant = "true")
     @Mapping(target = "credentialsNonExpired", constant = "true")
-    @Mapping(target = "authorities", ignore = true)
     @Mapping(target = "enabled", constant = "true")
     @Mapping(target = "role", constant = "ROLE_PROPRIETAIRE")
     Proprietaire toEntity(ProprietaireCreateDTO dto);

@@ -22,15 +22,15 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            );
-        
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                );
+
         return http.build();
     }
 
@@ -42,16 +42,16 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails adminUser = User.builder()
-            .username("admin")
-            .password(passwordEncoder().encode("admin123"))
-            .roles("ADMIN")
-            .build();
+                .username("admin")
+                .password(passwordEncoder().encode("admin123"))
+                .roles("ADMIN")
+                .build();
 
         UserDetails normalUser = User.builder()
-            .username("user")
-            .password(passwordEncoder().encode("user123"))
-            .roles("USER")
-            .build();
+                .username("user")
+                .password(passwordEncoder().encode("user123"))
+                .roles("USER")
+                .build();
 
         return new InMemoryUserDetailsManager(adminUser, normalUser);
     }

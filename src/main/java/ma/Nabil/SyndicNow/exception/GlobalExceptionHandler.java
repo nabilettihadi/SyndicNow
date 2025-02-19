@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
         String details = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
-        
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())
                 .code("VALIDATION_FAILED")
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
                 .details(details)
                 .path(request.getDescription(false))
                 .build();
-        
+
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

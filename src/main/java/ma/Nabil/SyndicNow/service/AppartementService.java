@@ -8,8 +8,12 @@ import org.springframework.data.domain.Pageable;
 
 public interface AppartementService {
     AppartementResponseDTO createAppartement(AppartementCreateDTO dto);
+
     AppartementResponseDTO updateAppartement(Long id, AppartementUpdateDTO dto);
+
     AppartementResponseDTO getAppartementById(Long id);
+
     Page<AppartementResponseDTO> getAllAppartements(Pageable pageable);
+
     void deleteAppartement(Long id);
 }

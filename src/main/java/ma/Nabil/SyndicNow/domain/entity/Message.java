@@ -1,17 +1,19 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "messages")
 public class Message extends BaseEntity {
 

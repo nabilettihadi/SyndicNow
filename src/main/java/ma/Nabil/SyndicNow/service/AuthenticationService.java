@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import ma.Nabil.SyndicNow.domain.dto.auth.AuthenticationRequest;
 import ma.Nabil.SyndicNow.domain.dto.auth.AuthenticationResponse;
 import ma.Nabil.SyndicNow.domain.dto.auth.RegisterRequest;
+import ma.Nabil.SyndicNow.domain.entity.Syndic;
+import ma.Nabil.SyndicNow.domain.entity.Proprietaire;
 import ma.Nabil.SyndicNow.domain.entity.User;
+import ma.Nabil.SyndicNow.domain.enums.Role;
 import ma.Nabil.SyndicNow.exception.DuplicateResourceException;
 import ma.Nabil.SyndicNow.repository.UserRepository;
 import ma.Nabil.SyndicNow.security.JwtService;
@@ -29,15 +32,28 @@ public class AuthenticationService {
             throw new DuplicateResourceException("Un utilisateur existe déjà avec cet email");
         }
 
-        var user = User.builder()
-                .nom(request.getNom())
-                .prenom(request.getPrenom())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .telephone(request.getTelephone())
-                .adresse(request.getAdresse())
-                .role(request.getRole())
-                .build();
+        User user;
+        if (request.getRole() == Role.ROLE_SYNDIC) {
+            user = Syndic.builder()
+                    .nom(request.getNom())
+                    .prenom(request.getPrenom())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .telephone(request.getTelephone())
+                    .adresse(request.getAdresse())
+                    .role(request.getRole())
+                    .build();
+        } else {
+            user = Proprietaire.builder()
+                    .nom(request.getNom())
+                    .prenom(request.getPrenom())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .telephone(request.getTelephone())
+                    .adresse(request.getAdresse())
+                    .role(request.getRole())
+                    .build();
+        }
 
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);

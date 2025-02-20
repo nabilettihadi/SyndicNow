@@ -1,18 +1,20 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import ma.Nabil.SyndicNow.domain.enums.BudgetCategory;
+import ma.Nabil.SyndicNow.domain.enums.BudgetStatus;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "budgets")
 public class Budget extends BaseEntity {
 
@@ -49,7 +51,7 @@ public class Budget extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "approved_by_id")
-    private User approvedBy;
+    private Syndic approvedBy;
 
     @ManyToOne
     @JoinColumn(name = "immeuble_id", nullable = false)
@@ -60,18 +62,4 @@ public class Budget extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String notes;
-
-    public enum BudgetCategory {
-        FONCTIONNEMENT,
-        TRAVAUX,
-        URGENCE,
-        AUTRE
-    }
-
-    public enum BudgetStatus {
-        PREVU,
-        EN_COURS,
-        CLOTURE,
-        ANNULE
-    }
 }

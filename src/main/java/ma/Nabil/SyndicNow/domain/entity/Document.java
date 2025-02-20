@@ -1,17 +1,20 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import ma.Nabil.SyndicNow.domain.enums.DocumentCategory;
+import ma.Nabil.SyndicNow.domain.enums.DocumentType;
+import ma.Nabil.SyndicNow.domain.enums.DocumentVisibility;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@EqualsAndHashCode(callSuper = true)
 @Table(name = "documents")
 public class Document extends BaseEntity {
 
@@ -36,7 +39,7 @@ public class Document extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "uploaded_by_id", nullable = false)
-    private User uploadedBy;
+    private Syndic uploadedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -44,39 +47,13 @@ public class Document extends BaseEntity {
 
     private LocalDateTime expiryDate;
 
-    private String version;
+    @Column(name = "doc_version")
+    private String documentVersion;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "appartement_id")
-    private Appartement appartement;
-
-    @ManyToOne
     @JoinColumn(name = "immeuble_id")
     private Immeuble immeuble;
-
-    public enum DocumentType {
-        CONTRAT,
-        FACTURE,
-        REGLEMENT,
-        PV_REUNION,
-        DEVIS,
-        AUTRE
-    }
-
-    public enum DocumentCategory {
-        ADMINISTRATIF,
-        FINANCIER,
-        TECHNIQUE,
-        JURIDIQUE,
-        AUTRE
-    }
-
-    public enum DocumentVisibility {
-        PUBLIC,
-        PRIVE,
-        RESTREINT
-    }
 }

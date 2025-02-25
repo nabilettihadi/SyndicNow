@@ -6,11 +6,12 @@ import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
+import { authReducer } from './features/auth/store/reducers/auth.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideStore(),
+    provideStore({ auth: authReducer }),
     provideEffects(),
     provideHttpClient(),
     provideStoreDevtools({

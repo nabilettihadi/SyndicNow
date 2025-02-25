@@ -40,6 +40,6 @@ public class ImmeubleDTO {
 
     @NotNull(message = "L'ID du syndic est obligatoire")
     private Long syndicId;
-    
+
     private Set<Long> appartementIds;
 }

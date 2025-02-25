@@ -24,7 +24,6 @@ public class Proprietaire extends User {
     @Builder.Default
     private Set<Appartement> appartements = new HashSet<>();
 
-    @PrePersist
     public void prePersist() {
         this.setRole(Role.ROLE_PROPRIETAIRE);
     }

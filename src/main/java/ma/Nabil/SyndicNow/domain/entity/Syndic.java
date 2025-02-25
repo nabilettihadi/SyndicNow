@@ -1,6 +1,9 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ma.Nabil.SyndicNow.domain.enums.Role;
@@ -32,7 +35,6 @@ public class Syndic extends User {
     @Builder.Default
     private Set<Immeuble> immeubles = new HashSet<>();
 
-    @PrePersist
     public void prePersist() {
         this.setRole(Role.ROLE_SYNDIC);
         if (dateDebutActivite == null) {

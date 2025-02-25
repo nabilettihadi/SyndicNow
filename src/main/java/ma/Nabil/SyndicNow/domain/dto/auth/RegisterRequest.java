@@ -16,21 +16,21 @@ import ma.Nabil.SyndicNow.domain.enums.Role;
 public class RegisterRequest {
     @NotBlank(message = "Le nom est obligatoire")
     private String nom;
-    
+
     @NotBlank(message = "Le prénom est obligatoire")
     private String prenom;
-    
+
     @NotBlank(message = "L'email est obligatoire")
     @Email(message = "Format d'email invalide")
     private String email;
-    
+
     @NotBlank(message = "Le mot de passe est obligatoire")
     private String password;
-    
+
     @NotBlank(message = "Le téléphone est obligatoire")
     @Pattern(regexp = "^[+]?[0-9]{8,15}$", message = "Format de téléphone invalide")
     private String telephone;
-    
+
     private String adresse;
     private Role role;
 }

@@ -22,7 +22,7 @@ public class Appartement extends BaseEntity {
     private Integer etage;
     private Double surface;
     private Integer nombrePieces;
-    private String type; // T1, T2, T3, etc.
+    private String type;
 
     @Column(length = 1000)
     private String description;

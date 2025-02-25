@@ -4,15 +4,18 @@ import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementCreateDTO;
 import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementResponseDTO;
 import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementUpdateDTO;
 import ma.Nabil.SyndicNow.domain.entity.Appartement;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.Set;
 
-@Mapper(componentModel = "spring", 
+@Mapper(componentModel = "spring",
         uses = {ProprietaireMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AppartementMapper {
-    
+
     AppartementMapper INSTANCE = org.mapstruct.factory.Mappers.getMapper(AppartementMapper.class);
 
     @Mapping(target = "id", ignore = true)

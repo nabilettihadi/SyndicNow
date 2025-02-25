@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import ma.Nabil.SyndicNow.domain.dto.auth.AuthenticationRequest;
 import ma.Nabil.SyndicNow.domain.dto.auth.AuthenticationResponse;
 import ma.Nabil.SyndicNow.domain.dto.auth.RegisterRequest;
-import ma.Nabil.SyndicNow.domain.entity.Syndic;
 import ma.Nabil.SyndicNow.domain.entity.Proprietaire;
+import ma.Nabil.SyndicNow.domain.entity.Syndic;
 import ma.Nabil.SyndicNow.domain.entity.User;
 import ma.Nabil.SyndicNow.domain.enums.Role;
 import ma.Nabil.SyndicNow.exception.DuplicateResourceException;
@@ -57,7 +57,7 @@ public class AuthenticationService {
 
         userRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        
+
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .email(user.getEmail())
@@ -72,12 +72,12 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        
+
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
-                
+
         var jwtToken = jwtService.generateToken(user);
-        
+
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .email(user.getEmail())

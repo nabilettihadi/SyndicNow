@@ -8,11 +8,11 @@ import org.mapstruct.*;
 
 import java.util.Set;
 
-@Mapper(componentModel = "spring", 
+@Mapper(componentModel = "spring",
         uses = {AppartementMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ImmeubleMapper {
-    
+
     ImmeubleMapper INSTANCE = org.mapstruct.factory.Mappers.getMapper(ImmeubleMapper.class);
 
     @Mapping(target = "id", ignore = true)

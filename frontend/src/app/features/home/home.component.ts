@@ -12,7 +12,6 @@ import { RouterLink } from '@angular/router';
 })
 export class HomeComponent implements OnInit {
   ngOnInit() {
-    // Add scroll animation for features
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {

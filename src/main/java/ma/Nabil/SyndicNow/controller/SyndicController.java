@@ -29,7 +29,7 @@ public class SyndicController {
     private final SyndicService syndicService;
 
     @PostMapping
-    @Operation(summary = "Create a new syndic", 
+    @Operation(summary = "Create a new syndic",
             description = "Creates a new syndic with the provided information")
     @ApiResponse(responseCode = "201", description = "Syndic successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")

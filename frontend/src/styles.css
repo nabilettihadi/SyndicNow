@@ -4,4 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global styles */
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+}
+
 /* Vos styles globaux personnalisés ici */

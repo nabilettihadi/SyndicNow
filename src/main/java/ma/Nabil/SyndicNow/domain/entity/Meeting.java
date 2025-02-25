@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -52,7 +53,7 @@ public class Meeting extends BaseEntity {
     private User organizedBy;
 
     private Integer expectedParticipants;
-    
+
     private Integer actualParticipants;
 
     @Column(columnDefinition = "TEXT")

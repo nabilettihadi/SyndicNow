@@ -1,10 +1,7 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashSet;
@@ -40,7 +37,8 @@ public class Immeuble extends BaseEntity {
     @JoinColumn(name = "syndic_id")
     private Syndic syndic;
 
-    @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL)
+    @Builder.Default
     private Set<Appartement> appartements = new HashSet<>();
 
     public void addAppartement(Appartement appartement) {

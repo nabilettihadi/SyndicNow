@@ -1,6 +1,7 @@
 package ma.Nabil.SyndicNow.config;
 
 import lombok.RequiredArgsConstructor;
+import ma.Nabil.SyndicNow.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,8 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import ma.Nabil.SyndicNow.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -50,8 +49,8 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
-                        .contentSecurityPolicy(csp -> 
-                            csp.policyDirectives("default-src 'self'; frame-ancestors 'self'; form-action 'self'"))
+                        .contentSecurityPolicy(csp ->
+                                csp.policyDirectives("default-src 'self'; frame-ancestors 'self'; form-action 'self'"))
                 );
 
         return http.build();

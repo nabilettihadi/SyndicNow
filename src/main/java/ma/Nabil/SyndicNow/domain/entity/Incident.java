@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -42,9 +43,9 @@ public class Incident extends BaseEntity {
     @Column(nullable = false)
     private IncidentCategory category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to_id")
-    private User assignedTo;
+    private Syndic assignedTo;
 
     private LocalDateTime resolutionDate;
 

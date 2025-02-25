@@ -1,10 +1,7 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ma.Nabil.SyndicNow.domain.enums.Role;
 
@@ -24,6 +21,7 @@ public class Proprietaire extends User {
     private String cin;
 
     @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<Appartement> appartements = new HashSet<>();
 
     @PrePersist

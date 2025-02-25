@@ -1,10 +1,7 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -39,5 +36,6 @@ public class Appartement extends BaseEntity {
     private Proprietaire proprietaire;
 
     @OneToMany(mappedBy = "appartement", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Paiement> paiements = new ArrayList<>();
 }

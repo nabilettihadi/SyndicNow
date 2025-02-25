@@ -1,10 +1,7 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import ma.Nabil.SyndicNow.domain.enums.Role;
 
@@ -31,7 +28,8 @@ public class Syndic extends User {
     @Column(nullable = false)
     private LocalDateTime dateDebutActivite;
 
-    @OneToMany(mappedBy = "syndic", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "syndic")
+    @Builder.Default
     private Set<Immeuble> immeubles = new HashSet<>();
 
     @PrePersist

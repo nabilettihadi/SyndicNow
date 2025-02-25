@@ -1,9 +1,6 @@
 package ma.Nabil.SyndicNow.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +17,9 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-@MappedSuperclass
+@Entity
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false)

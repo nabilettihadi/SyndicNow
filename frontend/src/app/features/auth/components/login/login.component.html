@@ -1,27 +1,49 @@
 <div class="login-container">
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-    <h2 class="form-title">Login to SyndicNow</h2>
+    <h2 class="form-title">Welcome Back!</h2>
     
     <div class="form-group">
-      <label for="email" class="form-label">Email</label>
+      <label for="email" class="form-label">Email address</label>
       <input
         type="email"
         id="email"
         formControlName="email"
         class="form-input"
-        placeholder="Enter your email"
+        placeholder="name@example.com"
+        [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
       />
+      <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="error-message">
+        <span *ngIf="loginForm.get('email')?.errors?.['required']">Email is required</span>
+        <span *ngIf="loginForm.get('email')?.errors?.['email']">Please enter a valid email</span>
+      </div>
     </div>
 
     <div class="form-group">
-      <label for="password" class="form-label">Password</label>
+      <div class="flex justify-between items-center mb-2">
+        <label for="password" class="form-label">Password</label>
+        <a routerLink="/auth/forgot-password" class="text-sm text-blue-600 hover:text-blue-800">
+          Forgot password?
+        </a>
+      </div>
       <input
         type="password"
         id="password"
         formControlName="password"
         class="form-input"
-        placeholder="Enter your password"
+        placeholder="••••••••"
+        [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
       />
+      <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
+        <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
+        <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="flex items-center">
+        <input type="checkbox" class="form-checkbox h-4 w-4 text-blue-600">
+        <span class="ml-2 text-sm text-gray-600">Remember me</span>
+      </label>
     </div>
 
     <button
@@ -30,23 +52,24 @@
       [disabled]="loginForm.invalid || (loading$ | async)"
     >
       <ng-container *ngIf="!(loading$ | async); else loadingTemplate">
-        Login
+        Sign in to your account
       </ng-container>
       <ng-template #loadingTemplate>
         <svg class="loading-spinner" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="4"></circle>
         </svg>
-        Loading...
+        Signing in...
       </ng-template>
     </button>
 
-    <div *ngIf="error$ | async as error" class="error-message">
+    <div *ngIf="error$ | async as error" class="error-message mt-4">
       {{ error }}
     </div>
 
-    <div class="text-sm text-center">
-      <a routerLink="/auth/register" class="font-medium text-indigo-600 hover:text-indigo-500">
-        Don't have an account? Sign up
+    <div class="mt-6 text-center">
+      <span class="text-gray-600">Don't have an account?</span>
+      <a routerLink="/auth/register" class="auth-link ml-1">
+        Create one now
       </a>
     </div>
   </form>

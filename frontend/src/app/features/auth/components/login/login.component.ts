@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {CommonModule} from '@angular/common';
+import {RouterLink} from '@angular/router';
 
 import * as AuthActions from '../../store/actions/auth.actions';
-import { AuthState } from '../../models/auth.model';
+import {AuthState} from '../../models/auth.model';
 
 @Component({
   selector: 'app-login',
@@ -36,7 +35,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // Clear any previous error messages
-    this.store.dispatch(AuthActions.loginFailure({ error: null }));
+    this.store.dispatch(AuthActions.loginFailure({error: null}));
   }
 
   onSubmit(): void {
@@ -45,7 +44,7 @@ export class LoginComponent implements OnInit {
         email: this.loginForm.get('email')?.value,
         password: this.loginForm.get('password')?.value
       };
-      this.store.dispatch(AuthActions.login({ credentials }));
+      this.store.dispatch(AuthActions.login({credentials}));
     } else {
       Object.keys(this.loginForm.controls).forEach(key => {
         const control = this.loginForm.get(key);

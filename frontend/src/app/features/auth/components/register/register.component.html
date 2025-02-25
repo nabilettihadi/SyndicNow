@@ -1,81 +1,107 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-md w-full space-y-8">
-    <div>
-      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-        Create your account
-      </h2>
+<div class="register-container">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+    <h2 class="form-title">Create Account</h2>
+    <p class="form-subtitle">Join SyndicNow and start managing your properties efficiently</p>
+
+    <div class="form-group">
+      <label for="username" class="form-label">Username</label>
+      <input
+        type="text"
+        id="username"
+        formControlName="username"
+        class="form-input"
+        [class.error]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched"
+        placeholder="Choose a username"
+      />
+      <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="error-message">
+        <span *ngIf="registerForm.get('username')?.errors?.['required']">Username is required</span>
+        <span *ngIf="registerForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters</span>
+      </div>
     </div>
-    <form class="mt-8 space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div class="rounded-md shadow-sm -space-y-px">
-        <div>
-          <label for="username" class="sr-only">Username</label>
-          <input id="username" 
-                 name="username" 
-                 type="text" 
-                 formControlName="username"
-                 required 
-                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                 placeholder="Username">
-        </div>
-        <div>
-          <label for="email-address" class="sr-only">Email address</label>
-          <input id="email-address" 
-                 name="email" 
-                 type="email" 
-                 formControlName="email"
-                 required 
-                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                 placeholder="Email address">
-        </div>
-        <div>
-          <label for="password" class="sr-only">Password</label>
-          <input id="password" 
-                 name="password" 
-                 type="password" 
-                 formControlName="password"
-                 required 
-                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                 placeholder="Password">
-        </div>
-        <div>
-          <label for="confirm-password" class="sr-only">Confirm Password</label>
-          <input id="confirm-password" 
-                 name="confirmPassword" 
-                 type="password" 
-                 formControlName="confirmPassword"
-                 required 
-                 class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" 
-                 placeholder="Confirm Password">
-        </div>
-      </div>
 
-      <div>
-        <button type="submit" 
-                [disabled]="!registerForm.valid || (loading$ | async)"
-                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-          <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-            <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-            </svg>
-          </span>
-          <ng-container *ngIf="!(loading$ | async); else loadingTemplate">
-            Sign up
-          </ng-container>
-          <ng-template #loadingTemplate>
-            Loading...
-          </ng-template>
-        </button>
+    <div class="form-group">
+      <label for="email" class="form-label">Email address</label>
+      <input
+        type="email"
+        id="email"
+        formControlName="email"
+        class="form-input"
+        [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+        placeholder="name@example.com"
+      />
+      <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-message">
+        <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
+        <span *ngIf="registerForm.get('email')?.errors?.['email']">Please enter a valid email address</span>
       </div>
+    </div>
 
-      <div *ngIf="error$ | async as error" class="mt-2 text-center text-sm text-red-600">
-        {{ error }}
+    <div class="form-group">
+      <label for="password" class="form-label">Password</label>
+      <input
+        type="password"
+        id="password"
+        formControlName="password"
+        class="form-input"
+        [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+        placeholder="••••••••"
+      />
+      <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
+        <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
+        <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
       </div>
+      <div class="password-requirements">
+        Password requirements:
+        <ul>
+          <li [class.valid]="!registerForm.get('password')?.errors?.['minlength']">At least 6 characters long</li>
+          <li [class.valid]="passwordContainsNumber()">Contains at least 1 number</li>
+          <li [class.valid]="passwordContainsLetter()">Contains at least 1 letter</li>
+        </ul>
+      </div>
+    </div>
 
-      <div class="text-sm text-center">
-        <a routerLink="/auth/login" class="font-medium text-indigo-600 hover:text-indigo-500">
-          Already have an account? Sign in
-        </a>
+    <div class="form-group">
+      <label for="confirmPassword" class="form-label">Confirm password</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        formControlName="confirmPassword"
+        class="form-input"
+        [class.error]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched || registerForm.errors?.['mismatch']"
+        placeholder="••••••••"
+      />
+      <div
+        *ngIf="(registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) || registerForm.errors?.['mismatch']"
+        class="error-message">
+        <span *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</span>
+        <span *ngIf="registerForm.errors?.['mismatch']">Passwords do not match</span>
       </div>
-    </form>
-  </div>
+    </div>
+
+    <button
+      type="submit"
+      class="submit-button"
+      [disabled]="registerForm.invalid || (loading$ | async)"
+    >
+      <ng-container *ngIf="!(loading$ | async); else loadingTemplate">
+        Create your account
+      </ng-container>
+      <ng-template #loadingTemplate>
+        <svg class="loading-spinner" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="4"></circle>
+        </svg>
+        Creating account...
+      </ng-template>
+    </button>
+
+    <div *ngIf="error$ | async as error" class="error-message mt-4">
+      {{ error }}
+    </div>
+
+    <div class="mt-6 text-center">
+      <span class="text-gray-600">Already have an account?</span>
+      <a routerLink="/auth/login" class="auth-link ml-1">
+        Sign in here
+      </a>
+    </div>
+  </form>
 </div>

@@ -1,8 +1,8 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.domain.dto.proprietaire.ProprietaireCreateDTO;
-import ma.Nabil.SyndicNow.domain.dto.proprietaire.ProprietaireResponseDTO;
-import ma.Nabil.SyndicNow.domain.dto.proprietaire.ProprietaireUpdateDTO;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireCreateDTO;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireResponseDTO;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireUpdateDTO;
 
 import java.util.List;
 

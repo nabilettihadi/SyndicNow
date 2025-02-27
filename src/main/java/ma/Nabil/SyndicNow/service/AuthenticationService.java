@@ -1,13 +1,13 @@
 package ma.Nabil.SyndicNow.service;
 
 import lombok.RequiredArgsConstructor;
-import ma.Nabil.SyndicNow.domain.dto.auth.AuthenticationRequest;
-import ma.Nabil.SyndicNow.domain.dto.auth.AuthenticationResponse;
-import ma.Nabil.SyndicNow.domain.dto.auth.RegisterRequest;
-import ma.Nabil.SyndicNow.domain.entity.Proprietaire;
-import ma.Nabil.SyndicNow.domain.entity.Syndic;
-import ma.Nabil.SyndicNow.domain.entity.User;
-import ma.Nabil.SyndicNow.domain.enums.Role;
+import ma.Nabil.SyndicNow.dto.auth.AuthenticationRequest;
+import ma.Nabil.SyndicNow.dto.auth.AuthenticationResponse;
+import ma.Nabil.SyndicNow.dto.auth.RegisterRequest;
+import ma.Nabil.SyndicNow.entity.Proprietaire;
+import ma.Nabil.SyndicNow.entity.Syndic;
+import ma.Nabil.SyndicNow.entity.User;
+import ma.Nabil.SyndicNow.enums.Role;
 import ma.Nabil.SyndicNow.exception.DuplicateResourceException;
 import ma.Nabil.SyndicNow.repository.UserRepository;
 import ma.Nabil.SyndicNow.security.JwtService;
@@ -33,7 +33,7 @@ public class AuthenticationService {
         }
 
         User user;
-        if (request.getRole() == Role.ROLE_SYNDIC) {
+        if (request.getRole() == Role.SYNDIC) {
             user = Syndic.builder()
                     .nom(request.getNom())
                     .prenom(request.getPrenom())

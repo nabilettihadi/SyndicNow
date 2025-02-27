@@ -1,7 +1,7 @@
 package ma.Nabil.SyndicNow.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import ma.Nabil.SyndicNow.domain.entity.Document;
+import ma.Nabil.SyndicNow.entity.Document;
 import ma.Nabil.SyndicNow.repository.DocumentRepository;
 import ma.Nabil.SyndicNow.service.DocumentService;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,10 @@
 package ma.Nabil.SyndicNow.service.impl;
 
-import ma.Nabil.SyndicNow.domain.dto.syndic.SyndicCreateDTO;
-import ma.Nabil.SyndicNow.domain.dto.syndic.SyndicResponseDTO;
-import ma.Nabil.SyndicNow.domain.dto.syndic.SyndicUpdateDTO;
-import ma.Nabil.SyndicNow.domain.entity.Syndic;
-import ma.Nabil.SyndicNow.domain.mapper.SyndicMapper;
+import ma.Nabil.SyndicNow.dto.syndic.SyndicCreateDTO;
+import ma.Nabil.SyndicNow.dto.syndic.SyndicResponseDTO;
+import ma.Nabil.SyndicNow.dto.syndic.SyndicUpdateDTO;
+import ma.Nabil.SyndicNow.entity.Syndic;
+import ma.Nabil.SyndicNow.mapper.SyndicMapper;
 import ma.Nabil.SyndicNow.repository.SyndicRepository;
 import ma.Nabil.SyndicNow.service.SyndicService;
 import org.springframework.beans.factory.annotation.Autowired;

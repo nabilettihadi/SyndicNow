@@ -1,7 +1,9 @@
 export interface User {
   id: number;
+  nom: string;
+  prenom: string;
   email: string;
-  username: string;
+  role: string;
   token?: string;
 }
 
@@ -10,9 +12,14 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface RegisterCredentials extends LoginCredentials {
-  username: string;
-  confirmPassword: string;
+export interface RegisterCredentials {
+  nom: string;
+  prenom: string;
+  email: string;
+  password: string;
+  telephone: string;
+  adresse?: string;
+  role: string;
 }
 
 export interface AuthState {

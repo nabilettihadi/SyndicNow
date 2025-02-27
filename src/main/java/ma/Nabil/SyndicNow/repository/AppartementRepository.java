@@ -1,6 +1,6 @@
 package ma.Nabil.SyndicNow.repository;
 
-import ma.Nabil.SyndicNow.domain.entity.Appartement;
+import ma.Nabil.SyndicNow.entity.Appartement;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

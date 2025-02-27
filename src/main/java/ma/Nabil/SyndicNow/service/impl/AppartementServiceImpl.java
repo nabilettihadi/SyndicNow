@@ -1,10 +1,10 @@
 package ma.Nabil.SyndicNow.service.impl;
 
-import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementCreateDTO;
-import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementResponseDTO;
-import ma.Nabil.SyndicNow.domain.dto.appartement.AppartementUpdateDTO;
-import ma.Nabil.SyndicNow.domain.entity.Appartement;
-import ma.Nabil.SyndicNow.domain.mapper.AppartementMapper;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementCreateDTO;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementResponseDTO;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementUpdateDTO;
+import ma.Nabil.SyndicNow.entity.Appartement;
+import ma.Nabil.SyndicNow.mapper.AppartementMapper;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
 import ma.Nabil.SyndicNow.service.AppartementService;
 import org.springframework.beans.factory.annotation.Autowired;

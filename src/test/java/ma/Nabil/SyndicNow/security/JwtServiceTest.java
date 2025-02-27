@@ -1,7 +1,7 @@
 package ma.Nabil.SyndicNow.security;
 
-import ma.Nabil.SyndicNow.domain.entity.Syndic;
-import ma.Nabil.SyndicNow.domain.enums.Role;
+import ma.Nabil.SyndicNow.entity.Syndic;
+import ma.Nabil.SyndicNow.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ class JwtServiceTest {
                 .prenom("User")
                 .password("password123")
                 .telephone("0123456789")
-                .role(Role.ROLE_SYNDIC)
+                .role(Role.SYNDIC)
                 .build();
     }
 
@@ -79,7 +79,7 @@ class JwtServiceTest {
                 .prenom("User")
                 .password("password123")
                 .telephone("9876543210")
-                .role(Role.ROLE_SYNDIC)
+                .role(Role.SYNDIC)
                 .build();
 
         // When & Then

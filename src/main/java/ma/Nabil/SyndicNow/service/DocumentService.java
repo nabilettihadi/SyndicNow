@@ -1,6 +1,6 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.domain.entity.Document;
+import ma.Nabil.SyndicNow.entity.Document;
 
 import java.util.List;
 

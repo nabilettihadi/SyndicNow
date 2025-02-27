@@ -1,10 +1,10 @@
 package ma.Nabil.SyndicNow.service.impl;
 
-import ma.Nabil.SyndicNow.domain.dto.paiement.PaiementCreateDTO;
-import ma.Nabil.SyndicNow.domain.dto.paiement.PaiementResponseDTO;
-import ma.Nabil.SyndicNow.domain.dto.paiement.PaiementUpdateDTO;
-import ma.Nabil.SyndicNow.domain.entity.Paiement;
-import ma.Nabil.SyndicNow.domain.mapper.PaiementMapper;
+import ma.Nabil.SyndicNow.dto.paiement.PaiementCreateDTO;
+import ma.Nabil.SyndicNow.dto.paiement.PaiementResponseDTO;
+import ma.Nabil.SyndicNow.dto.paiement.PaiementUpdateDTO;
+import ma.Nabil.SyndicNow.entity.Paiement;
+import ma.Nabil.SyndicNow.mapper.PaiementMapper;
 import ma.Nabil.SyndicNow.repository.PaiementRepository;
 import ma.Nabil.SyndicNow.service.PaiementService;
 import org.springframework.beans.factory.annotation.Autowired;

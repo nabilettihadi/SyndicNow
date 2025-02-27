@@ -1,7 +1,7 @@
 package ma.Nabil.SyndicNow.repository;
 
-import ma.Nabil.SyndicNow.domain.entity.Paiement;
-import ma.Nabil.SyndicNow.domain.enums.StatutPaiement;
+import ma.Nabil.SyndicNow.entity.Paiement;
+import ma.Nabil.SyndicNow.enums.StatutPaiement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

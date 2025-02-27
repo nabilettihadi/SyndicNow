@@ -1,8 +1,8 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.domain.dto.immeuble.ImmeubleCreateDTO;
-import ma.Nabil.SyndicNow.domain.dto.immeuble.ImmeubleResponseDTO;
-import ma.Nabil.SyndicNow.domain.dto.immeuble.ImmeubleUpdateDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleCreateDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponseDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleUpdateDTO;
 
 import java.util.List;
 

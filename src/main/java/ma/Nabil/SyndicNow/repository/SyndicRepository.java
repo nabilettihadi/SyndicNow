@@ -1,6 +1,6 @@
 package ma.Nabil.SyndicNow.repository;
 
-import ma.Nabil.SyndicNow.domain.entity.Syndic;
+import ma.Nabil.SyndicNow.entity.Syndic;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

@@ -1,7 +1,7 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.domain.dto.auth.AuthenticationRequest;
-import ma.Nabil.SyndicNow.domain.dto.auth.RegisterRequest;
+import ma.Nabil.SyndicNow.dto.auth.AuthenticationRequest;
+import ma.Nabil.SyndicNow.dto.auth.RegisterRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,7 +1,7 @@
 package ma.Nabil.SyndicNow.controller;
 
 import lombok.RequiredArgsConstructor;
-import ma.Nabil.SyndicNow.domain.entity.Document;
+import ma.Nabil.SyndicNow.entity.Document;
 import ma.Nabil.SyndicNow.service.DocumentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

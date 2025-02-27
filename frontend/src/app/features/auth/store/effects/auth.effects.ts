@@ -53,12 +53,10 @@ export class AuthEffects {
   logout$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logout),
-      mergeMap(() =>
-        this.authService.logout().pipe(
-          map(() => AuthActions.logoutSuccess()),
-          catchError(() => of(AuthActions.logoutSuccess()))
-        )
-      )
+      tap(() => {
+        this.authService.logout();
+        return AuthActions.logoutSuccess();
+      })
     )
   );
 
@@ -75,6 +73,5 @@ export class AuthEffects {
     private actions$: Actions,
     private authService: AuthService,
     private router: Router
-  ) {
-  }
+  ) {}
 }

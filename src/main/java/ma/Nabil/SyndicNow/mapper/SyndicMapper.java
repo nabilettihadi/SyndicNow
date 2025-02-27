@@ -6,6 +6,8 @@ import ma.Nabil.SyndicNow.dto.syndic.SyndicUpdateDTO;
 import ma.Nabil.SyndicNow.entity.Syndic;
 import org.mapstruct.*;
 
+import java.util.stream.Collectors;
+
 @Mapper(componentModel = "spring",
         uses = {ImmeubleMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -31,9 +33,11 @@ public interface SyndicMapper {
     SyndicResponseDTO toResponseDto(Syndic syndic);
 
     @AfterMapping
-    default void setImmeubles(@MappingTarget SyndicResponseDTO dto, Syndic syndic) {
+    default void setImmeubles(@MappingTarget SyndicResponseDTO dto, Syndic syndic, @Context ImmeubleMapper immeubleMapper) {
         if (syndic.getImmeubles() != null && !syndic.getImmeubles().isEmpty()) {
-            dto.setImmeubles(ImmeubleMapper.INSTANCE.toResponseDtoSet(syndic.getImmeubles()));
+            dto.setImmeubles(syndic.getImmeubles().stream()
+                    .map(immeubleMapper::toResponseDto)
+                    .collect(Collectors.toSet()));
         }
     }
 }

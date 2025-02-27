@@ -7,13 +7,12 @@ import ma.Nabil.SyndicNow.entity.Immeuble;
 import org.mapstruct.*;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring",
         uses = {AppartementMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ImmeubleMapper {
-
-    ImmeubleMapper INSTANCE = org.mapstruct.factory.Mappers.getMapper(ImmeubleMapper.class);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -35,9 +34,11 @@ public interface ImmeubleMapper {
     Set<ImmeubleResponseDTO> toResponseDtoSet(Set<Immeuble> immeubles);
 
     @AfterMapping
-    default void setAppartements(@MappingTarget ImmeubleResponseDTO dto, Immeuble immeuble) {
+    default void setAppartements(@MappingTarget ImmeubleResponseDTO dto, Immeuble immeuble, @Context AppartementMapper appartementMapper) {
         if (immeuble.getAppartements() != null && !immeuble.getAppartements().isEmpty()) {
-            dto.setAppartements(AppartementMapper.INSTANCE.toResponseDtoSet(immeuble.getAppartements()));
+            dto.setAppartements(immeuble.getAppartements().stream()
+                    .map(appartementMapper::toResponseDto)
+                    .collect(Collectors.toSet()));
         }
     }
 }

@@ -16,8 +16,6 @@ import java.util.Set;
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AppartementMapper {
 
-    AppartementMapper INSTANCE = org.mapstruct.factory.Mappers.getMapper(AppartementMapper.class);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

@@ -6,6 +6,8 @@ import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireUpdateDTO;
 import ma.Nabil.SyndicNow.entity.Proprietaire;
 import org.mapstruct.*;
 
+import java.util.stream.Collectors;
+
 @Mapper(componentModel = "spring",
         uses = {AppartementMapper.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
@@ -32,9 +34,11 @@ public interface ProprietaireMapper {
     ProprietaireResponseDTO toResponseDto(Proprietaire proprietaire);
 
     @AfterMapping
-    default void setAppartements(@MappingTarget ProprietaireResponseDTO dto, Proprietaire proprietaire) {
+    default void setAppartements(@MappingTarget ProprietaireResponseDTO dto, Proprietaire proprietaire, @Context AppartementMapper appartementMapper) {
         if (proprietaire.getAppartements() != null && !proprietaire.getAppartements().isEmpty()) {
-            dto.setAppartements(AppartementMapper.INSTANCE.toResponseDtoSet(proprietaire.getAppartements()));
+            dto.setAppartements(proprietaire.getAppartements().stream()
+                    .map(appartementMapper::toResponseDto)
+                    .collect(Collectors.toSet()));
         }
     }
 }

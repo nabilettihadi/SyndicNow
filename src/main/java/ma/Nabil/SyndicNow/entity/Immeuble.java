@@ -1,53 +1,38 @@
-package ma.Nabil.SyndicNow.entity;
-
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
-
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "immeubles")
-public class Immeuble extends BaseEntity {
+public class Immeuble {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false)
     private String nom;
-
-    @Column(nullable = false)
     private String adresse;
-
-    private String ville;
-    private String codePostal;
-    private String pays;
-
     private Integer nombreEtages;
     private Integer nombreAppartements;
-    private Double surface;
-
-    @Column(length = 1000)
-    private String description;
+    
+    @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL)
+    private List<Appartement> appartements = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "syndic_id")
     private Syndic syndic;
 
-    @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL)
-    @Builder.Default
-    private Set<Appartement> appartements = new HashSet<>();
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    public void addAppartement(Appartement appartement) {
-        appartements.add(appartement);
-        appartement.setImmeuble(this);
-    }
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
-    public void removeAppartement(Appartement appartement) {
-        appartements.remove(appartement);
-        appartement.setImmeuble(null);
-    }
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedBy
+    private String updatedBy;
 }

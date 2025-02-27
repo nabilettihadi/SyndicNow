@@ -15,11 +15,14 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @Table(name = "budgets")
-public class Budget extends BaseEntity {
+public class Budget {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private Integer year;
@@ -65,4 +68,16 @@ public class Budget extends BaseEntity {
 
     @Column(columnDefinition = "TEXT")
     private String notes;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedBy
+    private String updatedBy;
 }

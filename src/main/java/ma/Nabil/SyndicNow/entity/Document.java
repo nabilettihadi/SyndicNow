@@ -1,18 +1,24 @@
 package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import ma.Nabil.SyndicNow.enums.DocumentCategory;
+import ma.Nabil.SyndicNow.enums.DocumentType;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "documents")
 public class Document {
 
@@ -23,41 +29,46 @@ public class Document {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String type;
-
-    @Column(nullable = false)
-    private LocalDateTime uploadDate;
-
-    private String category;
+    @Column(length = 1000)
+    private String description;
 
     @Column(nullable = false)
     private String filePath;
 
+    @Column(nullable = false)
+    private String type;
+
     private Long fileSize;
 
-    @Column(nullable = false)
-    private String uploadedBy;
+    @Enumerated(EnumType.STRING)
+    private DocumentType documentType;
 
-    @Column(nullable = false)
-    private String visibility;
+    @Enumerated(EnumType.STRING)
+    private DocumentCategory category;
 
-    private LocalDateTime expiryDate;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    private String documentVersion;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
-    @Column(length = 1000)
-    private String description;
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedBy
+    private String updatedBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "immeuble_id")
     private Immeuble immeuble;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime expiryDate;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private String documentVersion;
+
+    private String uploadedBy;
+
+    private String visibility;
 
     @PrePersist
     protected void onCreate() {

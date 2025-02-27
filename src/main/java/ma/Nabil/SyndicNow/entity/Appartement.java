@@ -2,19 +2,29 @@ package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "appartements")
-public class Appartement extends BaseEntity {
+public class Appartement {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String numero;
@@ -31,11 +41,22 @@ public class Appartement extends BaseEntity {
     @JoinColumn(name = "immeuble_id")
     private Immeuble immeuble;
 
+    @OneToMany(mappedBy = "appartement", cascade = CascadeType.ALL)
+    private List<Paiement> paiements = new ArrayList<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proprietaire_id")
     private Proprietaire proprietaire;
 
-    @OneToMany(mappedBy = "appartement", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<Paiement> paiements = new ArrayList<>();
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedBy
+    private String updatedBy;
 }

@@ -16,7 +16,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "incidents")
-public class Incident extends BaseEntity {
+public class Incident {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -61,6 +65,18 @@ public class Incident extends BaseEntity {
     private Immeuble immeuble;
 
     private String attachmentUrls;
+
+    @CreatedBy
+    private String createdBy;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedBy
+    private String updatedBy;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     public enum IncidentStatus {
         NOUVEAU,

@@ -12,11 +12,14 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @Table(name = "messages")
-public class Message extends BaseEntity {
+public class Message {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
@@ -61,6 +64,18 @@ public class Message extends BaseEntity {
     private String recipients; // Stocké comme JSON des IDs des utilisateurs
 
     private LocalDateTime readDate;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @CreatedBy
+    private String createdBy;
+
+    @LastModifiedBy
+    private String updatedBy;
 
     public enum MessageStatus {
         NON_LU,

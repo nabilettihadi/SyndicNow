@@ -1,20 +1,22 @@
 package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "incidents")
 public class Incident {
 
@@ -25,15 +27,8 @@ public class Incident {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(length = 1000)
     private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "reported_by_id", nullable = false)
-    private User reportedBy;
-
-    @Column(nullable = false)
-    private LocalDateTime reportedDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -42,6 +37,13 @@ public class Incident {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private IncidentPriority priority;
+
+    @Column(nullable = false)
+    private LocalDateTime reportedDate;
+
+    @ManyToOne
+    @JoinColumn(name = "reported_by_id", nullable = false)
+    private User reportedBy;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -56,11 +58,11 @@ public class Incident {
     @Column(columnDefinition = "TEXT")
     private String resolution;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appartement_id")
     private Appartement appartement;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "immeuble_id")
     private Immeuble immeuble;
 

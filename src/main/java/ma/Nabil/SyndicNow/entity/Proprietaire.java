@@ -2,49 +2,57 @@ package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import ma.Nabil.SyndicNow.enums.Role;
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "proprietaires")
-public class Proprietaire {
+public class Proprietaire extends User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String nom;
-    private String prenom;
+    @Column(unique = true)
     private String cin;
-    private String email;
-    private String telephone;
-    private String adresse;
 
-    @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<Appartement> appartements = new ArrayList<>();
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     @CreatedBy
     private String createdBy;
 
     @LastModifiedBy
     private String updatedBy;
+
+    @PrePersist
+    public void prePersist() {
+        if (role == null) {
+            role = Role.PROPRIETAIRE;
+        }
+    }
+
+    public void addAppartement(Appartement appartement) {
+        if (appartements == null) {
+            appartements = new ArrayList<>();
+        }
+        appartements.add(appartement);
+        appartement.setProprietaire(this);
+    }
+
+    public void removeAppartement(Appartement appartement) {
+        if (appartements != null) {
+            appartements.remove(appartement);
+            appartement.setProprietaire(null);
+        }
+    }
 }

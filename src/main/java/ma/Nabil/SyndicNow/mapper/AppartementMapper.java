@@ -21,7 +21,6 @@ public interface AppartementMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "version", ignore = true)
     @Mapping(target = "immeuble", ignore = true)
     @Mapping(target = "proprietaire", ignore = true)
     Appartement toEntity(AppartementCreateDTO dto);

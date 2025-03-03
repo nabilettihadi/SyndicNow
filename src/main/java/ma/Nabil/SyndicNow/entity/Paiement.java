@@ -2,6 +2,8 @@ package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ma.Nabil.SyndicNow.enums.StatutPaiement;
+import ma.Nabil.SyndicNow.enums.TypePaiement;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -15,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)

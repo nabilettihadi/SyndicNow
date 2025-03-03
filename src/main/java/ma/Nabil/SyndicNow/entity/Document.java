@@ -27,7 +27,7 @@ public class Document {
     private Long id;
 
     @Column(nullable = false)
-    private String title;
+    private String nom;
 
     @Column(length = 1000)
     private String description;

@@ -31,9 +31,8 @@ public class DocumentServiceImpl implements DocumentService {
     @Transactional
     public Document updateDocument(Long id, Document document) {
         Document existingDocument = getDocumentById(id);
-        existingDocument.setTitle(document.getTitle());
+        existingDocument.setNom(document.getNom());
         existingDocument.setType(document.getType());
-        existingDocument.setUploadDate(document.getUploadDate());
         existingDocument.setCategory(document.getCategory());
         existingDocument.setFilePath(document.getFilePath());
         existingDocument.setFileSize(document.getFileSize());

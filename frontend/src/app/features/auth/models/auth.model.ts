@@ -1,7 +1,7 @@
 export interface User {
-  id: number;
-  nom: string;
-  prenom: string;
+  id?: number;
+  nom?: string;
+  prenom?: string;
   email: string;
   role: string;
   token?: string;
@@ -19,6 +19,12 @@ export interface RegisterCredentials {
   password: string;
   telephone: string;
   adresse?: string;
+  role?: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  email: string;
   role: string;
 }
 
@@ -26,4 +32,9 @@ export interface AuthState {
   user: User | null;
   loading: boolean;
   error: string | null;
+}
+
+export enum UserRole {
+  SYNDIC = 'SYNDIC',
+  PROPRIETAIRE = 'PROPRIETAIRE'
 }

@@ -18,12 +18,8 @@ public interface SyndicMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "version", ignore = true)
+
     @Mapping(target = "immeubles", ignore = true)
-    @Mapping(target = "accountNonExpired", constant = "true")
-    @Mapping(target = "accountNonLocked", constant = "true")
-    @Mapping(target = "credentialsNonExpired", constant = "true")
-    @Mapping(target = "enabled", constant = "true")
     @Mapping(target = "dateDebutActivite", expression = "java(java.time.LocalDateTime.now())")
     Syndic toEntity(SyndicCreateDTO dto);
 

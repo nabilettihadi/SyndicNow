@@ -19,7 +19,6 @@ public interface ImmeubleMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "version", ignore = true)
     @Mapping(target = "syndic", ignore = true)
     @Mapping(target = "appartements", ignore = true)
     Immeuble toEntity(ImmeubleCreateDTO dto);

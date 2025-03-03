@@ -15,7 +15,6 @@ public interface PaiementMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "version", ignore = true)
     @Mapping(target = "appartement", ignore = true)
     @Mapping(target = "reference", expression = "java(generateReference())")
     @Mapping(target = "statut", constant = "EN_ATTENTE")

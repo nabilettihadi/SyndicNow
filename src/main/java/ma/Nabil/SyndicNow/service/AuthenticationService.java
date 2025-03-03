@@ -13,6 +13,7 @@ import ma.Nabil.SyndicNow.repository.UserRepository;
 import ma.Nabil.SyndicNow.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,31 +33,34 @@ public class AuthenticationService {
             throw new DuplicateResourceException("Un utilisateur existe déjà avec cet email");
         }
 
-        User user;
-        if (request.getRole() == Role.SYNDIC) {
-            user = Syndic.builder()
-                    .nom(request.getNom())
-                    .prenom(request.getPrenom())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .telephone(request.getTelephone())
-                    .adresse(request.getAdresse())
-                    .role(request.getRole())
-                    .build();
-        } else {
-            user = Proprietaire.builder()
-                    .nom(request.getNom())
-                    .prenom(request.getPrenom())
-                    .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .telephone(request.getTelephone())
-                    .adresse(request.getAdresse())
-                    .role(request.getRole())
-                    .build();
+        if (request.getRole() == null) {
+            request.setRole(Role.PROPRIETAIRE); // Default role
         }
 
-        userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        User user = switch (request.getRole()) {
+            case SYNDIC -> Syndic.builder()
+                    .nom(request.getNom())
+                    .prenom(request.getPrenom())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .telephone(request.getTelephone())
+                    .adresse(request.getAdresse())
+                    .role(Role.SYNDIC)
+                    .build();
+            case PROPRIETAIRE -> Proprietaire.builder()
+                    .nom(request.getNom())
+                    .prenom(request.getPrenom())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .telephone(request.getTelephone())
+                    .adresse(request.getAdresse())
+                    .role(Role.PROPRIETAIRE)
+                    .build();
+            default -> throw new IllegalArgumentException("Role non supporté: " + request.getRole());
+        };
+
+        user = userRepository.save(user);
+        String jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -73,10 +77,10 @@ public class AuthenticationService {
                 )
         );
 
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
 
-        var jwtToken = jwtService.generateToken(user);
+        String jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
                 .token(jwtToken)

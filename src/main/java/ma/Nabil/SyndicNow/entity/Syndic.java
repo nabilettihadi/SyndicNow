@@ -2,6 +2,8 @@ package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
+import ma.Nabil.SyndicNow.enums.Role;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -15,33 +17,30 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "syndics")
-public class Syndic {
+public class Syndic extends User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @Column(unique = true)
     private String cin;
+
+    @Column(unique = true)
     private String numeroLicence;
+
     private String societe;
+
+    @Column(unique = true)
     private String siret;
 
     @Column(nullable = false)
     private LocalDateTime dateDebutActivite;
 
     @OneToMany(mappedBy = "syndic", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Immeuble> immeubles = new ArrayList<>();
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     @CreatedBy
     private String createdBy;
@@ -49,19 +48,28 @@ public class Syndic {
     @LastModifiedBy
     private String updatedBy;
 
+    @PrePersist
     public void prePersist() {
         if (dateDebutActivite == null) {
             dateDebutActivite = LocalDateTime.now();
         }
+        if (role == null) {
+            role = Role.SYNDIC;
+        }
     }
 
     public void addImmeuble(Immeuble immeuble) {
+        if (immeubles == null) {
+            immeubles = new ArrayList<>();
+        }
         immeubles.add(immeuble);
         immeuble.setSyndic(this);
     }
 
     public void removeImmeuble(Immeuble immeuble) {
-        immeubles.remove(immeuble);
-        immeuble.setSyndic(null);
+        if (immeubles != null) {
+            immeubles.remove(immeuble);
+            immeuble.setSyndic(null);
+        }
     }
 }

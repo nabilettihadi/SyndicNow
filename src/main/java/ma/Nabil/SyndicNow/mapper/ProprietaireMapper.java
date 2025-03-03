@@ -18,13 +18,7 @@ public interface ProprietaireMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
-    @Mapping(target = "version", ignore = true)
     @Mapping(target = "appartements", ignore = true)
-    @Mapping(target = "accountNonExpired", constant = "true")
-    @Mapping(target = "accountNonLocked", constant = "true")
-    @Mapping(target = "credentialsNonExpired", constant = "true")
-    @Mapping(target = "enabled", constant = "true")
-    @Mapping(target = "role", constant = "PROPRIETAIRE")
     Proprietaire toEntity(ProprietaireCreateDTO dto);
 
     @Mapping(target = "appartements", ignore = true)

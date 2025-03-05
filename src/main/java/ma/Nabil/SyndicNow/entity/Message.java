@@ -1,10 +1,10 @@
 package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -12,34 +12,22 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
-@EqualsAndHashCode
+@AllArgsConstructor
+@Entity
 @Table(name = "messages")
 public class Message {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id", nullable = false)
-    private User sender;
-
     @Column(nullable = false)
     private String subject;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-
-    @Column(nullable = false)
-    private LocalDateTime sentDate;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private MessageStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -49,55 +37,58 @@ public class Message {
     @Column(nullable = false)
     private MessageCategory category;
 
-    private String attachmentUrls;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private MessageStatus status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = false)
+    private User sender;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_message_id")
     private Message parentMessage;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appartement_id")
     private Appartement appartement;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "immeuble_id")
     private Immeuble immeuble;
 
     @Column(columnDefinition = "TEXT")
+    private String attachmentUrls;
+
+    @Column(columnDefinition = "TEXT")
     private String recipients;
 
-    private LocalDateTime readDate;
-
-    @CreatedDate
     private LocalDateTime createdAt;
-
-    @LastModifiedDate
     private LocalDateTime updatedAt;
+    private boolean read;
+    private boolean archived;
 
-    @CreatedBy
-    private String createdBy;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        status = MessageStatus.SENT;
+    }
 
-    @LastModifiedBy
-    private String updatedBy;
-
-    public enum MessageStatus {
-        NON_LU,
-        LU,
-        ARCHIVE,
-        SUPPRIME
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     public enum MessagePriority {
-        BASSE,
-        NORMALE,
-        HAUTE,
-        URGENTE
+        HIGH, MEDIUM, LOW
     }
 
     public enum MessageCategory {
-        ANNONCE,
-        NOTIFICATION,
-        MESSAGE_PRIVE,
-        ALERTE
+        ANNOUNCEMENT, COMPLAINT, MAINTENANCE, PAYMENT, OTHER
+    }
+
+    public enum MessageStatus {
+        DRAFT, SENT, DELIVERED, READ, ARCHIVED
     }
 }

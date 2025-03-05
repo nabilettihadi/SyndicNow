@@ -19,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "proprietaires")
+@DiscriminatorValue("PROPRIETAIRE")
 public class Proprietaire extends User {
 
     @Column(unique = true)

@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {of} from 'rxjs';
 import {catchError, map, mergeMap, tap} from 'rxjs/operators';
@@ -8,13 +8,21 @@ import * as AuthActions from '../actions/auth.actions';
 
 @Injectable()
 export class AuthEffects {
+  private actions$ = inject(Actions);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   login$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.login),
       mergeMap(({credentials}) =>
         this.authService.login(credentials).pipe(
-          map(user => AuthActions.loginSuccess({user})),
-          catchError(error => of(AuthActions.loginFailure({error: error.message})))
+          map(response => AuthActions.loginSuccess({user: response})),
+          catchError(error => {
+            console.error('Login error:', error);
+            const errorMessage = error.error?.message || 'Une erreur est survenue lors de la connexion';
+            return of(AuthActions.loginFailure({error: errorMessage}));
+          })
         )
       )
     )
@@ -34,8 +42,12 @@ export class AuthEffects {
       ofType(AuthActions.register),
       mergeMap(({credentials}) =>
         this.authService.register(credentials).pipe(
-          map(user => AuthActions.registerSuccess({user})),
-          catchError(error => of(AuthActions.registerFailure({error: error.message})))
+          map(response => AuthActions.registerSuccess({user: response})),
+          catchError(error => {
+            console.error('Register error:', error);
+            const errorMessage = error.error?.message || 'Une erreur est survenue lors de l\'inscription';
+            return of(AuthActions.registerFailure({error: errorMessage}));
+          })
         )
       )
     )
@@ -53,7 +65,7 @@ export class AuthEffects {
   logout$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logout),
-      tap(() => {
+      map(() => {
         this.authService.logout();
         return AuthActions.logoutSuccess();
       })
@@ -68,10 +80,4 @@ export class AuthEffects {
       ),
     {dispatch: false}
   );
-
-  constructor(
-    private actions$: Actions,
-    private authService: AuthService,
-    private router: Router
-  ) {}
 }

@@ -32,5 +32,8 @@ public class RegisterRequest {
 
     private String adresse;
 
+    @NotBlank(message = "Le CIN est obligatoire")
+    private String cin;
+
     private Role role;
 } 

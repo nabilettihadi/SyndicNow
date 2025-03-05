@@ -20,17 +20,26 @@ export class RegisterComponent implements OnInit {
   loading$: Observable<boolean>;
   error$: Observable<string | null>;
 
+  roles = [
+    { value: 'PROPRIETAIRE', label: 'Propriétaire' },
+    { value: 'SYNDIC', label: 'Syndic' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private store: Store<{ auth: AuthState }>
   ) {
     this.registerForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
+      nom: ['', [Validators.required, Validators.minLength(3)]],
+      prenom: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
+      telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      adresse: ['', [Validators.required, Validators.minLength(5)]],
+      role: ['PROPRIETAIRE', [Validators.required]],
       password: ['', [
         Validators.required,
         Validators.minLength(6),
-        Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)
+        Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[\w\W]{6,}$/)
       ]],
       confirmPassword: ['', [Validators.required]]
     }, {
@@ -46,25 +55,10 @@ export class RegisterComponent implements OnInit {
     this.store.dispatch(AuthActions.registerFailure({error: null}));
   }
 
-  private passwordMatchValidator(g: FormGroup) {
-    return g.get('password')?.value === g.get('confirmPassword')?.value
-      ? null
-      : {mismatch: true};
-  }
-
-  passwordContainsNumber(): boolean {
-    const password = this.registerForm.get('password')?.value;
-    return password ? /\d/.test(password) : false;
-  }
-
-  passwordContainsLetter(): boolean {
-    const password = this.registerForm.get('password')?.value;
-    return password ? /[A-Za-z]/.test(password) : false;
-  }
-
   onSubmit(): void {
     if (this.registerForm.valid) {
-      const {confirmPassword, ...credentials} = this.registerForm.value;
+      const {confirmPassword, ...formValue} = this.registerForm.value;
+      const credentials = formValue;
       this.store.dispatch(AuthActions.register({credentials}));
     } else {
       Object.keys(this.registerForm.controls).forEach(key => {
@@ -74,5 +68,22 @@ export class RegisterComponent implements OnInit {
         }
       });
     }
+  }
+
+  passwordMatchValidator(g: FormGroup) {
+    return g.get('password')?.value === g.get('confirmPassword')?.value
+      ? null
+      : {mismatch: true};
+  }
+
+  // Méthodes utilitaires pour les validations du template
+  passwordContainsNumber(): boolean {
+    const password = this.registerForm.get('password')?.value;
+    return /\d/.test(password);
+  }
+
+  passwordContainsLetter(): boolean {
+    const password = this.registerForm.get('password')?.value;
+    return /[A-Za-z]/.test(password);
   }
 }

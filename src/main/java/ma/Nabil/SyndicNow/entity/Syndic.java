@@ -22,6 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "syndics")
+@DiscriminatorValue("SYNDIC")
 public class Syndic extends User {
 
     @Column(unique = true)

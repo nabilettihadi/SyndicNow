@@ -1,14 +1,14 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable, tap} from 'rxjs';
-import {LoginCredentials, RegisterCredentials, User} from '../models/auth.model';
-import {environment} from '../../../../environments/environment';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+import { LoginCredentials, RegisterCredentials, User, AuthResponse } from '../models/auth.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = `${environment.apiUrl}/api/auth`;
+  private apiUrl = `${environment.apiUrl}/auth`;
   private readonly TOKEN_KEY = 'auth_token';
   private readonly USER_KEY = 'current_user';
 
@@ -20,14 +20,25 @@ export class AuthService {
     }
   }
 
-  login(credentials: LoginCredentials): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/authenticate`, credentials).pipe(
+  login(credentials: LoginCredentials): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/authenticate`, {
+      email: credentials.email,
+      password: credentials.password
+    }).pipe(
       tap(response => this.handleAuthResponse(response))
     );
   }
 
-  register(credentials: RegisterCredentials): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, credentials).pipe(
+  register(credentials: RegisterCredentials): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, {
+      nom: credentials.nom,
+      prenom: credentials.prenom,
+      email: credentials.email,
+      password: credentials.password,
+      telephone: credentials.telephone,
+      adresse: credentials.adresse,
+      role: credentials.role
+    }).pipe(
       tap(response => this.handleAuthResponse(response))
     );
   }
@@ -35,10 +46,9 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
-    // Additional cleanup if needed
   }
 
-  private handleAuthResponse(response: any): void {
+  private handleAuthResponse(response: AuthResponse): void {
     if (response.token) {
       localStorage.setItem(this.TOKEN_KEY, response.token);
       const user: User = {

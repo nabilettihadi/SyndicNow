@@ -45,6 +45,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .telephone(request.getTelephone())
                     .adresse(request.getAdresse())
+                    .cin(request.getCin())
                     .role(Role.SYNDIC)
                     .build();
             case PROPRIETAIRE -> Proprietaire.builder()
@@ -54,6 +55,7 @@ public class AuthenticationService {
                     .password(passwordEncoder.encode(request.getPassword()))
                     .telephone(request.getTelephone())
                     .adresse(request.getAdresse())
+                    .cin(request.getCin())
                     .role(Role.PROPRIETAIRE)
                     .build();
             default -> throw new IllegalArgumentException("Role non supporté: " + request.getRole());

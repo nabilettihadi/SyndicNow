@@ -24,6 +24,9 @@ export interface RegisterCredentials {
 
 export interface AuthResponse {
   token: string;
+  type: string;
+  refreshToken: string;
+  id: number;
   email: string;
   role: string;
 }

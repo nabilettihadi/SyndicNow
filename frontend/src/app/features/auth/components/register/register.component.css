@@ -107,6 +107,53 @@
   font-size: 0.875rem;
 }
 
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.radio-input {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.radio-input:checked {
+  border-color: #3b82f6;
+  background-color: #3b82f6;
+}
+
+.radio-input:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.radio-label {
+  font-size: 0.875rem;
+  color: #4a5568;
+  cursor: pointer;
+}
+
 .password-requirements {
   margin-top: 0.5rem;
   font-size: 0.75rem;

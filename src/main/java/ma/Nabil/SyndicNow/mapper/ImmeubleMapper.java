@@ -1,43 +1,41 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleCreateDTO;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponseDTO;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleUpdateDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
 import ma.Nabil.SyndicNow.entity.Immeuble;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring",
-        uses = {AppartementMapper.class},
-        unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Component
 public interface ImmeubleMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "appartements", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "syndic", ignore = true)
+    Immeuble toEntity(ImmeubleRequest request);
+
     @Mapping(target = "appartements", ignore = true)
-    Immeuble toEntity(ImmeubleCreateDTO dto);
-
     @Mapping(target = "syndic", ignore = true)
-    @Mapping(target = "appartements", ignore = true)
-    void updateEntityFromDto(ImmeubleUpdateDTO dto, @MappingTarget Immeuble immeuble);
+    void updateEntityFromDto(ImmeubleRequest request, @MappingTarget Immeuble immeuble);
 
-    @Mapping(target = "syndic", ignore = true)
-    ImmeubleResponseDTO toResponseDto(Immeuble immeuble);
+    @Mapping(target = "syndicId", source = "syndic.id")
+    @Mapping(target = "syndicName", expression = "java(immeuble.getSyndic() != null ? immeuble.getSyndic().getNom() + \" \" + immeuble.getSyndic().getPrenom() : null)")
+    ImmeubleResponse toResponse(Immeuble immeuble);
 
-    Set<ImmeubleResponseDTO> toResponseDtoSet(Set<Immeuble> immeubles);
-
-    @AfterMapping
-    default void setAppartements(@MappingTarget ImmeubleResponseDTO dto, Immeuble immeuble, @Context AppartementMapper appartementMapper) {
-        if (immeuble.getAppartements() != null && !immeuble.getAppartements().isEmpty()) {
-            dto.setAppartements(immeuble.getAppartements().stream()
-                    .map(appartementMapper::toResponseDto)
-                    .collect(Collectors.toSet()));
+    default Set<ImmeubleResponse> toResponseDtoSet(Set<Immeuble> immeubles) {
+        if (immeubles == null) {
+            return null;
         }
+        return immeubles.stream().map(this::toResponse).collect(java.util.stream.Collectors.toSet());
     }
 }

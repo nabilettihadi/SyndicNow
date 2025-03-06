@@ -1,10 +1,17 @@
 export interface User {
-  id?: number;
+  userId?: number;
+  email: string;
   nom?: string;
   prenom?: string;
-  email: string;
   role: string;
-  token?: string;
+  token: string;
+  isActive?: boolean;
+}
+
+export interface AuthState {
+  user: User | null;
+  loading: boolean;
+  error: string | null;
 }
 
 export interface LoginCredentials {
@@ -29,12 +36,6 @@ export interface AuthResponse {
   id: number;
   email: string;
   role: string;
-}
-
-export interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
 }
 
 export enum UserRole {

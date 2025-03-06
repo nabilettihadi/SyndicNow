@@ -1,19 +1,18 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleCreateDTO;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponseDTO;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleUpdateDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
 
 import java.util.List;
 
 public interface ImmeubleService {
-    ImmeubleResponseDTO createImmeuble(ImmeubleCreateDTO dto);
+    ImmeubleResponse createImmeuble(ImmeubleRequest dto);
 
-    ImmeubleResponseDTO updateImmeuble(Long id, ImmeubleUpdateDTO dto);
+    ImmeubleResponse updateImmeuble(Long id, ImmeubleRequest dto);
 
-    ImmeubleResponseDTO getImmeubleById(Long id);
+    ImmeubleResponse getImmeubleById(Long id);
 
-    List<ImmeubleResponseDTO> getAllImmeubles();
+    List<ImmeubleResponse> getAllImmeubles();
 
     void deleteImmeuble(Long id);
 }

@@ -1,19 +1,18 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.dto.syndic.SyndicCreateDTO;
-import ma.Nabil.SyndicNow.dto.syndic.SyndicResponseDTO;
-import ma.Nabil.SyndicNow.dto.syndic.SyndicUpdateDTO;
+import ma.Nabil.SyndicNow.dto.syndic.SyndicRequest;
+import ma.Nabil.SyndicNow.dto.syndic.SyndicResponse;
 
 import java.util.List;
 
 public interface SyndicService {
-    SyndicResponseDTO createSyndic(SyndicCreateDTO dto);
+    SyndicResponse createSyndic(SyndicRequest request);
 
-    SyndicResponseDTO updateSyndic(Long id, SyndicUpdateDTO dto);
+    SyndicResponse updateSyndic(Long id, SyndicRequest request);
 
-    SyndicResponseDTO getSyndicById(Long id);
+    SyndicResponse getSyndicById(Long id);
 
-    List<SyndicResponseDTO> getAllSyndics();
+    List<SyndicResponse> getAllSyndics();
 
     void deleteSyndic(Long id);
 }

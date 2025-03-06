@@ -1,8 +1,7 @@
 package ma.Nabil.SyndicNow.service.impl;
 
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleCreateDTO;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponseDTO;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleUpdateDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
 import ma.Nabil.SyndicNow.entity.Immeuble;
 import ma.Nabil.SyndicNow.mapper.ImmeubleMapper;
 import ma.Nabil.SyndicNow.repository.ImmeubleRepository;
@@ -23,29 +22,29 @@ public class ImmeubleServiceImpl implements ImmeubleService {
     private ImmeubleMapper immeubleMapper;
 
     @Override
-    public ImmeubleResponseDTO createImmeuble(ImmeubleCreateDTO dto) {
+    public ImmeubleResponse createImmeuble(ImmeubleRequest dto) {
         Immeuble immeuble = immeubleMapper.toEntity(dto);
         immeuble = immeubleRepository.save(immeuble);
-        return immeubleMapper.toResponseDto(immeuble);
+        return immeubleMapper.toResponse(immeuble);
     }
 
     @Override
-    public ImmeubleResponseDTO updateImmeuble(Long id, ImmeubleUpdateDTO dto) {
+    public ImmeubleResponse updateImmeuble(Long id, ImmeubleRequest dto) {
         Immeuble immeuble = immeubleRepository.findById(id).orElseThrow(() -> new RuntimeException("Immeuble not found"));
         immeubleMapper.updateEntityFromDto(dto, immeuble);
         immeuble = immeubleRepository.save(immeuble);
-        return immeubleMapper.toResponseDto(immeuble);
+        return immeubleMapper.toResponse(immeuble);
     }
 
     @Override
-    public ImmeubleResponseDTO getImmeubleById(Long id) {
+    public ImmeubleResponse getImmeubleById(Long id) {
         Immeuble immeuble = immeubleRepository.findById(id).orElseThrow(() -> new RuntimeException("Immeuble not found"));
-        return immeubleMapper.toResponseDto(immeuble);
+        return immeubleMapper.toResponse(immeuble);
     }
 
     @Override
-    public List<ImmeubleResponseDTO> getAllImmeubles() {
-        return immeubleRepository.findAll().stream().map(immeubleMapper::toResponseDto).collect(Collectors.toList());
+    public List<ImmeubleResponse> getAllImmeubles() {
+        return immeubleRepository.findAll().stream().map(immeubleMapper::toResponse).collect(Collectors.toList());
     }
 
     @Override

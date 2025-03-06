@@ -1,9 +1,12 @@
 package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import ma.Nabil.SyndicNow.enums.StatutPaiement;
-import ma.Nabil.SyndicNow.enums.TypePaiement;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ma.Nabil.SyndicNow.enums.PaiementStatus;
+import ma.Nabil.SyndicNow.enums.PaiementType;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -15,44 +18,41 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "paiements")
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "paiements")
 public class Paiement {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
-    private String reference;
-
-    @Column(nullable = false)
     private BigDecimal montant;
 
     @Column(nullable = false)
-    private LocalDate datePaiement;
-
     private LocalDate dateEcheance;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TypePaiement type;
+    private LocalDate datePaiement;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatutPaiement statut;
+    private PaiementType type;
 
-    @Column(length = 1000)
-    private String description;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaiementStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appartement_id", nullable = false)
     private Appartement appartement;
+
+    private String description;
+
+    @Column(unique = true)
+    private String reference;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -66,12 +66,26 @@ public class Paiement {
     @LastModifiedBy
     private String updatedBy;
 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        if (status == null) {
+            status = PaiementStatus.EN_ATTENTE;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
     public void prePersist() {
         if (reference == null) {
             reference = generateReference();
         }
-        if (statut == null) {
-            statut = StatutPaiement.EN_ATTENTE;
+        if (status == null) {
+            status = PaiementStatus.EN_ATTENTE;
         }
     }
 

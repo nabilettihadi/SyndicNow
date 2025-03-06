@@ -15,30 +15,24 @@ import java.util.Optional;
 public interface ImmeubleRepository extends JpaRepository<Immeuble, Long> {
     @Query("SELECT i FROM Immeuble i WHERE i.syndic.id = :syndicId")
     List<Immeuble> findBySyndicId(@Param("syndicId") Long syndicId);
-    
-    @Query("SELECT i FROM Immeuble i WHERE " +
-           "LOWER(i.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(i.adresse) LIKE LOWER(CONCAT('%', :search, '%'))")
+
+    @Query("SELECT i FROM Immeuble i WHERE " + "LOWER(i.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " + "LOWER(i.adresse) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Immeuble> searchImmeubles(@Param("search") String search, Pageable pageable);
-    
+
     @Query("SELECT i FROM Immeuble i LEFT JOIN FETCH i.appartements WHERE i.id = :id")
     Optional<Immeuble> findByIdWithAppartements(@Param("id") Long id);
-    
+
     @Query("SELECT COUNT(a) FROM Immeuble i JOIN i.appartements a WHERE i.id = :immeubleId")
     long countAppartements(@Param("immeubleId") Long immeubleId);
-    
+
     @Query("SELECT i FROM Immeuble i WHERE i.ville = :ville")
     List<Immeuble> findByVille(@Param("ville") String ville);
-    
+
     @Query("SELECT DISTINCT i.ville FROM Immeuble i")
     List<String> findAllVilles();
-    
+
     boolean existsByNomAndAdresse(String nom, String adresse);
-    
-    @Query("SELECT i FROM Immeuble i WHERE i.syndic.id = :syndicId AND " +
-           "(:search IS NULL OR LOWER(i.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(i.adresse) LIKE LOWER(CONCAT('%', :search, '%')))")
-    Page<Immeuble> findBySyndicIdAndSearch(@Param("syndicId") Long syndicId, 
-                                          @Param("search") String search, 
-                                          Pageable pageable);
+
+    @Query("SELECT i FROM Immeuble i WHERE i.syndic.id = :syndicId AND " + "(:search IS NULL OR LOWER(i.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " + "LOWER(i.adresse) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<Immeuble> findBySyndicIdAndSearch(@Param("syndicId") Long syndicId, @Param("search") String search, Pageable pageable);
 }

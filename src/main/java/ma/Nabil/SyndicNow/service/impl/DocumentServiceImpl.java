@@ -23,8 +23,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public Document getDocumentById(Long id) {
-        return documentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+        return documentRepository.findById(id).orElseThrow(() -> new RuntimeException("Document not found"));
     }
 
     @Override

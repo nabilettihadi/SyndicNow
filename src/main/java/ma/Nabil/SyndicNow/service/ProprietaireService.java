@@ -1,19 +1,18 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireCreateDTO;
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireResponseDTO;
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireUpdateDTO;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireRequest;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireResponse;
 
 import java.util.List;
 
 public interface ProprietaireService {
-    ProprietaireResponseDTO createProprietaire(ProprietaireCreateDTO dto);
+    ProprietaireResponse createProprietaire(ProprietaireRequest dto);
 
-    ProprietaireResponseDTO updateProprietaire(Long id, ProprietaireUpdateDTO dto);
+    ProprietaireResponse updateProprietaire(Long id, ProprietaireRequest dto);
 
-    ProprietaireResponseDTO getProprietaireById(Long id);
+    ProprietaireResponse getProprietaireById(Long id);
 
-    List<ProprietaireResponseDTO> getAllProprietaires();
+    List<ProprietaireResponse> getAllProprietaires();
 
     void deleteProprietaire(Long id);
 }

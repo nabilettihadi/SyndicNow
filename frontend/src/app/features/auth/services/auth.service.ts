@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { LoginCredentials, RegisterCredentials, User, AuthResponse } from '../models/auth.model';
+import { User } from '../models/auth.model';
+import { LoginRequest, LoginResponse } from '../models/login.model';
+import { RegisterRequest, RegisterResponse } from '../models/register.model';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({
@@ -20,27 +22,18 @@ export class AuthService {
     }
   }
 
-  login(credentials: LoginCredentials): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/authenticate`, {
-      email: credentials.email,
-      password: credentials.password
-    }).pipe(
-      tap(response => this.handleAuthResponse(response))
-    );
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/authenticate`, credentials)
+      .pipe(
+        tap(response => this.handleAuthResponse(response))
+      );
   }
 
-  register(credentials: RegisterCredentials): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, {
-      nom: credentials.nom,
-      prenom: credentials.prenom,
-      email: credentials.email,
-      password: credentials.password,
-      telephone: credentials.telephone,
-      adresse: credentials.adresse,
-      role: credentials.role
-    }).pipe(
-      tap(response => this.handleAuthResponse(response))
-    );
+  register(credentials: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, credentials)
+      .pipe(
+        tap(response => this.handleAuthResponse(response))
+      );
   }
 
   logout(): void {
@@ -48,13 +41,17 @@ export class AuthService {
     localStorage.removeItem(this.USER_KEY);
   }
 
-  private handleAuthResponse(response: AuthResponse): void {
+  private handleAuthResponse(response: LoginResponse | RegisterResponse): void {
     if (response.token) {
       localStorage.setItem(this.TOKEN_KEY, response.token);
       const user: User = {
+        userId: response.userId,
         email: response.email,
+        nom: response.nom,
+        prenom: response.prenom,
         role: response.role,
-        token: response.token
+        token: response.token,
+        isActive: 'isActive' in response ? response.isActive : true
       };
       localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     }

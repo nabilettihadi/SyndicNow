@@ -1,16 +1,17 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireCreateDTO;
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireResponseDTO;
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireUpdateDTO;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireRequest;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireResponse;
 import ma.Nabil.SyndicNow.entity.Proprietaire;
-import org.mapstruct.*;
+import ma.Nabil.SyndicNow.enums.Role;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
-
-@Mapper(componentModel = "spring",
-        uses = {AppartementMapper.class},
-        unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, imports = {Role.class})
+@Component
 public interface ProprietaireMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -19,20 +20,31 @@ public interface ProprietaireMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "appartements", ignore = true)
-    Proprietaire toEntity(ProprietaireCreateDTO dto);
+    @Mapping(target = "enabled", ignore = true)
+    @Mapping(target = "accountNonExpired", ignore = true)
+    @Mapping(target = "accountNonLocked", ignore = true)
+    @Mapping(target = "credentialsNonExpired", ignore = true)
+    @Mapping(target = "role", constant = "PROPRIETAIRE")
+    Proprietaire toEntity(ProprietaireRequest request);
 
     @Mapping(target = "appartements", ignore = true)
-    void updateEntityFromDto(ProprietaireUpdateDTO dto, @MappingTarget Proprietaire proprietaire);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
+    @Mapping(target = "accountNonExpired", ignore = true)
+    @Mapping(target = "accountNonLocked", ignore = true)
+    @Mapping(target = "credentialsNonExpired", ignore = true)
+    @Mapping(target = "cin", ignore = true)
+    @Mapping(target = "createdBy", ignore = true)
+    @Mapping(target = "updatedBy", ignore = true)
+    void updateEntityFromDto(ProprietaireRequest request, @MappingTarget Proprietaire proprietaire);
 
-    @Mapping(target = "appartements", ignore = true)
-    ProprietaireResponseDTO toResponseDto(Proprietaire proprietaire);
-
-    @AfterMapping
-    default void setAppartements(@MappingTarget ProprietaireResponseDTO dto, Proprietaire proprietaire, @Context AppartementMapper appartementMapper) {
-        if (proprietaire.getAppartements() != null && !proprietaire.getAppartements().isEmpty()) {
-            dto.setAppartements(proprietaire.getAppartements().stream()
-                    .map(appartementMapper::toResponseDto)
-                    .collect(Collectors.toSet()));
-        }
-    }
+    @Mapping(target = "immeubleId", ignore = true)
+    @Mapping(target = "immeubleName", ignore = true)
+    @Mapping(target = "appartementId", ignore = true)
+    @Mapping(target = "appartementNumero", ignore = true)
+    ProprietaireResponse toResponse(Proprietaire proprietaire);
 }

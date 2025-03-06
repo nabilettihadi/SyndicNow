@@ -7,9 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleCreateDTO;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponseDTO;
-import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleUpdateDTO;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
 import ma.Nabil.SyndicNow.service.ImmeubleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +32,9 @@ public class ImmeubleController {
             description = "Creates a new building with the provided information")
     @ApiResponse(responseCode = "201", description = "Building successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
-    public ResponseEntity<ImmeubleResponseDTO> createImmeuble(@Valid @RequestBody ImmeubleCreateDTO dto) {
+    public ResponseEntity<ImmeubleResponse> createImmeuble(@Valid @RequestBody ImmeubleRequest dto) {
         log.info("Creating new building with data: {}", dto);
-        ImmeubleResponseDTO response = immeubleService.createImmeuble(dto);
+        ImmeubleResponse response = immeubleService.createImmeuble(dto);
         log.info("Successfully created building with ID: {}", response.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -45,11 +44,11 @@ public class ImmeubleController {
             description = "Updates a building's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Building successfully updated")
     @ApiResponse(responseCode = "404", description = "Building not found")
-    public ResponseEntity<ImmeubleResponseDTO> updateImmeuble(
+    public ResponseEntity<ImmeubleResponse> updateImmeuble(
             @Parameter(description = "ID of the building to update") @PathVariable Long id,
-            @Valid @RequestBody ImmeubleUpdateDTO dto) {
+            @Valid @RequestBody ImmeubleRequest dto) {
         log.info("Updating building with ID: {} with data: {}", id, dto);
-        ImmeubleResponseDTO response = immeubleService.updateImmeuble(id, dto);
+        ImmeubleResponse response = immeubleService.updateImmeuble(id, dto);
         log.info("Successfully updated building with ID: {}", id);
         return ResponseEntity.ok(response);
     }
@@ -59,10 +58,10 @@ public class ImmeubleController {
             description = "Retrieves a building's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Building found and returned")
     @ApiResponse(responseCode = "404", description = "Building not found")
-    public ResponseEntity<ImmeubleResponseDTO> getImmeubleById(
+    public ResponseEntity<ImmeubleResponse> getImmeubleById(
             @Parameter(description = "ID of the building to retrieve") @PathVariable Long id) {
         log.debug("Fetching building with ID: {}", id);
-        ImmeubleResponseDTO response = immeubleService.getImmeubleById(id);
+        ImmeubleResponse response = immeubleService.getImmeubleById(id);
         return ResponseEntity.ok(response);
     }
 
@@ -70,9 +69,9 @@ public class ImmeubleController {
     @Operation(summary = "Get all buildings",
             description = "Retrieves a list of all buildings in the system")
     @ApiResponse(responseCode = "200", description = "List of buildings retrieved successfully")
-    public ResponseEntity<List<ImmeubleResponseDTO>> getAllImmeubles() {
+    public ResponseEntity<List<ImmeubleResponse>> getAllImmeubles() {
         log.debug("Fetching all buildings");
-        List<ImmeubleResponseDTO> response = immeubleService.getAllImmeubles();
+        List<ImmeubleResponse> response = immeubleService.getAllImmeubles();
         return ResponseEntity.ok(response);
     }
 

@@ -1,7 +1,10 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.dto.auth.AuthenticationRequest;
+import ma.Nabil.SyndicNow.dto.auth.LoginRequest;
+import ma.Nabil.SyndicNow.dto.auth.LoginResponse;
 import ma.Nabil.SyndicNow.dto.auth.RegisterRequest;
+import ma.Nabil.SyndicNow.dto.auth.RegisterResponse;
+import ma.Nabil.SyndicNow.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,33 +21,25 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AuthenticationServiceTest {
 
     @Autowired
-    private AuthenticationService authenticationService;
+    private AuthService authService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     private RegisterRequest validRegisterRequest;
-    private AuthenticationRequest validAuthRequest;
+    private LoginRequest validLoginRequest;
 
     @BeforeEach
     void setUp() {
-        validRegisterRequest = RegisterRequest.builder()
-                .email("test@example.com")
-                .password("password")
-                .nom("Test")
-                .prenom("User")
-                .build();
+        validRegisterRequest = RegisterRequest.builder().email("test@example.com").password("password").nom("Test").prenom("User").telephone("1234567890").adresse("Test Address").role(Role.USER).build();
 
-        validAuthRequest = AuthenticationRequest.builder()
-                .email("test@example.com")
-                .password("password")
-                .build();
+        validLoginRequest = LoginRequest.builder().email("test@example.com").password("password").build();
     }
 
     @Test
     void register_WithValidData_ShouldCreateUserAndReturnToken() {
         // When
-        var response = authenticationService.register(validRegisterRequest);
+        RegisterResponse response = authService.register(validRegisterRequest);
 
         // Then
         assertNotNull(response);
@@ -54,21 +49,21 @@ public class AuthenticationServiceTest {
     @Test
     void register_WithExistingEmail_ShouldThrowException() {
         // Given
-        authenticationService.register(validRegisterRequest);
+        authService.register(validRegisterRequest);
 
         // When & Then
         assertThrows(RuntimeException.class, () -> {
-            authenticationService.register(validRegisterRequest);
+            authService.register(validRegisterRequest);
         });
     }
 
     @Test
-    void authenticate_WithValidCredentials_ShouldReturnToken() {
+    void login_WithValidCredentials_ShouldReturnToken() {
         // Given
-        authenticationService.register(validRegisterRequest);
+        authService.register(validRegisterRequest);
 
         // When
-        var response = authenticationService.authenticate(validAuthRequest);
+        LoginResponse response = authService.login(validLoginRequest);
 
         // Then
         assertNotNull(response);
@@ -76,17 +71,14 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    void authenticate_WithInvalidCredentials_ShouldThrowException() {
+    void login_WithInvalidCredentials_ShouldThrowException() {
         // Given
-        authenticationService.register(validRegisterRequest);
-        var invalidRequest = AuthenticationRequest.builder()
-                .email(validAuthRequest.getEmail())
-                .password("wrongpassword")
-                .build();
+        authService.register(validRegisterRequest);
+        LoginRequest invalidRequest = LoginRequest.builder().email(validLoginRequest.getEmail()).password("wrongpassword").build();
 
         // When & Then
         assertThrows(BadCredentialsException.class, () -> {
-            authenticationService.authenticate(invalidRequest);
+            authService.login(invalidRequest);
         });
     }
 }

@@ -1,8 +1,7 @@
 package ma.Nabil.SyndicNow.mapper;
 
-import ma.Nabil.SyndicNow.dto.appartement.AppartementCreateDTO;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementResponseDTO;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementUpdateDTO;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementRequest;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementResponse;
 import ma.Nabil.SyndicNow.entity.Appartement;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,9 +10,7 @@ import org.mapstruct.ReportingPolicy;
 
 import java.util.Set;
 
-@Mapper(componentModel = "spring",
-        uses = {ProprietaireMapper.class},
-        unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(componentModel = "spring", uses = {ProprietaireMapper.class}, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface AppartementMapper {
 
     @Mapping(target = "id", ignore = true)
@@ -23,15 +20,15 @@ public interface AppartementMapper {
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "immeuble", ignore = true)
     @Mapping(target = "proprietaire", ignore = true)
-    Appartement toEntity(AppartementCreateDTO dto);
+    Appartement toEntity(AppartementRequest dto);
 
     @Mapping(target = "immeuble", ignore = true)
     @Mapping(target = "proprietaire", ignore = true)
-    void updateEntityFromDto(AppartementUpdateDTO dto, @MappingTarget Appartement appartement);
+    void updateEntityFromDto(AppartementRequest dto, @MappingTarget Appartement appartement);
 
     @Mapping(target = "immeubleName", source = "immeuble.nom")
     @Mapping(target = "immeubleId", source = "immeuble.id")
-    AppartementResponseDTO toResponseDto(Appartement appartement);
+    AppartementResponse toResponseDto(Appartement appartement);
 
-    Set<AppartementResponseDTO> toResponseDtoSet(Set<Appartement> appartements);
+    Set<AppartementResponse> toResponseDtoSet(Set<Appartement> appartements);
 }

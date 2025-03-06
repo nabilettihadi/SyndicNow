@@ -21,14 +21,7 @@ class JwtServiceTest {
 
     @BeforeEach
     void setUp() {
-        testUser = Syndic.builder()
-                .email("test@example.com")
-                .nom("Test")
-                .prenom("User")
-                .password("password123")
-                .telephone("0123456789")
-                .role(Role.SYNDIC)
-                .build();
+        testUser = Syndic.builder().email("test@example.com").nom("Test").prenom("User").password("password123").telephone("0123456789").role(Role.SYNDIC).build();
     }
 
     @Test
@@ -73,14 +66,7 @@ class JwtServiceTest {
     void isTokenValid_WithDifferentUser_ShouldReturnFalse() {
         // Given
         String token = jwtService.generateToken(testUser);
-        Syndic differentUser = Syndic.builder()
-                .email("different@example.com")
-                .nom("Different")
-                .prenom("User")
-                .password("password123")
-                .telephone("9876543210")
-                .role(Role.SYNDIC)
-                .build();
+        Syndic differentUser = Syndic.builder().email("different@example.com").nom("Different").prenom("User").password("password123").telephone("9876543210").role(Role.SYNDIC).build();
 
         // When & Then
         assertFalse(jwtService.isTokenValid(token, differentUser));

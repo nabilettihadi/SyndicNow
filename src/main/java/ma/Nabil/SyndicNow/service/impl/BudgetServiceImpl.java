@@ -5,7 +5,6 @@ import ma.Nabil.SyndicNow.dto.budget.BudgetRequest;
 import ma.Nabil.SyndicNow.dto.budget.BudgetResponse;
 import ma.Nabil.SyndicNow.entity.Budget;
 import ma.Nabil.SyndicNow.entity.Immeuble;
-import ma.Nabil.SyndicNow.entity.Syndic;
 import ma.Nabil.SyndicNow.enums.BudgetStatus;
 import ma.Nabil.SyndicNow.exception.InvalidOperationException;
 import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
@@ -30,23 +29,9 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional
     public BudgetResponse createBudget(BudgetRequest request) {
-        Immeuble immeuble = immeubleRepository.findById(request.getImmeubleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé"));
+        Immeuble immeuble = immeubleRepository.findById(request.getImmeubleId()).orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé"));
 
-        Budget budget = Budget.builder()
-                .year(request.getYear())
-                .totalAmount(request.getTotalAmount())
-                .category(request.getCategory())
-                .plannedExpenses(request.getPlannedExpenses())
-                .actualExpenses(BigDecimal.ZERO)
-                .income(request.getIncome())
-                .balance(request.getIncome().subtract(request.getPlannedExpenses()))
-                .reserveFund(request.getReserveFund())
-                .status(BudgetStatus.EN_ATTENTE)
-                .immeuble(immeuble)
-                .description(request.getDescription())
-                .notes(request.getNotes())
-                .build();
+        Budget budget = Budget.builder().year(request.getYear()).totalAmount(request.getTotalAmount()).category(request.getCategory()).plannedExpenses(request.getPlannedExpenses()).actualExpenses(BigDecimal.ZERO).income(request.getIncome()).balance(request.getIncome().subtract(request.getPlannedExpenses())).reserveFund(request.getReserveFund()).status(BudgetStatus.PREVU).immeuble(immeuble).description(request.getDescription()).notes(request.getNotes()).build();
 
         budget = budgetRepository.save(budget);
         return mapToResponse(budget);
@@ -55,15 +40,13 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional
     public BudgetResponse updateBudget(Long id, BudgetRequest request) {
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
+        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
 
-        if (budget.getStatus() == BudgetStatus.APPROUVE) {
+        if (budget.getStatus() == BudgetStatus.EN_COURS) {
             throw new InvalidOperationException("Impossible de modifier un budget approuvé");
         }
 
-        Immeuble immeuble = immeubleRepository.findById(request.getImmeubleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé"));
+        Immeuble immeuble = immeubleRepository.findById(request.getImmeubleId()).orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé"));
 
         budget.setYear(request.getYear());
         budget.setTotalAmount(request.getTotalAmount());
@@ -83,10 +66,9 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional
     public void deleteBudget(Long id) {
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
+        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
 
-        if (budget.getStatus() == BudgetStatus.APPROUVE) {
+        if (budget.getStatus() == BudgetStatus.EN_COURS) {
             throw new InvalidOperationException("Impossible de supprimer un budget approuvé");
         }
 
@@ -96,55 +78,45 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public BudgetResponse getBudgetById(Long id) {
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
+        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
         return mapToResponse(budget);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BudgetResponse> getAllBudgets() {
-        return budgetRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return budgetRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BudgetResponse> getBudgetsByImmeubleId(Long immeubleId) {
-        return budgetRepository.findByImmeubleId(immeubleId).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return budgetRepository.findByImmeubleId(immeubleId).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BudgetResponse> getBudgetsByYear(Integer year) {
-        return budgetRepository.findByYear(year).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return budgetRepository.findByYear(year).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BudgetResponse> getBudgetsByStatus(BudgetStatus status) {
-        return budgetRepository.findByStatus(status).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return budgetRepository.findByStatus(status).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public BudgetResponse updateBudgetStatus(Long id, BudgetStatus status) {
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
+        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
 
-        if (budget.getStatus() == BudgetStatus.APPROUVE && status != BudgetStatus.APPROUVE) {
+        if (budget.getStatus() == BudgetStatus.EN_COURS && status != BudgetStatus.EN_COURS) {
             throw new InvalidOperationException("Impossible de modifier le statut d'un budget approuvé");
         }
 
         budget.setStatus(status);
-        if (status == BudgetStatus.APPROUVE) {
+        if (status == BudgetStatus.EN_COURS) {
             budget.setApprovalDate(LocalDateTime.now());
         }
 
@@ -155,8 +127,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional
     public BudgetResponse updateActualExpenses(Long id, BigDecimal actualExpenses) {
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
+        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
 
         budget.setActualExpenses(actualExpenses);
         budget.setBalance(budget.getIncome().subtract(actualExpenses));
@@ -168,18 +139,16 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public BigDecimal calculateBalance(Long id) {
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
+        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
         return budget.getIncome().subtract(budget.getActualExpenses());
     }
 
     @Override
     @Transactional
     public void validateBudget(Long id) {
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
+        Budget budget = budgetRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Budget non trouvé"));
 
-        if (budget.getStatus() == BudgetStatus.APPROUVE) {
+        if (budget.getStatus() == BudgetStatus.EN_COURS) {
             throw new InvalidOperationException("Le budget est déjà approuvé");
         }
 
@@ -187,34 +156,12 @@ public class BudgetServiceImpl implements BudgetService {
             throw new InvalidOperationException("Les dépenses prévues ne peuvent pas dépasser le montant total");
         }
 
-        budget.setStatus(BudgetStatus.APPROUVE);
+        budget.setStatus(BudgetStatus.EN_COURS);
         budget.setApprovalDate(LocalDateTime.now());
         budgetRepository.save(budget);
     }
 
     private BudgetResponse mapToResponse(Budget budget) {
-        return BudgetResponse.builder()
-                .id(budget.getId())
-                .year(budget.getYear())
-                .totalAmount(budget.getTotalAmount())
-                .category(budget.getCategory())
-                .plannedExpenses(budget.getPlannedExpenses())
-                .actualExpenses(budget.getActualExpenses())
-                .income(budget.getIncome())
-                .balance(budget.getBalance())
-                .reserveFund(budget.getReserveFund())
-                .status(budget.getStatus())
-                .approvalDate(budget.getApprovalDate())
-                .approvedById(budget.getApprovedBy() != null ? budget.getApprovedBy().getId() : null)
-                .approvedByName(budget.getApprovedBy() != null ? budget.getApprovedBy().getNom() + " " + budget.getApprovedBy().getPrenom() : null)
-                .immeubleId(budget.getImmeuble().getId())
-                .immeubleName(budget.getImmeuble().getNom())
-                .description(budget.getDescription())
-                .notes(budget.getNotes())
-                .createdAt(budget.getCreatedAt())
-                .updatedAt(budget.getUpdatedAt())
-                .createdBy(budget.getCreatedBy())
-                .updatedBy(budget.getUpdatedBy())
-                .build();
+        return BudgetResponse.builder().id(budget.getId()).year(budget.getYear()).totalAmount(budget.getTotalAmount()).category(budget.getCategory()).plannedExpenses(budget.getPlannedExpenses()).actualExpenses(budget.getActualExpenses()).income(budget.getIncome()).balance(budget.getBalance()).reserveFund(budget.getReserveFund()).status(budget.getStatus()).approvalDate(budget.getApprovalDate()).approvedById(budget.getApprovedBy() != null ? budget.getApprovedBy().getId() : null).approvedByName(budget.getApprovedBy() != null ? budget.getApprovedBy().getNom() + " " + budget.getApprovedBy().getPrenom() : null).immeubleId(budget.getImmeuble().getId()).immeubleName(budget.getImmeuble().getNom()).description(budget.getDescription()).notes(budget.getNotes()).createdAt(budget.getCreatedAt()).updatedAt(budget.getUpdatedAt()).createdBy(budget.getCreatedBy()).updatedBy(budget.getUpdatedBy()).build();
     }
 } 

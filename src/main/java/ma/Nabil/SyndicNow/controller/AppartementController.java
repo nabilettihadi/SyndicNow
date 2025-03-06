@@ -6,9 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementCreateDTO;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementResponseDTO;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementUpdateDTO;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementRequest;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementResponse;
 import ma.Nabil.SyndicNow.service.AppartementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +35,9 @@ public class AppartementController {
     @ApiResponse(responseCode = "201", description = "Apartment successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AppartementResponseDTO> createAppartement(@Valid @RequestBody AppartementCreateDTO dto) {
+    public ResponseEntity<AppartementResponse> createAppartement(@Valid @RequestBody AppartementRequest dto) {
         log.info("Creating new apartment with data: {}", dto);
-        AppartementResponseDTO response = appartementService.createAppartement(dto);
+        AppartementResponse response = appartementService.createAppartement(dto);
         log.info("Successfully created apartment with ID: {}", response.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -49,11 +48,11 @@ public class AppartementController {
     @ApiResponse(responseCode = "200", description = "Apartment successfully updated")
     @ApiResponse(responseCode = "404", description = "Apartment not found")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AppartementResponseDTO> updateAppartement(
+    public ResponseEntity<AppartementResponse> updateAppartement(
             @Parameter(description = "ID of the apartment to update") @PathVariable Long id,
-            @Valid @RequestBody AppartementUpdateDTO dto) {
+            @Valid @RequestBody AppartementRequest dto) {
         log.info("Updating apartment with ID: {} with data: {}", id, dto);
-        AppartementResponseDTO response = appartementService.updateAppartement(id, dto);
+        AppartementResponse response = appartementService.updateAppartement(id, dto);
         log.info("Successfully updated apartment with ID: {}", id);
         return ResponseEntity.ok(response);
     }
@@ -64,10 +63,10 @@ public class AppartementController {
     @ApiResponse(responseCode = "200", description = "Apartment found and returned")
     @ApiResponse(responseCode = "404", description = "Apartment not found")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<AppartementResponseDTO> getAppartementById(
+    public ResponseEntity<AppartementResponse> getAppartementById(
             @Parameter(description = "ID of the apartment to retrieve") @PathVariable Long id) {
         log.debug("Fetching apartment with ID: {}", id);
-        AppartementResponseDTO response = appartementService.getAppartementById(id);
+        AppartementResponse response = appartementService.getAppartementById(id);
         return ResponseEntity.ok(response);
     }
 
@@ -76,9 +75,9 @@ public class AppartementController {
             description = "Retrieves a paginated list of all apartments in the system")
     @ApiResponse(responseCode = "200", description = "List of apartments retrieved successfully")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Page<AppartementResponseDTO>> getAllAppartements(Pageable pageable) {
+    public ResponseEntity<Page<AppartementResponse>> getAllAppartements(Pageable pageable) {
         log.debug("Fetching all apartments with pagination: {}", pageable);
-        Page<AppartementResponseDTO> response = appartementService.getAllAppartements(pageable);
+        Page<AppartementResponse> response = appartementService.getAllAppartements(pageable);
         return ResponseEntity.ok(response);
     }
 

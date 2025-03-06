@@ -1,8 +1,8 @@
 package ma.Nabil.SyndicNow.service.impl;
 
-import ma.Nabil.SyndicNow.dto.appartement.AppartementCreateDTO;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementResponseDTO;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementUpdateDTO;
+
+import ma.Nabil.SyndicNow.dto.appartement.AppartementRequest;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementResponse;
 import ma.Nabil.SyndicNow.entity.Appartement;
 import ma.Nabil.SyndicNow.mapper.AppartementMapper;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
@@ -22,14 +22,14 @@ public class AppartementServiceImpl implements AppartementService {
     private AppartementMapper appartementMapper;
 
     @Override
-    public AppartementResponseDTO createAppartement(AppartementCreateDTO dto) {
+    public AppartementResponse createAppartement(AppartementRequest dto) {
         Appartement appartement = appartementMapper.toEntity(dto);
         appartement = appartementRepository.save(appartement);
         return appartementMapper.toResponseDto(appartement);
     }
 
     @Override
-    public AppartementResponseDTO updateAppartement(Long id, AppartementUpdateDTO dto) {
+    public AppartementResponse updateAppartement(Long id, AppartementRequest dto) {
         Appartement appartement = appartementRepository.findById(id).orElseThrow(() -> new RuntimeException("Appartement not found"));
         appartementMapper.updateEntityFromDto(dto, appartement);
         appartement = appartementRepository.save(appartement);
@@ -37,13 +37,13 @@ public class AppartementServiceImpl implements AppartementService {
     }
 
     @Override
-    public AppartementResponseDTO getAppartementById(Long id) {
+    public AppartementResponse getAppartementById(Long id) {
         Appartement appartement = appartementRepository.findById(id).orElseThrow(() -> new RuntimeException("Appartement not found"));
         return appartementMapper.toResponseDto(appartement);
     }
 
     @Override
-    public Page<AppartementResponseDTO> getAllAppartements(Pageable pageable) {
+    public Page<AppartementResponse> getAllAppartements(Pageable pageable) {
         return appartementRepository.findAll(pageable).map(appartementMapper::toResponseDto);
     }
 

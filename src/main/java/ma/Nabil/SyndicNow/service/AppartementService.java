@@ -1,19 +1,18 @@
 package ma.Nabil.SyndicNow.service;
 
-import ma.Nabil.SyndicNow.dto.appartement.AppartementCreateDTO;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementResponseDTO;
-import ma.Nabil.SyndicNow.dto.appartement.AppartementUpdateDTO;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementRequest;
+import ma.Nabil.SyndicNow.dto.appartement.AppartementResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface AppartementService {
-    AppartementResponseDTO createAppartement(AppartementCreateDTO dto);
+    AppartementResponse createAppartement(AppartementRequest dto);
 
-    AppartementResponseDTO updateAppartement(Long id, AppartementUpdateDTO dto);
+    AppartementResponse updateAppartement(Long id, AppartementRequest dto);
 
-    AppartementResponseDTO getAppartementById(Long id);
+    AppartementResponse getAppartementById(Long id);
 
-    Page<AppartementResponseDTO> getAllAppartements(Pageable pageable);
+    Page<AppartementResponse> getAllAppartements(Pageable pageable);
 
     void deleteAppartement(Long id);
 }

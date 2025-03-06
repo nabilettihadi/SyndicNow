@@ -29,21 +29,10 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public MessageResponse createMessage(MessageRequest request) {
         User sender = getCurrentUser();
-        Message message = Message.builder()
-                .subject(request.getSubject())
-                .content(request.getContent())
-                .priority(request.getPriority())
-                .category(request.getCategory())
-                .sender(sender)
-                .parentMessage(request.getParentMessageId() != null ? 
-                    messageRepository.findById(request.getParentMessageId())
-                        .orElse(null) : null)
-                .appartement(null) // Will be set based on appartementId if needed
+        Message message = Message.builder().subject(request.getSubject()).content(request.getContent()).priority(request.getPriority()).category(request.getCategory()).sender(sender).parentMessage(request.getParentMessageId() != null ? messageRepository.findById(request.getParentMessageId()).orElse(null) : null).appartement(null) // Will be set based on appartementId if needed
                 .immeuble(null) // Will be set based on immeubleId if needed
-                .attachmentUrls(request.getAttachmentUrls())
-                .recipients(request.getRecipients())
-                .build();
-        
+                .attachmentUrls(request.getAttachmentUrls()).recipients(request.getRecipients()).build();
+
         return toMessageResponse(messageRepository.save(message));
     }
 
@@ -76,51 +65,37 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageResponse> getAllMessages() {
-        return messageRepository.findAll().stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findAll().stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MessageResponse> getMessagesByStatus(MessageStatus status) {
-        return messageRepository.findByStatus(status).stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findByStatus(status).stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MessageResponse> getMessagesByPriority(Message.MessagePriority priority) {
-        return messageRepository.findByPriority(priority).stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findByPriority(priority).stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MessageResponse> getMessagesByCategory(Message.MessageCategory category) {
-        return messageRepository.findByCategory(category).stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findByCategory(category).stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MessageResponse> getMessagesBySender(Long senderId) {
-        return messageRepository.findBySenderId(senderId).stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findBySenderId(senderId).stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MessageResponse> getMessagesByImmeuble(Long immeubleId) {
-        return messageRepository.findByImmeubleId(immeubleId).stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findByImmeubleId(immeubleId).stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MessageResponse> getMessagesByAppartement(Long appartementId) {
-        return messageRepository.findByAppartementId(appartementId).stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findByAppartementId(appartementId).stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -148,21 +123,16 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageResponse> getUnreadMessages(Long userId) {
-        return messageRepository.findByReadFalseAndRecipients(userId.toString()).stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findByReadFalseAndRecipients(userId.toString()).stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     @Override
     public List<MessageResponse> getArchivedMessages(Long userId) {
-        return messageRepository.findByArchivedTrueAndRecipients(userId.toString()).stream()
-                .map(this::toMessageResponse)
-                .collect(Collectors.toList());
+        return messageRepository.findByArchivedTrueAndRecipients(userId.toString()).stream().map(this::toMessageResponse).collect(Collectors.toList());
     }
 
     private Message getMessage(Long id) {
-        return messageRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Message not found with id: " + id));
+        return messageRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Message not found with id: " + id));
     }
 
     private void validateMessageOwnership(Message message) {
@@ -174,29 +144,10 @@ public class MessageServiceImpl implements MessageService {
 
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return userRepository.findByEmail(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userRepository.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private MessageResponse toMessageResponse(Message message) {
-        return MessageResponse.builder()
-                .id(message.getId())
-                .subject(message.getSubject())
-                .content(message.getContent())
-                .priority(message.getPriority())
-                .category(message.getCategory())
-                .status(message.getStatus())
-                .senderId(message.getSender().getId())
-                .senderName(message.getSender().getNom() + " " + message.getSender().getPrenom())
-                .parentMessageId(message.getParentMessage() != null ? message.getParentMessage().getId() : null)
-                .appartementId(message.getAppartement() != null ? message.getAppartement().getId() : null)
-                .immeubleId(message.getImmeuble() != null ? message.getImmeuble().getId() : null)
-                .attachmentUrls(message.getAttachmentUrls())
-                .recipients(message.getRecipients())
-                .createdAt(message.getCreatedAt())
-                .updatedAt(message.getUpdatedAt())
-                .read(message.isRead())
-                .archived(message.isArchived())
-                .build();
+        return MessageResponse.builder().id(message.getId()).subject(message.getSubject()).content(message.getContent()).priority(message.getPriority()).category(message.getCategory()).status(message.getStatus()).senderId(message.getSender().getId()).senderName(message.getSender().getNom() + " " + message.getSender().getPrenom()).parentMessageId(message.getParentMessage() != null ? message.getParentMessage().getId() : null).appartementId(message.getAppartement() != null ? message.getAppartement().getId() : null).immeubleId(message.getImmeuble() != null ? message.getImmeuble().getId() : null).attachmentUrls(message.getAttachmentUrls()).recipients(message.getRecipients()).createdAt(message.getCreatedAt()).updatedAt(message.getUpdatedAt()).read(message.isRead()).archived(message.isArchived()).build();
     }
 } 

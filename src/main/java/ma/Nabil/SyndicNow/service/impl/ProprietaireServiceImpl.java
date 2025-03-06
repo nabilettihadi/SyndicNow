@@ -1,8 +1,7 @@
 package ma.Nabil.SyndicNow.service.impl;
 
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireCreateDTO;
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireResponseDTO;
-import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireUpdateDTO;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireRequest;
+import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireResponse;
 import ma.Nabil.SyndicNow.entity.Proprietaire;
 import ma.Nabil.SyndicNow.mapper.ProprietaireMapper;
 import ma.Nabil.SyndicNow.repository.ProprietaireRepository;
@@ -23,29 +22,29 @@ public class ProprietaireServiceImpl implements ProprietaireService {
     private ProprietaireMapper proprietaireMapper;
 
     @Override
-    public ProprietaireResponseDTO createProprietaire(ProprietaireCreateDTO dto) {
+    public ProprietaireResponse createProprietaire(ProprietaireRequest dto) {
         Proprietaire proprietaire = proprietaireMapper.toEntity(dto);
         proprietaire = proprietaireRepository.save(proprietaire);
-        return proprietaireMapper.toResponseDto(proprietaire);
+        return proprietaireMapper.toResponse(proprietaire);
     }
 
     @Override
-    public ProprietaireResponseDTO updateProprietaire(Long id, ProprietaireUpdateDTO dto) {
+    public ProprietaireResponse updateProprietaire(Long id, ProprietaireRequest dto) {
         Proprietaire proprietaire = proprietaireRepository.findById(id).orElseThrow(() -> new RuntimeException("Proprietaire not found"));
         proprietaireMapper.updateEntityFromDto(dto, proprietaire);
         proprietaire = proprietaireRepository.save(proprietaire);
-        return proprietaireMapper.toResponseDto(proprietaire);
+        return proprietaireMapper.toResponse(proprietaire);
     }
 
     @Override
-    public ProprietaireResponseDTO getProprietaireById(Long id) {
+    public ProprietaireResponse getProprietaireById(Long id) {
         Proprietaire proprietaire = proprietaireRepository.findById(id).orElseThrow(() -> new RuntimeException("Proprietaire not found"));
-        return proprietaireMapper.toResponseDto(proprietaire);
+        return proprietaireMapper.toResponse(proprietaire);
     }
 
     @Override
-    public List<ProprietaireResponseDTO> getAllProprietaires() {
-        return proprietaireRepository.findAll().stream().map(proprietaireMapper::toResponseDto).collect(Collectors.toList());
+    public List<ProprietaireResponse> getAllProprietaires() {
+        return proprietaireRepository.findAll().stream().map(proprietaireMapper::toResponse).collect(Collectors.toList());
     }
 
     @Override

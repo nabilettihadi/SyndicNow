@@ -1,7 +1,10 @@
 package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import ma.Nabil.SyndicNow.enums.Role;
 import org.springframework.data.annotation.CreatedBy;
@@ -26,7 +29,6 @@ public class Proprietaire extends User {
     private String cin;
 
     @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
     private List<Appartement> appartements = new ArrayList<>();
 
     @CreatedBy
@@ -35,7 +37,6 @@ public class Proprietaire extends User {
     @LastModifiedBy
     private String updatedBy;
 
-    @PrePersist
     public void prePersist() {
         if (role == null) {
             role = Role.PROPRIETAIRE;

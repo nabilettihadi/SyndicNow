@@ -1,26 +1,28 @@
-import {Injectable, inject} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
-import {of} from 'rxjs';
-import {catchError, map, mergeMap, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {AuthService} from '../../services/auth.service';
+import {of} from 'rxjs';
+import {map, exhaustMap, catchError, tap} from 'rxjs/operators';
+import {AuthService} from '../../../../core/services/auth.service';
 import * as AuthActions from '../actions/auth.actions';
 
 @Injectable()
 export class AuthEffects {
-  private actions$ = inject(Actions);
-  private authService = inject(AuthService);
-  private router = inject(Router);
+  constructor(
+    private actions$: Actions,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   login$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.login),
-      mergeMap(({credentials}) =>
+      exhaustMap(({credentials}) =>
         this.authService.login(credentials).pipe(
-          map(response => AuthActions.loginSuccess({user: response})),
+          map(user => AuthActions.loginSuccess({user})),
           catchError(error => {
             console.error('Login error:', error);
-            const errorMessage = error.error?.message || 'Une erreur est survenue lors de la connexion';
+            const errorMessage = error.error?.message || 'Une erreur est survenue';
             return of(AuthActions.loginFailure({error: errorMessage}));
           })
         )
@@ -32,7 +34,11 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.loginSuccess),
-        tap(() => this.router.navigate(['/dashboard']))
+        tap(({user}) => {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('token', user.token);
+          this.router.navigate(['/']);
+        })
       ),
     {dispatch: false}
   );
@@ -40,12 +46,12 @@ export class AuthEffects {
   register$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.register),
-      mergeMap(({credentials}) =>
-        this.authService.register(credentials).pipe(
-          map(response => AuthActions.registerSuccess({user: response})),
+      exhaustMap(({userData}) =>
+        this.authService.register(userData).pipe(
+          map(user => AuthActions.registerSuccess({user})),
           catchError(error => {
             console.error('Register error:', error);
-            const errorMessage = error.error?.message || 'Une erreur est survenue lors de l\'inscription';
+            const errorMessage = error.error?.message || 'Une erreur est survenue';
             return of(AuthActions.registerFailure({error: errorMessage}));
           })
         )
@@ -57,7 +63,19 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.registerSuccess),
-        tap(() => this.router.navigate(['/dashboard']))
+        tap(({user}) => {
+          localStorage.setItem('currentUser', JSON.stringify({
+            userId: user.userId,
+            email: user.email,
+            nom: user.nom,
+            prenom: user.prenom,
+            role: user.role,
+            token: user.token,
+            isActive: true
+          }));
+          localStorage.setItem('token', user.token);
+          this.router.navigate(['/']);
+        })
       ),
     {dispatch: false}
   );
@@ -65,10 +83,16 @@ export class AuthEffects {
   logout$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logout),
-      map(() => {
-        this.authService.logout();
-        return AuthActions.logoutSuccess();
-      })
+      exhaustMap(() =>
+        this.authService.logout().pipe(
+          map(() => AuthActions.logoutSuccess()),
+          catchError(error => {
+            console.error('Logout error:', error);
+            const errorMessage = error.error?.message || 'Une erreur est survenue';
+            return of(AuthActions.logoutFailure({error: errorMessage}));
+          })
+        )
+      )
     )
   );
 
@@ -76,7 +100,11 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.logoutSuccess),
-        tap(() => this.router.navigate(['/auth/login']))
+        tap(() => {
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('token');
+          this.router.navigate(['/auth/login']);
+        })
       ),
     {dispatch: false}
   );

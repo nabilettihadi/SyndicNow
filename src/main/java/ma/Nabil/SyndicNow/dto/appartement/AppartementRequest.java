@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Set;
 
 @Data
 @Builder
@@ -26,6 +27,6 @@ public class AppartementRequest {
     @NotNull(message = "L'ID de l'immeuble est obligatoire")
     private Long immeubleId;
 
-    private Long proprietaireId;
+    private Set<Long> proprietaireIds;
     private String description;
 } 

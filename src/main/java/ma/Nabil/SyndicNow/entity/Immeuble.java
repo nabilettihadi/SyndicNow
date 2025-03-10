@@ -5,8 +5,8 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -35,7 +35,8 @@ public class Immeuble {
     private Integer nombreAppartements;
 
     @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Appartement> appartements = new ArrayList<>();
+    @Builder.Default
+    private Set<Appartement> appartements = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "syndic_id", nullable = false)
@@ -51,6 +52,9 @@ public class Immeuble {
 
     @Column(name = "ville")
     private String ville;
+
+    @Column(length = 1000)
+    private String description;
 
     @PrePersist
     protected void onCreate() {

@@ -9,24 +9,19 @@ import ma.Nabil.SyndicNow.enums.Role;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "user_type", discriminatorType = DiscriminatorType.STRING)
-public abstract class User implements UserDetails {
+@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
+public abstract class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,8 +44,11 @@ public abstract class User implements UserDetails {
 
     private String adresse;
 
+    @Column(unique = true)
+    protected String cin;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false, insertable = false, updatable = false)
     protected Role role;
 
     @CreatedDate
@@ -59,11 +57,6 @@ public abstract class User implements UserDetails {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    private boolean enabled = true;
-    private boolean accountNonExpired = true;
-    private boolean accountNonLocked = true;
-    private boolean credentialsNonExpired = true;
 
     @PrePersist
     protected void onCreate() {
@@ -74,35 +67,5 @@ public abstract class User implements UserDetails {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return accountNonExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return accountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 }

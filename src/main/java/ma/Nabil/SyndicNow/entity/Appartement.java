@@ -10,7 +10,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -42,11 +44,17 @@ public class Appartement {
     private Immeuble immeuble;
 
     @OneToMany(mappedBy = "appartement", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Paiement> paiements = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proprietaire_id")
-    private Proprietaire proprietaire;
+    @ManyToMany
+    @JoinTable(
+        name = "appartement_proprietaire",
+        joinColumns = @JoinColumn(name = "appartement_id"),
+        inverseJoinColumns = @JoinColumn(name = "proprietaire_id")
+    )
+    @Builder.Default
+    private Set<Proprietaire> proprietaires = new HashSet<>();
 
     @CreatedDate
     private LocalDateTime createdAt;

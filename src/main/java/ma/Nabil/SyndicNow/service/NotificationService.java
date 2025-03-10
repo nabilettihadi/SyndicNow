@@ -14,7 +14,7 @@ public interface NotificationService {
 
     void notifyPaymentCancelled(Paiement paiement);
 
-    void sendEmailNotification(User user, String subject, String content);
+    void sendEmailNotification(String email, String subject, String content);
 
     void sendSmsNotification(User user, String content);
 } 

@@ -6,6 +6,7 @@ export interface RegisterRequest {
   telephone: string;
   adresse: string;
   role: string;
+  cin: string;
 }
 
 export interface RegisterResponse {

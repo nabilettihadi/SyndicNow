@@ -19,6 +19,11 @@ public class ImmeubleRequest {
     @NotBlank(message = "L'adresse est obligatoire")
     private String adresse;
 
+    @NotBlank(message = "La ville est obligatoire")
+    private String ville;
+
+    private String description;
+
     @NotNull(message = "Le nombre d'étages est obligatoire")
     @Positive(message = "Le nombre d'étages doit être positif")
     private Integer nombreEtages;
@@ -28,5 +33,4 @@ public class ImmeubleRequest {
     private Integer nombreAppartements;
 
     private Long syndicId;
-    private String description;
 } 

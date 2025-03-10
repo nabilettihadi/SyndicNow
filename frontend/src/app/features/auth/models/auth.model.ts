@@ -25,8 +25,9 @@ export interface RegisterCredentials {
   email: string;
   password: string;
   telephone: string;
-  adresse?: string;
-  role?: string;
+  adresse: string;
+  role: string;
+  cin: string;
 }
 
 export interface AuthResponse {
@@ -39,6 +40,43 @@ export interface AuthResponse {
 }
 
 export enum UserRole {
+  ADMIN = 'ADMIN',
   SYNDIC = 'SYNDIC',
   PROPRIETAIRE = 'PROPRIETAIRE'
+}
+
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface RegisterRequest {
+    nom: string;
+    prenom: string;
+    email: string;
+    password: string;
+    telephone: string;
+    adresse: string;
+    cin: string;
+    role: UserRole;
+}
+
+export interface LoginResponse {
+    userId: number;
+    email: string;
+    nom: string;
+    prenom: string;
+    role: string;
+    token: string;
+    isActive: boolean;
+}
+
+export interface RegisterResponse {
+    userId: number;
+    email: string;
+    nom: string;
+    prenom: string;
+    role: string;
+    token: string;
+    createdAt: string;
 }

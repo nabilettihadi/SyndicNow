@@ -1,9 +1,9 @@
 import {createReducer, on} from '@ngrx/store';
 import * as AuthActions from '../actions/auth.actions';
-import {User} from '../../models/auth.model';
+import {LoginResponse} from '../../models/auth.model';
 
 export interface AuthState {
-  user: User | null;
+  user: LoginResponse | null;
   loading: boolean;
   error: string | null;
 }
@@ -33,6 +33,7 @@ export const authReducer = createReducer(
 
   on(AuthActions.loginFailure, (state, {error}) => ({
     ...state,
+    user: null,
     loading: false,
     error
   })),
@@ -46,13 +47,22 @@ export const authReducer = createReducer(
 
   on(AuthActions.registerSuccess, (state, {user}) => ({
     ...state,
-    user,
+    user: {
+      userId: user.userId,
+      email: user.email,
+      nom: user.nom,
+      prenom: user.prenom,
+      role: user.role,
+      token: user.token,
+      isActive: true
+    },
     loading: false,
     error: null
   })),
 
   on(AuthActions.registerFailure, (state, {error}) => ({
     ...state,
+    user: null,
     loading: false,
     error
   })),
@@ -64,10 +74,13 @@ export const authReducer = createReducer(
     error: null
   })),
 
-  on(AuthActions.logoutSuccess, (state) => ({
+  on(AuthActions.logoutSuccess, () => ({
+    ...initialState
+  })),
+
+  on(AuthActions.logoutFailure, (state, {error}) => ({
     ...state,
-    user: null,
     loading: false,
-    error: null
+    error
   }))
 );

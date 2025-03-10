@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,9 +21,6 @@ public class AuthenticationServiceTest {
 
     @Autowired
     private AuthService authService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     private RegisterRequest validRegisterRequest;
     private LoginRequest validLoginRequest;

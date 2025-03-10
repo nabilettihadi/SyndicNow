@@ -25,7 +25,7 @@ public class ImmeubleServiceImpl implements ImmeubleService {
     public ImmeubleResponse createImmeuble(ImmeubleRequest dto) {
         Immeuble immeuble = immeubleMapper.toEntity(dto);
         immeuble = immeubleRepository.save(immeuble);
-        return immeubleMapper.toResponse(immeuble);
+        return immeubleMapper.toResponseDto(immeuble);
     }
 
     @Override
@@ -33,18 +33,18 @@ public class ImmeubleServiceImpl implements ImmeubleService {
         Immeuble immeuble = immeubleRepository.findById(id).orElseThrow(() -> new RuntimeException("Immeuble not found"));
         immeubleMapper.updateEntityFromDto(dto, immeuble);
         immeuble = immeubleRepository.save(immeuble);
-        return immeubleMapper.toResponse(immeuble);
+        return immeubleMapper.toResponseDto(immeuble);
     }
 
     @Override
     public ImmeubleResponse getImmeubleById(Long id) {
         Immeuble immeuble = immeubleRepository.findById(id).orElseThrow(() -> new RuntimeException("Immeuble not found"));
-        return immeubleMapper.toResponse(immeuble);
+        return immeubleMapper.toResponseDto(immeuble);
     }
 
     @Override
     public List<ImmeubleResponse> getAllImmeubles() {
-        return immeubleRepository.findAll().stream().map(immeubleMapper::toResponse).collect(Collectors.toList());
+        return immeubleRepository.findAll().stream().map(immeubleMapper::toResponseDto).collect(Collectors.toList());
     }
 
     @Override

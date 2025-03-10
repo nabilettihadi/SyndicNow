@@ -20,13 +20,13 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class IncidentServiceImpl implements IncidentService {
 
     private final IncidentRepository incidentRepository;
-    private final UserRepository userRepository;
+    private final AppartementRepository appartementRepository;
     private final SyndicRepository syndicRepository;
     private final ImmeubleRepository immeubleRepository;
-    private final AppartementRepository appartementRepository;
 
     @Override
     @Transactional

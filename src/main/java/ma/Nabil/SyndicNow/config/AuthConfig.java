@@ -2,6 +2,7 @@ package ma.Nabil.SyndicNow.config;
 
 import lombok.RequiredArgsConstructor;
 import ma.Nabil.SyndicNow.repository.UserRepository;
+import ma.Nabil.SyndicNow.security.CustomUserDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,7 +22,10 @@ public class AuthConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return username -> CustomUserDetails.fromUser(
+            userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"))
+        );
     }
 
     @Bean

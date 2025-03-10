@@ -10,6 +10,7 @@ import ma.Nabil.SyndicNow.enums.PaiementType;
 import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
 import ma.Nabil.SyndicNow.repository.PaiementRepository;
+import ma.Nabil.SyndicNow.service.NotificationService;
 import ma.Nabil.SyndicNow.service.PaiementService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 public class PaiementServiceImpl implements PaiementService {
     private final PaiementRepository paiementRepository;
     private final AppartementRepository appartementRepository;
+    private final NotificationService notificationService;
 
     @Override
     public PaiementResponse createPaiement(PaiementRequest request) {
@@ -33,7 +35,19 @@ public class PaiementServiceImpl implements PaiementService {
 
         Paiement paiement = Paiement.builder().montant(request.getMontant()).dateEcheance(request.getDateEcheance()).type(request.getType()).status(request.getStatus() != null ? request.getStatus() : PaiementStatus.EN_ATTENTE).appartement(appartement).description(request.getDescription()).reference(request.getReference()).build();
 
-        return toPaiementResponse(paiementRepository.save(paiement));
+        paiementRepository.save(paiement);
+
+        String message = String.format("Nouveau paiement créé pour l'appartement %s - Montant: %.2f DH - Date d'échéance: %s - Type: %s - Référence: %s", 
+            paiement.getAppartement().getNumero(), 
+            paiement.getMontant(), 
+            paiement.getDateEcheance(), 
+            paiement.getType(), 
+            paiement.getReference());
+        paiement.getAppartement().getProprietaires().forEach(proprietaire -> {
+            notificationService.sendEmailNotification(proprietaire.getEmail(), "Nouveau paiement", message);
+        });
+
+        return toPaiementResponse(paiement);
     }
 
     @Override
@@ -133,6 +147,24 @@ public class PaiementServiceImpl implements PaiementService {
     }
 
     private PaiementResponse toPaiementResponse(Paiement paiement) {
-        return PaiementResponse.builder().id(paiement.getId()).montant(paiement.getMontant()).dateEcheance(paiement.getDateEcheance()).datePaiement(paiement.getDatePaiement()).type(paiement.getType().name()).status(paiement.getStatus().name()).appartementId(paiement.getAppartement().getId()).appartementNumero(paiement.getAppartement().getNumero()).proprietaireId(paiement.getAppartement().getProprietaire().getId()).proprietaireName(paiement.getAppartement().getProprietaire().getNom()).description(paiement.getDescription()).reference(paiement.getReference()).createdAt(paiement.getCreatedAt()).updatedAt(paiement.getUpdatedAt()).build();
+        var proprietaires = paiement.getAppartement().getProprietaires();
+        var firstProprietaire = proprietaires.isEmpty() ? null : proprietaires.iterator().next();
+        
+        return PaiementResponse.builder()
+                .id(paiement.getId())
+                .montant(paiement.getMontant())
+                .dateEcheance(paiement.getDateEcheance())
+                .datePaiement(paiement.getDatePaiement())
+                .type(paiement.getType().name())
+                .status(paiement.getStatus().name())
+                .appartementId(paiement.getAppartement().getId())
+                .appartementNumero(paiement.getAppartement().getNumero())
+                .proprietaireId(firstProprietaire != null ? firstProprietaire.getId() : null)
+                .proprietaireName(firstProprietaire != null ? firstProprietaire.getNom() : null)
+                .description(paiement.getDescription())
+                .reference(paiement.getReference())
+                .createdAt(paiement.getCreatedAt())
+                .updatedAt(paiement.getUpdatedAt())
+                .build();
     }
 }

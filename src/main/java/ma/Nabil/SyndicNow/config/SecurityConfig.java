@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import ma.Nabil.SyndicNow.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,12 +30,36 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        // Endpoints publics
                         .requestMatchers(
-                                "/api/auth/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+                        
+                        // Endpoints d'authentification
+                        .requestMatchers("/api/auth/authenticate").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
+                        
+                        // Endpoints spécifiques aux rôles
+                        // Admin
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        
+                        // Syndic
+                        .requestMatchers("/api/syndic/**").hasRole("SYNDIC")
+                        .requestMatchers(HttpMethod.POST, "/api/immeubles/**").hasRole("SYNDIC")
+                        .requestMatchers(HttpMethod.PUT, "/api/immeubles/**").hasRole("SYNDIC")
+                        .requestMatchers(HttpMethod.DELETE, "/api/immeubles/**").hasRole("SYNDIC")
+                        .requestMatchers(HttpMethod.POST, "/api/appartements/**").hasRole("SYNDIC")
+                        .requestMatchers(HttpMethod.PUT, "/api/appartements/**").hasRole("SYNDIC")
+                        .requestMatchers(HttpMethod.DELETE, "/api/appartements/**").hasRole("SYNDIC")
+                        
+                        // Propriétaire
+                        .requestMatchers("/api/proprietaire/**").hasRole("PROPRIETAIRE")
+                        .requestMatchers(HttpMethod.GET, "/api/immeubles/**").hasAnyRole("SYNDIC", "PROPRIETAIRE")
+                        .requestMatchers(HttpMethod.GET, "/api/appartements/**").hasAnyRole("SYNDIC", "PROPRIETAIRE")
+                        
+                        // Autres endpoints nécessitent une authentification
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

@@ -24,6 +24,4 @@ public class NotificationRequest {
     private String attachmentPath;
 
     private boolean sendEmail;
-
-    private boolean sendSms;
 } 

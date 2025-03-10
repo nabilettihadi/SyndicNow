@@ -27,9 +27,21 @@ public class AuthenticationServiceTest {
 
     @BeforeEach
     void setUp() {
-        validRegisterRequest = RegisterRequest.builder().email("test@example.com").password("password").nom("Test").prenom("User").telephone("1234567890").adresse("Test Address").role(Role.USER).build();
+        validRegisterRequest = RegisterRequest.builder()
+                .email("test@example.com")
+                .password("password")
+                .nom("Test")
+                .prenom("User")
+                .telephone("1234567890")
+                .adresse("Test Address")
+                .cin("AB123456")
+                .role(Role.PROPRIETAIRE)
+                .build();
 
-        validLoginRequest = LoginRequest.builder().email("test@example.com").password("password").build();
+        validLoginRequest = LoginRequest.builder()
+                .email("test@example.com")
+                .password("password")
+                .build();
     }
 
     @Test

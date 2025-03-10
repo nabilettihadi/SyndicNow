@@ -31,7 +31,7 @@ public class BudgetServiceImpl implements BudgetService {
     public BudgetResponse createBudget(BudgetRequest request) {
         Immeuble immeuble = immeubleRepository.findById(request.getImmeubleId()).orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé"));
 
-        Budget budget = Budget.builder().year(request.getYear()).totalAmount(request.getTotalAmount()).category(request.getCategory()).plannedExpenses(request.getPlannedExpenses()).actualExpenses(BigDecimal.ZERO).income(request.getIncome()).balance(request.getIncome().subtract(request.getPlannedExpenses())).reserveFund(request.getReserveFund()).status(BudgetStatus.PREVU).immeuble(immeuble).description(request.getDescription()).notes(request.getNotes()).build();
+        Budget budget = Budget.builder().budgetYear(request.getYear()).totalAmount(request.getTotalAmount()).category(request.getCategory()).plannedExpenses(request.getPlannedExpenses()).actualExpenses(BigDecimal.ZERO).income(request.getIncome()).balance(request.getIncome().subtract(request.getPlannedExpenses())).reserveFund(request.getReserveFund()).status(BudgetStatus.PREVU).immeuble(immeuble).description(request.getDescription()).notes(request.getNotes()).build();
 
         budget = budgetRepository.save(budget);
         return mapToResponse(budget);
@@ -48,7 +48,7 @@ public class BudgetServiceImpl implements BudgetService {
 
         Immeuble immeuble = immeubleRepository.findById(request.getImmeubleId()).orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé"));
 
-        budget.setYear(request.getYear());
+        budget.setBudgetYear(request.getYear());
         budget.setTotalAmount(request.getTotalAmount());
         budget.setCategory(request.getCategory());
         budget.setPlannedExpenses(request.getPlannedExpenses());
@@ -97,7 +97,7 @@ public class BudgetServiceImpl implements BudgetService {
     @Override
     @Transactional(readOnly = true)
     public List<BudgetResponse> getBudgetsByYear(Integer year) {
-        return budgetRepository.findByYear(year).stream().map(this::mapToResponse).collect(Collectors.toList());
+        return budgetRepository.findBybudgetYear(year).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -162,6 +162,6 @@ public class BudgetServiceImpl implements BudgetService {
     }
 
     private BudgetResponse mapToResponse(Budget budget) {
-        return BudgetResponse.builder().id(budget.getId()).year(budget.getYear()).totalAmount(budget.getTotalAmount()).category(budget.getCategory()).plannedExpenses(budget.getPlannedExpenses()).actualExpenses(budget.getActualExpenses()).income(budget.getIncome()).balance(budget.getBalance()).reserveFund(budget.getReserveFund()).status(budget.getStatus()).approvalDate(budget.getApprovalDate()).approvedById(budget.getApprovedBy() != null ? budget.getApprovedBy().getId() : null).approvedByName(budget.getApprovedBy() != null ? budget.getApprovedBy().getNom() + " " + budget.getApprovedBy().getPrenom() : null).immeubleId(budget.getImmeuble().getId()).immeubleName(budget.getImmeuble().getNom()).description(budget.getDescription()).notes(budget.getNotes()).createdAt(budget.getCreatedAt()).updatedAt(budget.getUpdatedAt()).createdBy(budget.getCreatedBy()).updatedBy(budget.getUpdatedBy()).build();
+        return BudgetResponse.builder().id(budget.getId()).year(budget.getBudgetYear()).totalAmount(budget.getTotalAmount()).category(budget.getCategory()).plannedExpenses(budget.getPlannedExpenses()).actualExpenses(budget.getActualExpenses()).income(budget.getIncome()).balance(budget.getBalance()).reserveFund(budget.getReserveFund()).status(budget.getStatus()).approvalDate(budget.getApprovalDate()).approvedById(budget.getApprovedBy() != null ? budget.getApprovedBy().getId() : null).approvedByName(budget.getApprovedBy() != null ? budget.getApprovedBy().getNom() + " " + budget.getApprovedBy().getPrenom() : null).immeubleId(budget.getImmeuble().getId()).immeubleName(budget.getImmeuble().getNom()).description(budget.getDescription()).notes(budget.getNotes()).createdAt(budget.getCreatedAt()).updatedAt(budget.getUpdatedAt()).createdBy(budget.getCreatedBy()).updatedBy(budget.getUpdatedBy()).build();
     }
 } 

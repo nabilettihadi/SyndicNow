@@ -1,7 +1,6 @@
 package ma.Nabil.SyndicNow.service;
 
 import ma.Nabil.SyndicNow.entity.Paiement;
-import ma.Nabil.SyndicNow.entity.User;
 
 public interface NotificationService {
     void notifyPaymentCreated(Paiement paiement);
@@ -15,6 +14,4 @@ public interface NotificationService {
     void notifyPaymentCancelled(Paiement paiement);
 
     void sendEmailNotification(String email, String subject, String content);
-
-    void sendSmsNotification(User user, String content);
 } 

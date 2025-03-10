@@ -1,12 +1,8 @@
 package ma.Nabil.SyndicNow.service.impl;
 
-import com.twilio.rest.api.v2010.account.Message;
-import com.twilio.type.PhoneNumber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import ma.Nabil.SyndicNow.config.TwilioConfig;
 import ma.Nabil.SyndicNow.entity.Paiement;
-import ma.Nabil.SyndicNow.entity.User;
 import ma.Nabil.SyndicNow.service.NotificationService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,7 +14,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class NotificationServiceImpl implements NotificationService {
     private final JavaMailSender emailSender;
-    private final TwilioConfig twilioConfig;
 
     @Override
     @Async
@@ -36,24 +31,9 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendSmsNotification(User user, String content) {
-        try {
-            Message.creator(
-                new PhoneNumber(user.getTelephone()),
-                new PhoneNumber(twilioConfig.getPhoneNumber()),
-                content
-            ).create();
-            log.info("SMS sent successfully to {}", user.getTelephone());
-        } catch (Exception e) {
-            log.error("Failed to send SMS to {}: {}", user.getTelephone(), e.getMessage());
-            throw new RuntimeException("Failed to send SMS notification", e);
-        }
-    }
-
-    @Override
     @Async
     public void notifyPaymentCreated(Paiement paiement) {
-        paiement.getAppartement().getProprietaires().forEach(proprietaire -> {
+        if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Nouveau paiement créé";
             String content = String.format(
                 "Un nouveau paiement a été créé pour votre appartement %s.\n" +
@@ -67,14 +47,14 @@ public class NotificationServiceImpl implements NotificationService {
                 paiement.getType(),
                 paiement.getReference()
             );
-            sendEmailNotification(proprietaire.getEmail(), subject, content);
-        });
+            sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
+        }
     }
 
     @Override
     @Async
     public void notifyPaymentDue(Paiement paiement) {
-        paiement.getAppartement().getProprietaires().forEach(proprietaire -> {
+        if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Rappel de paiement";
             String content = String.format(
                 "Un paiement arrive à échéance pour votre appartement %s.\n" +
@@ -88,14 +68,14 @@ public class NotificationServiceImpl implements NotificationService {
                 paiement.getType(),
                 paiement.getReference()
             );
-            sendEmailNotification(proprietaire.getEmail(), subject, content);
-        });
+            sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
+        }
     }
 
     @Override
     @Async
     public void notifyPaymentOverdue(Paiement paiement) {
-        paiement.getAppartement().getProprietaires().forEach(proprietaire -> {
+        if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Paiement en retard";
             String content = String.format(
                 "Un paiement est en retard pour votre appartement %s.\n" +
@@ -110,16 +90,14 @@ public class NotificationServiceImpl implements NotificationService {
                 paiement.getType(),
                 paiement.getReference()
             );
-            sendEmailNotification(proprietaire.getEmail(), subject, content);
-            sendSmsNotification(proprietaire, "Paiement en retard pour l'appartement " + 
-                paiement.getAppartement().getNumero() + ". Montant: " + paiement.getMontant() + " DH");
-        });
+            sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
+        }
     }
 
     @Override
     @Async
     public void notifyPaymentReceived(Paiement paiement) {
-        paiement.getAppartement().getProprietaires().forEach(proprietaire -> {
+        if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Paiement reçu";
             String content = String.format(
                 "Nous avons bien reçu votre paiement pour l'appartement %s.\n" +
@@ -134,14 +112,14 @@ public class NotificationServiceImpl implements NotificationService {
                 paiement.getType(),
                 paiement.getReference()
             );
-            sendEmailNotification(proprietaire.getEmail(), subject, content);
-        });
+            sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
+        }
     }
 
     @Override
     @Async
     public void notifyPaymentCancelled(Paiement paiement) {
-        paiement.getAppartement().getProprietaires().forEach(proprietaire -> {
+        if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Paiement annulé";
             String content = String.format(
                 "Le paiement suivant a été annulé pour l'appartement %s:\n" +
@@ -153,7 +131,7 @@ public class NotificationServiceImpl implements NotificationService {
                 paiement.getType(),
                 paiement.getReference()
             );
-            sendEmailNotification(proprietaire.getEmail(), subject, content);
-        });
+            sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
+        }
     }
 } 

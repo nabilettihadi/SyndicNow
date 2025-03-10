@@ -19,11 +19,11 @@ public interface AppartementMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "immeuble", ignore = true)
-    @Mapping(target = "proprietaires", ignore = true)
+    @Mapping(target = "proprietaire", ignore = true)
     Appartement toEntity(AppartementRequest dto);
 
     @Mapping(target = "immeuble", ignore = true)
-    @Mapping(target = "proprietaires", ignore = true)
+    @Mapping(target = "proprietaire", ignore = true)
     void updateEntityFromDto(AppartementRequest dto, @MappingTarget Appartement appartement);
 
     @Mapping(target = "immeubleName", source = "immeuble.nom")

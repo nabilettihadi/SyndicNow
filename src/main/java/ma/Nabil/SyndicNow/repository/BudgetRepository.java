@@ -11,7 +11,7 @@ import java.util.List;
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
     List<Budget> findByImmeubleId(Long immeubleId);
 
-    List<Budget> findByYear(Integer year);
+    List<Budget> findBybudgetYear(Integer budgetYear);
 
     List<Budget> findByStatus(BudgetStatus status);
 } 

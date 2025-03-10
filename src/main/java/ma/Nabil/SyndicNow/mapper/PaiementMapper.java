@@ -3,13 +3,10 @@ package ma.Nabil.SyndicNow.mapper;
 import ma.Nabil.SyndicNow.dto.paiement.PaiementRequest;
 import ma.Nabil.SyndicNow.dto.paiement.PaiementResponse;
 import ma.Nabil.SyndicNow.entity.Paiement;
-import ma.Nabil.SyndicNow.entity.Proprietaire;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-
-import java.util.Set;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface PaiementMapper {
@@ -25,8 +22,8 @@ public interface PaiementMapper {
 
     @Mapping(target = "appartementId", source = "appartement.id")
     @Mapping(target = "appartementNumero", source = "appartement.numero")
-    @Mapping(target = "proprietaireId", expression = "java(getFirstProprietaireId(paiement))")
-    @Mapping(target = "proprietaireName", expression = "java(getFirstProprietaireName(paiement))")
+    @Mapping(target = "proprietaireId", source = "appartement.proprietaire.id")
+    @Mapping(target = "proprietaireName", source = "appartement.proprietaire.nom")
     PaiementResponse toPaiementResponse(Paiement paiement);
 
     @Mapping(target = "id", ignore = true)
@@ -37,14 +34,4 @@ public interface PaiementMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     void updatePaiementFromRequest(PaiementRequest request, @MappingTarget Paiement paiement);
-
-    default Long getFirstProprietaireId(Paiement paiement) {
-        Set<Proprietaire> proprietaires = paiement.getAppartement().getProprietaires();
-        return proprietaires.isEmpty() ? null : proprietaires.iterator().next().getId();
-    }
-
-    default String getFirstProprietaireName(Paiement paiement) {
-        Set<Proprietaire> proprietaires = paiement.getAppartement().getProprietaires();
-        return proprietaires.isEmpty() ? null : proprietaires.iterator().next().getNom();
-    }
 }

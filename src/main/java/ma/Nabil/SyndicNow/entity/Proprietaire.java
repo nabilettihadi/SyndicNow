@@ -11,8 +11,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "proprietaires")
@@ -27,9 +27,9 @@ public class Proprietaire extends User {
     @Column(unique = true)
     private String cin;
 
-    @ManyToMany(mappedBy = "proprietaires")
+    @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL)
     @Builder.Default
-    private Set<Appartement> appartements = new HashSet<>();
+    private List<Appartement> appartements = new ArrayList<>();
 
     @CreatedBy
     private String createdBy;
@@ -46,16 +46,16 @@ public class Proprietaire extends User {
 
     public void addAppartement(Appartement appartement) {
         if (appartements == null) {
-            appartements = new HashSet<>();
+            appartements = new ArrayList<>();
         }
         appartements.add(appartement);
-        appartement.getProprietaires().add(this);
+        appartement.setProprietaire(this);
     }
 
     public void removeAppartement(Appartement appartement) {
         if (appartements != null) {
             appartements.remove(appartement);
-            appartement.getProprietaires().remove(this);
+            appartement.setProprietaire(null);
         }
     }
 }

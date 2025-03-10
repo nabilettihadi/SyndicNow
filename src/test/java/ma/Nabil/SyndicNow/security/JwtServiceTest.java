@@ -1,6 +1,7 @@
 package ma.Nabil.SyndicNow.security;
 
 import ma.Nabil.SyndicNow.entity.Syndic;
+import ma.Nabil.SyndicNow.enums.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,7 @@ class JwtServiceTest {
         Syndic syndic = Syndic.builder()
                 .email("test@example.com")
                 .password("password")
+                .role(Role.SYNDIC)
                 .build();
         CustomUserDetails userDetails = CustomUserDetails.fromUser(syndic);
         
@@ -30,6 +32,7 @@ class JwtServiceTest {
         Syndic syndic = Syndic.builder()
                 .email("test@example.com")
                 .password("password")
+                .role(Role.SYNDIC)
                 .build();
         CustomUserDetails userDetails = CustomUserDetails.fromUser(syndic);
         
@@ -38,6 +41,7 @@ class JwtServiceTest {
         Syndic differentSyndic = Syndic.builder()
                 .email("different@example.com")
                 .password("password")
+                .role(Role.SYNDIC)
                 .build();
         CustomUserDetails differentUser = CustomUserDetails.fromUser(differentSyndic);
         
@@ -49,6 +53,7 @@ class JwtServiceTest {
         Syndic syndic = Syndic.builder()
                 .email("test@example.com")
                 .password("password")
+                .role(Role.SYNDIC)
                 .build();
         CustomUserDetails userDetails = CustomUserDetails.fromUser(syndic);
         

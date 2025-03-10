@@ -20,7 +20,6 @@ public class NotificationResponse {
     private String content;
     private String attachmentPath;
     private boolean emailSent;
-    private boolean smsSent;
     private LocalDateTime sentAt;
     private String status;
 } 

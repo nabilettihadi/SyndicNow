@@ -27,7 +27,7 @@ public class Budget {
     private Long id;
 
     @Column(nullable = false)
-    private Integer year;
+    private Integer budgetYear;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount;

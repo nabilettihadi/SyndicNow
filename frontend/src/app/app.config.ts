@@ -10,13 +10,15 @@ import {AuthInterceptor} from './core/interceptors/auth.interceptor';
 import {routes} from './app.routes';
 import {authReducer} from './features/auth/store/reducers/auth.reducer';
 import {AuthEffects} from './features/auth/store/effects/auth.effects';
+import {AuthService} from './features/auth/services/auth.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes, withComponentInputBinding()),
     provideStore({auth: authReducer}),
-    provideEffects(AuthEffects),
+    provideEffects([AuthEffects]),
     provideHttpClient(),
+    AuthService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

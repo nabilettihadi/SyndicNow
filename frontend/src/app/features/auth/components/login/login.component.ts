@@ -5,11 +5,12 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AuthState } from '../../store/reducers/auth.reducer';
 import * as AuthActions from '../../store/actions/auth.actions';
+import {RouterLink} from '@angular/router';
 
 @Component({
     selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -33,7 +34,7 @@ export class LoginComponent implements OnInit {
 
     ngOnInit(): void {
         // Réinitialiser les erreurs au chargement du composant
-        this.store.dispatch(AuthActions.loginFailure({ error: null }));
+        this.store.dispatch(AuthActions.loginFailure({ error: '' }));
     }
 
     onSubmit(): void {

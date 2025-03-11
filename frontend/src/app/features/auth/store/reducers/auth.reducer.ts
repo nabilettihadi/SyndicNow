@@ -18,7 +18,7 @@ export const authReducer = createReducer(
   initialState,
 
   // Login actions
-  on(AuthActions.login, (state) => ({
+  on(AuthActions.login, state => ({
     ...state,
     loading: true,
     error: null

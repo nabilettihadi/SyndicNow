@@ -3,30 +3,35 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from
 import { AuthService } from '../../features/auth/services/auth.service';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthGuard implements CanActivate {
-    constructor(
-        private authService: AuthService,
-        private router: Router
-    ) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-        const currentUser = this.authService.getCurrentUser();
-        
-        if (!currentUser) {
-            // Non authentifié, rediriger vers la page de connexion
-            this.router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url }});
-            return false;
-        }
+  async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+    const currentUser = this.authService.getCurrentUser();
 
-        // Vérifier si la route nécessite des rôles spécifiques
-        if (route.data['roles'] && !route.data['roles'].includes(currentUser.role)) {
-            // Rôle non autorisé, rediriger vers la page d'accueil
-            this.router.navigate(['/']);
-            return false;
-        }
-
-        return true;
+    if (!currentUser) {
+      try {
+        await this.router.navigate(['/auth/login'], { queryParams: { returnUrl: state.url }});
+      } catch (error) {
+        console.error('Navigation failed:', error);
+      }
+      return false;
     }
+
+    if (route.data['roles'] && !route.data['roles'].includes(currentUser.role)) {
+      try {
+        await this.router.navigate(['/']);
+      } catch (error) {
+        console.error('Navigation failed:', error);
+      }
+      return false;
+    }
+
+    return true;
+  }
 }

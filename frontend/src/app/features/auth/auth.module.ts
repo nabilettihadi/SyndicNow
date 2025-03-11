@@ -20,8 +20,8 @@ import {AuthEffects} from './store/effects/auth.effects';
     ReactiveFormsModule,
     RouterModule,
     AuthRoutingModule,
-    StoreModule.forFeature('auth', authReducer),
-    EffectsModule.forFeature([AuthEffects])
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot([AuthEffects]) 
   ]
 })
 export class AuthModule {

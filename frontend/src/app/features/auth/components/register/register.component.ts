@@ -58,8 +58,7 @@ export class RegisterComponent implements OnInit {
   onSubmit(): void {
     if (this.registerForm.valid) {
       const {confirmPassword, ...formValue} = this.registerForm.value;
-      const credentials = formValue;
-      this.store.dispatch(AuthActions.register({credentials}));
+      this.store.dispatch(AuthActions.register({ userData: formValue }));
     } else {
       Object.keys(this.registerForm.controls).forEach(key => {
         const control = this.registerForm.get(key);

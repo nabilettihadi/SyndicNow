@@ -26,8 +26,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+
+import io.jsonwebtoken.ExpiredJwtException;
 
 @Service
 @RequiredArgsConstructor
@@ -41,8 +51,43 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     
-    // Set pour stocker les tokens invalidés (déconnexion)
-    private final Set<String> invalidatedTokens = new HashSet<>();
+    // Utiliser un Set concurrent pour la thread-safety
+    private final Set<String> invalidatedTokens = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    
+    // Durée de conservation des tokens invalidés (24 heures)
+    private static final long TOKEN_CLEANUP_DELAY = 24 * 60 * 60 * 1000; // 24 heures en millisecondes
+
+    @PostConstruct
+    public void init() {
+        // Démarrer un thread de nettoyage des tokens invalidés
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(this::cleanupInvalidatedTokens, TOKEN_CLEANUP_DELAY, TOKEN_CLEANUP_DELAY, TimeUnit.MILLISECONDS);
+    }
+
+    @PreDestroy
+    public void destroy() {
+        // Nettoyer les ressources à la fermeture de l'application
+        invalidatedTokens.clear();
+    }
+
+    private void cleanupInvalidatedTokens() {
+        invalidatedTokens.removeIf(token -> {
+            try {
+                // On crée un UserDetails temporaire pour vérifier la validité du token
+                UserDetails tempUser = CustomUserDetails.builder()
+                    .id(0L)
+                    .email("temp@email.com")
+                    .password("")
+                    .nom("")
+                    .prenom("")
+                    .role(Role.PROPRIETAIRE.name())
+                    .build();
+                return !jwtService.isTokenValid(token, tempUser);
+            } catch (Exception e) {
+                return true; // En cas d'erreur, on considère le token comme expiré
+            }
+        });
+    }
 
     @Override
     public RegisterResponse register(RegisterRequest request) {
@@ -121,11 +166,21 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
     @Override
     public void logout(String token) {
-        invalidatedTokens.add(token);
+        if (token != null && !token.isEmpty()) {
+            // Vérifier si le token est valide avant de l'invalider
+            try {
+                jwtService.extractUsername(token);
+                invalidatedTokens.add(token);
+            } catch (Exception e) {
+                throw new InvalidOperationException("Token invalide");
+            }
+        } else {
+            throw new InvalidOperationException("Token manquant");
+        }
     }
     
     public boolean isTokenInvalidated(String token) {
-        return invalidatedTokens.contains(token);
+        return token != null && invalidatedTokens.contains(token);
     }
 
     @Override

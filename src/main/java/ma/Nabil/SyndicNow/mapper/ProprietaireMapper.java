@@ -20,8 +20,6 @@ public interface ProprietaireMapper {
     @Mapping(target = "appartements", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     Proprietaire toEntity(ProprietaireRequest request);
 
     @Mapping(target = "appartements", ignore = true)

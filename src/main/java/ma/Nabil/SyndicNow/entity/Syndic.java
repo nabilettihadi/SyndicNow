@@ -24,16 +24,11 @@ public class Syndic extends User {
     @Column(nullable = false)
     private String siret;
 
-    private String entreprise;
+    private String societe;
 
     private String numeroLicence;
 
     private LocalDateTime dateDebutActivite;
-
-    private String societe;
-
-    private String createdBy;
-    private String updatedBy;
 
     @OneToMany(mappedBy = "syndic", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default

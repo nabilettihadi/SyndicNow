@@ -45,19 +45,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private store: Store<{ auth: AuthState }>,
     private authService: AuthService
   ) {
-    // Utiliser le service d'authentification pour l'état
-    this.isAuthenticated$ = this.authService.isAuthenticated$;
-    
-    // Observer les changements de l'utilisateur depuis le service
-    this.userRole$ = this.store.select(state => {
-      const user = this.authService.currentUser;
-      return user?.role ?? null;
-    });
-
-    this.userName$ = this.store.select(state => {
-      const user = this.authService.currentUser;
-      return user ? `${user.prenom} ${user.nom}` : null;
-    });
+    this.isAuthenticated$ = this.store.select(state => !!state.auth.user);
+    this.userRole$ = this.store.select(state => state.auth.user?.role || null);
+    this.userName$ = this.store.select(state => 
+      state.auth.user ? `${state.auth.user.prenom} ${state.auth.user.nom}` : null
+    );
   }
 
   ngOnInit(): void {
@@ -86,21 +78,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
   onLogout(event: Event): void {
     event.preventDefault();
     this.store.dispatch(AuthActions.logout());
-    this.authService.clearStoredUser();
     this.toggleMobileMenu(false);
   }
 
   toggleMobileMenu(forceState?: boolean): void {
-    if (forceState !== undefined) {
-      this.isMobileMenuOpen = forceState;
-    } else {
-      this.isMobileMenuOpen = !this.isMobileMenuOpen;
-    }
+    this.isMobileMenuOpen = forceState !== undefined ? forceState : !this.isMobileMenuOpen;
   }
 
   @HostListener('window:resize')
   onResize(): void {
-    if (window.innerWidth >= 768 && this.isMobileMenuOpen) {
+    if (window.innerWidth > 768 && this.isMobileMenuOpen) {
       this.toggleMobileMenu(false);
     }
   }

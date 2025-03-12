@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../models/auth.model';
 import { environment } from '../../../../environments/environment';
@@ -40,28 +40,6 @@ export class AuthService {
         this.currentUserSubject.next(null);
     }
 
-    private handleError(error: HttpErrorResponse): Observable<never> {
-        let errorMessage = 'Une erreur est survenue';
-        
-        if (error.error instanceof ErrorEvent) {
-            // Erreur côté client
-            errorMessage = error.error.message;
-        } else {
-            // Erreur côté serveur
-            if (error.error?.message) {
-                errorMessage = error.error.message;
-            } else if (error.status === 0) {
-                errorMessage = 'Le serveur est inaccessible. Veuillez vérifier votre connexion.';
-            } else if (error.status === 400) {
-                errorMessage = 'Données invalides. Veuillez vérifier vos informations.';
-            } else if (error.status === 409) {
-                errorMessage = 'Cette adresse email est déjà utilisée.';
-            }
-        }
-        
-        return throwError(() => new Error(errorMessage));
-    }
-
     login(request: LoginRequest): Observable<LoginResponse> {
         return this.http.post<LoginResponse>(`${this.API_URL}/authenticate`, request)
             .pipe(
@@ -92,6 +70,13 @@ export class AuthService {
     }
 
     logout(): Observable<void> {
+        const token = this.getToken();
+        if (!token) {
+            // Si pas de token, on nettoie juste le stockage local
+            this.clearStorage();
+            return of(void 0);
+        }
+
         return this.http.post<void>(`${this.API_URL}/logout`, {})
             .pipe(
                 tap(() => this.clearStorage()),
@@ -114,5 +99,15 @@ export class AuthService {
 
     getToken(): string | null {
         return localStorage.getItem(this.TOKEN_KEY);
+    }
+
+    private handleError(error: HttpErrorResponse): Observable<never> {
+        let errorMessage = 'Une erreur est survenue';
+        if (error.error?.message) {
+            errorMessage = error.error.message;
+        } else if (error.message) {
+            errorMessage = error.message;
+        }
+        return throwError(() => new Error(errorMessage));
     }
 }

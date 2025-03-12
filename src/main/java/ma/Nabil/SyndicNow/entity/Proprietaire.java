@@ -31,12 +31,6 @@ public class Proprietaire extends User {
     @Builder.Default
     private List<Appartement> appartements = new ArrayList<>();
 
-    @CreatedBy
-    private String createdBy;
-
-    @LastModifiedBy
-    private String updatedBy;
-
     @PrePersist
     public void onCreateProprietaire() {
         if (getRole() == null) {

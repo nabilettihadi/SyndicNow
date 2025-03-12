@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 
+// Composant Home
+import { HomeComponent } from './features/home/home.component';
+
 // Composants d'authentification
 import { LoginComponent } from './features/auth/components/login/login.component';
 import { RegisterComponent } from './features/auth/components/register/register.component';
@@ -23,17 +26,16 @@ import { PaiementsComponent } from './features/proprietaire/components/paiements
 import { DocumentsComponent as ProprietaireDocumentsComponent } from './features/proprietaire/components/documents/documents.component';
 
 export const routes: Routes = [
-  // Route par défaut
+  // Route par défaut vers Home
   {
     path: '',
-    redirectTo: 'dashboard',
+    component: HomeComponent,
     pathMatch: 'full'
   },
 
   // Routes d'authentification
   {
     path: 'auth',
-    canActivate: [AuthGuard],
     children: [
       {
         path: 'login',
@@ -135,6 +137,6 @@ export const routes: Routes = [
   // Route fallback
   {
     path: '**',
-    redirectTo: 'dashboard'
+    redirectTo: ''
   }
 ];

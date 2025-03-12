@@ -47,9 +47,6 @@ public class Immeuble {
 
     private LocalDateTime updatedAt;
 
-    private String createdBy;
-    private String updatedBy;
-
     @Column(name = "ville")
     private String ville;
 

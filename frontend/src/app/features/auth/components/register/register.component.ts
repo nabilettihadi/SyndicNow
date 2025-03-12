@@ -37,6 +37,10 @@ export class RegisterComponent implements OnInit {
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       cin: ['', [Validators.required, Validators.minLength(6)]],
       role: ['PROPRIETAIRE', [Validators.required]],
+      siret: [''],
+      numeroLicence: [''],
+      societe: [''],
+      dateDebutActivite: [''],
       password: ['', [
         Validators.required,
         Validators.minLength(6),
@@ -49,23 +53,54 @@ export class RegisterComponent implements OnInit {
 
     this.loading$ = this.store.select(state => state.auth.loading);
     this.error$ = this.store.select(state => state.auth.error);
+
+    this.registerForm.get('role')?.valueChanges.subscribe(role => {
+      this.updateValidators(role);
+    });
   }
 
   ngOnInit(): void {
-    // Réinitialiser les erreurs au chargement du composant
     this.store.dispatch(AuthActions.registerFailure({error: null}));
+  }
+
+  private updateValidators(role: string): void {
+    const siretControl = this.registerForm.get('siret');
+    const numeroLicenceControl = this.registerForm.get('numeroLicence');
+    const societeControl = this.registerForm.get('societe');
+    const dateDebutActiviteControl = this.registerForm.get('dateDebutActivite');
+
+    if (role === 'SYNDIC') {
+      siretControl?.setValidators([Validators.required, Validators.pattern(/^[0-9]{14}$/)]);
+      numeroLicenceControl?.setValidators([Validators.required]);
+      societeControl?.setValidators([Validators.required]);
+      dateDebutActiviteControl?.setValidators([Validators.required]);
+    } else {
+      siretControl?.clearValidators();
+      numeroLicenceControl?.clearValidators();
+      societeControl?.clearValidators();
+      dateDebutActiviteControl?.clearValidators();
+    }
+
+    siretControl?.updateValueAndValidity();
+    numeroLicenceControl?.updateValueAndValidity();
+    societeControl?.updateValueAndValidity();
+    dateDebutActiviteControl?.updateValueAndValidity();
   }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
       const {confirmPassword, ...formValue} = this.registerForm.value;
-      try {
-        this.store.dispatch(AuthActions.register({ userData: formValue }));
-      } catch (error) {
-        console.error('Error during form submission:', error);
-        this.store.dispatch(AuthActions.registerFailure({
-          error: 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.'
-        }));
+      
+      if (formValue.role === 'PROPRIETAIRE') {
+        const { siret, numeroLicence, societe, dateDebutActivite, ...proprietaireData } = formValue;
+        this.store.dispatch(AuthActions.register({ userData: proprietaireData }));
+      } else {
+        // Format the date to ISO string for syndic registration
+        const formattedData = {
+          ...formValue,
+          dateDebutActivite: formValue.dateDebutActivite ? new Date(formValue.dateDebutActivite).toISOString() : null
+        };
+        this.store.dispatch(AuthActions.register({ userData: formattedData }));
       }
     } else {
       Object.keys(this.registerForm.controls).forEach(key => {
@@ -83,7 +118,6 @@ export class RegisterComponent implements OnInit {
       : {mismatch: true};
   }
 
-  // Méthodes utilitaires pour les validations du template
   passwordContainsNumber(): boolean {
     const password = this.registerForm.get('password')?.value;
     return /\d/.test(password);
@@ -91,6 +125,6 @@ export class RegisterComponent implements OnInit {
 
   passwordContainsLetter(): boolean {
     const password = this.registerForm.get('password')?.value;
-    return /[A-Za-z]/.test(password);
+    return /[a-zA-Z]/.test(password);
   }
 }

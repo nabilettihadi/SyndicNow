@@ -20,7 +20,7 @@ public class SyndicResponse {
     private String email;
     private String telephone;
     private String adresse;
-    private String entreprise;
+    private String societe;
     private String numeroLicence;
     private String role;
     private LocalDateTime createdAt;

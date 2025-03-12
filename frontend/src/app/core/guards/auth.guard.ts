@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, map, take } from 'rxjs';
+import { Observable, map, take, tap } from 'rxjs';
 import { AuthState } from '../../features/auth/models/auth.model';
 
 @Injectable({
@@ -19,37 +19,46 @@ export class AuthGuard {
   ): Observable<boolean | UrlTree> {
     return this.store.select(state => state.auth.user).pipe(
       take(1),
+      tap(user => {
+        console.log('AuthGuard - État utilisateur:', user);
+        console.log('Route tentée:', state.url);
+      }),
       map(user => {
         const currentPath = this.getFullPath(route);
+        console.log('Chemin complet:', currentPath);
 
-        // Pages publiques (home)
-        if (currentPath === '' || currentPath === 'home') {
+        // Gestion des routes d'authentification (login/register)
+        if (currentPath.startsWith('auth')) {
+          if (user) {
+            console.log('Utilisateur déjà connecté, redirection vers dashboard');
+            return this.router.createUrlTree(['/dashboard']);
+          }
+          console.log('Accès autorisé aux pages d\'authentification');
           return true;
         }
 
-        // Pages d'authentification (login, register)
-        if (currentPath.startsWith('auth')) {
-          if (user) {
-            // Si l'utilisateur est déjà connecté, rediriger vers le dashboard
-            return this.router.createUrlTree(['/dashboard']);
-          }
-          return true; // Autoriser l'accès aux pages d'auth si non connecté
-        }
-
-        // Pour toutes les autres routes, vérifier l'authentification
+        // Gestion des routes protégées
         if (!user) {
-          // Sauvegarder l'URL tentée pour redirection après connexion
-          return this.router.createUrlTree(['/auth/login']);
+          console.log('Utilisateur non connecté, redirection vers login');
+          return this.router.createUrlTree(['/auth/login'], {
+            queryParams: { returnUrl: state.url }
+          });
         }
 
-        // Vérifier les permissions de rôle pour les sections protégées
+        // Vérification des permissions basées sur le rôle
         const requiredRole = route.data['role'];
         if (requiredRole && user.role !== requiredRole) {
-          // Si l'utilisateur n'a pas le bon rôle, rediriger vers le dashboard
+          console.log('Rôle insuffisant, redirection vers dashboard');
           return this.router.createUrlTree(['/dashboard']);
         }
 
-        // Route nécessitant uniquement l'authentification (ex: dashboard)
+        // Vérification des routes spécifiques au rôle
+        if (this.isRoleSpecificRoute(currentPath, user.role)) {
+          console.log('Route non autorisée pour ce rôle, redirection vers dashboard');
+          return this.router.createUrlTree(['/dashboard']);
+        }
+
+        console.log('Accès autorisé à la route');
         return true;
       })
     );
@@ -67,5 +76,25 @@ export class AuthGuard {
     }
 
     return paths.join('/');
+  }
+
+  private isRoleSpecificRoute(path: string, userRole: string): boolean {
+    // Routes spécifiques au SYNDIC
+    if (userRole !== 'SYNDIC' && (
+      path.includes('buildings') ||
+      path.includes('syndic/payments')
+    )) {
+      return true;
+    }
+
+    // Routes spécifiques au PROPRIETAIRE
+    if (userRole !== 'PROPRIETAIRE' && (
+      path.includes('my-properties') ||
+      path.includes('payments')
+    )) {
+      return true;
+    }
+
+    return false;
   }
 }

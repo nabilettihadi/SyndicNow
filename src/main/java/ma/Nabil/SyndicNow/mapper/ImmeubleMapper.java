@@ -20,8 +20,6 @@ public interface ImmeubleMapper {
     @Mapping(target = "appartements", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
     @Mapping(target = "syndic", ignore = true)
     @Mapping(target = "ville", source = "ville")
     @Mapping(target = "description", source = "description")

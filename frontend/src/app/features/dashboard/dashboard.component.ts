@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
-import { AuthState } from '../auth/models/auth.model';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
-import { DashboardService } from './services/dashboard.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Store} from '@ngrx/store';
+import {Observable, Subscription} from 'rxjs';
+import {AuthState} from '../auth/models/auth.model';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {DashboardService} from './services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -42,7 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private dashboardService: DashboardService
   ) {
     this.userRole$ = this.store.select(state => state.auth.user?.role ?? null);
-    this.userName$ = this.store.select(state => 
+    this.userName$ = this.store.select(state =>
       state.auth.user ? `${state.auth.user.prenom} ${state.auth.user.nom}` : null
     );
   }
@@ -59,8 +59,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.loading = true;
     const roleSub = this.userRole$.subscribe(role => {
       if (!role) return;
-      
-      switch(role) {
+
+      switch (role) {
         case 'ADMIN':
           this.loadAdminData();
           break;
@@ -125,4 +125,4 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
     this.subscription.add(propSub);
   }
-} 
+}

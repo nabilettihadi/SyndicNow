@@ -21,8 +21,8 @@ export class RegisterComponent implements OnInit {
   error$: Observable<string | null>;
 
   roles = [
-    { value: 'PROPRIETAIRE', label: 'Propriétaire' },
-    { value: 'SYNDIC', label: 'Syndic' }
+    {value: 'PROPRIETAIRE', label: 'Propriétaire'},
+    {value: 'SYNDIC', label: 'Syndic'}
   ];
 
   constructor(
@@ -90,17 +90,17 @@ export class RegisterComponent implements OnInit {
   onSubmit(): void {
     if (this.registerForm.valid) {
       const {confirmPassword, ...formValue} = this.registerForm.value;
-      
+
       if (formValue.role === 'PROPRIETAIRE') {
-        const { siret, numeroLicence, societe, dateDebutActivite, ...proprietaireData } = formValue;
-        this.store.dispatch(AuthActions.register({ userData: proprietaireData }));
+        const {siret, numeroLicence, societe, dateDebutActivite, ...proprietaireData} = formValue;
+        this.store.dispatch(AuthActions.register({userData: proprietaireData}));
       } else {
         // Format the date to ISO string for syndic registration
         const formattedData = {
           ...formValue,
           dateDebutActivite: formValue.dateDebutActivite ? new Date(formValue.dateDebutActivite).toISOString() : null
         };
-        this.store.dispatch(AuthActions.register({ userData: formattedData }));
+        this.store.dispatch(AuthActions.register({userData: formattedData}));
       }
     } else {
       Object.keys(this.registerForm.controls).forEach(key => {

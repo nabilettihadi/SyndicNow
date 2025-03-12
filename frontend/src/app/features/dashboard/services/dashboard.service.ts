@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '../../../../environments/environment';
 
 export interface AdminStats {
   totalUsers: number;
@@ -30,7 +30,8 @@ export interface ProprietaireStats {
 export class DashboardService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAdminStats(): Observable<AdminStats> {
     return this.http.get<AdminStats>(`${this.apiUrl}/dashboard/admin/stats`);
@@ -43,4 +44,4 @@ export class DashboardService {
   getProprietaireStats(): Observable<ProprietaireStats> {
     return this.http.get<ProprietaireStats>(`${this.apiUrl}/dashboard/proprietaire/stats`);
   }
-} 
+}

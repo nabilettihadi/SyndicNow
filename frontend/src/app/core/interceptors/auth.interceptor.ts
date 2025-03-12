@@ -1,16 +1,10 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
-import { AuthService } from '../../features/auth/services/auth.service';
-import { Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import {Injectable} from '@angular/core';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {Observable, throwError} from 'rxjs';
+import {catchError} from 'rxjs/operators';
+import {AuthService} from '@features/auth/services/auth.service';
+import {Router} from '@angular/router';
+import {environment} from '@env/environment';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -19,7 +13,8 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) {
+  }
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // Ne pas ajouter le token pour les requêtes d'authentification
@@ -68,7 +63,7 @@ export class AuthInterceptor implements HttpInterceptor {
       this.authService.logout().subscribe({
         next: () => {
           this.router.navigate(['/auth/login'], {
-            queryParams: { returnUrl: this.router.url }
+            queryParams: {returnUrl: this.router.url}
           });
         },
         error: (error) => {

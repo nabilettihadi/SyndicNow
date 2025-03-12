@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { AuthState, User } from '../../features/auth/models/auth.model';
+import {Injectable} from '@angular/core';
+import {Store} from '@ngrx/store';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {AuthState, User} from '@features/auth/models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -69,4 +69,4 @@ export class AuthService {
     localStorage.removeItem(this.USER_KEY);
     localStorage.removeItem(this.TOKEN_KEY);
   }
-} 
+}

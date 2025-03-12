@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable, map, take, tap } from 'rxjs';
-import { AuthState } from '../../features/auth/models/auth.model';
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {map, Observable, take, tap} from 'rxjs';
+import {AuthState} from '@features/auth/models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,8 @@ export class AuthGuard {
   constructor(
     private router: Router,
     private store: Store<{ auth: AuthState }>
-  ) {}
+  ) {
+  }
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -40,9 +41,7 @@ export class AuthGuard {
         // Gestion des routes protégées
         if (!user) {
           console.log('Utilisateur non connecté, redirection vers login');
-          return this.router.createUrlTree(['/auth/login'], {
-            queryParams: { returnUrl: state.url }
-          });
+          return this.router.createUrlTree(['/auth/login']);
         }
 
         // Vérification des permissions basées sur le rôle
@@ -88,13 +87,11 @@ export class AuthGuard {
     }
 
     // Routes spécifiques au PROPRIETAIRE
-    if (userRole !== 'PROPRIETAIRE' && (
+    return userRole !== 'PROPRIETAIRE' && (
       path.includes('my-properties') ||
       path.includes('payments')
-    )) {
-      return true;
-    }
+    );
 
-    return false;
+
   }
 }

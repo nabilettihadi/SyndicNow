@@ -21,17 +21,20 @@
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .register-form {
   background: rgba(255, 255, 255, 0.95);
   padding: 2.5rem;
   border-radius: 1.5rem;
-  box-shadow: 
-    0 10px 25px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(66, 153, 225, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1),
+  0 0 0 1px rgba(66, 153, 225, 0.1);
   width: 100%;
   max-width: 600px;
   position: relative;
@@ -266,9 +269,8 @@
   border-radius: 1rem;
   margin: 2rem 0;
   border: 1px solid #90CDF4;
-  box-shadow: 
-    inset 0 2px 4px rgba(66, 153, 225, 0.05),
-    0 4px 6px rgba(66, 153, 225, 0.1);
+  box-shadow: inset 0 2px 4px rgba(66, 153, 225, 0.05),
+  0 4px 6px rgba(66, 153, 225, 0.1);
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -351,9 +353,15 @@
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
 }
 
 /* Ajout des styles pour les sections */

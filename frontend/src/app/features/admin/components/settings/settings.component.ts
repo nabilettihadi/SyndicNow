@@ -15,10 +15,11 @@ import { CommonModule } from '@angular/common';
     .container {
       padding: 2rem;
     }
+
     h2 {
       color: #2d3748;
       margin-bottom: 1rem;
     }
   `]
 })
-export class SettingsComponent {} 
+export class SettingsComponent {}

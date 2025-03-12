@@ -46,37 +46,37 @@ export enum UserRole {
 }
 
 export interface LoginRequest {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 export interface RegisterRequest {
-    nom: string;
-    prenom: string;
-    email: string;
-    password: string;
-    telephone: string;
-    adresse: string;
-    cin: string;
-    role: UserRole;
+  nom: string;
+  prenom: string;
+  email: string;
+  password: string;
+  telephone: string;
+  adresse: string;
+  cin: string;
+  role: UserRole;
 }
 
 export interface LoginResponse {
-    userId: number;
-    email: string;
-    nom: string;
-    prenom: string;
-    role: string;
-    token: string;
-    isActive: boolean;
+  userId: number;
+  email: string;
+  nom: string;
+  prenom: string;
+  role: string;
+  token: string;
+  isActive: boolean;
 }
 
 export interface RegisterResponse {
-    userId: number;
-    email: string;
-    nom: string;
-    prenom: string;
-    role: string;
-    token: string;
-    createdAt: string;
+  userId: number;
+  email: string;
+  nom: string;
+  prenom: string;
+  role: string;
+  token: string;
+  createdAt: string;
 }

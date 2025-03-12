@@ -1,0 +1,132 @@
+<app-navbar></app-navbar>
+
+<div class="container mt-4">
+  <div class="welcome-message mb-4">
+    <h2>Bienvenue, {{ userName$ | async }}</h2>
+  </div>
+
+  <div *ngIf="loading" class="text-center">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading" class="stats-container" [ngSwitch]="userRole$ | async">
+    <div *ngSwitchCase="'ADMIN'" class="row g-4">
+      <div class="col-md-3">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <h5 class="card-title">Utilisateurs Totaux</h5>
+            <p class="card-text display-6">{{ totalUsers }}</p>
+            <i class="fas fa-users fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <h5 class="card-title">Utilisateurs Actifs</h5>
+            <p class="card-text display-6">{{ activeUsers }}</p>
+            <i class="fas fa-user-check fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <h5 class="card-title">Total Syndics</h5>
+            <p class="card-text display-6">{{ totalSyndics }}</p>
+            <i class="fas fa-building fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-warning text-white">
+          <div class="card-body">
+            <h5 class="card-title">Total Propriétaires</h5>
+            <p class="card-text display-6">{{ totalProprietaires }}</p>
+            <i class="fas fa-home fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="'SYNDIC'" class="row g-4">
+      <div class="col-md-3">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <h5 class="card-title">Immeubles</h5>
+            <p class="card-text display-6">{{ totalImmeubles }}</p>
+            <i class="fas fa-building fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <h5 class="card-title">Appartements</h5>
+            <p class="card-text display-6">{{ totalAppartements }}</p>
+            <i class="fas fa-home fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <h5 class="card-title">Charges</h5>
+            <p class="card-text display-6">{{ totalCharges }}</p>
+            <i class="fas fa-file-invoice-dollar fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-warning text-white">
+          <div class="card-body">
+            <h5 class="card-title">Paiements</h5>
+            <p class="card-text display-6">{{ totalPaiements }}</p>
+            <i class="fas fa-money-bill-wave fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="'PROPRIETAIRE'" class="row g-4">
+      <div class="col-md-3">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <h5 class="card-title">Mes Appartements</h5>
+            <p class="card-text display-6">{{ mesAppartements }}</p>
+            <i class="fas fa-home fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <h5 class="card-title">Paiements en Attente</h5>
+            <p class="card-text display-6">{{ paiementsEnAttente }}</p>
+            <i class="fas fa-clock fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-danger text-white">
+          <div class="card-body">
+            <h5 class="card-title">Charges Impayées</h5>
+            <p class="card-text display-6">{{ chargesImpayees }}</p>
+            <i class="fas fa-exclamation-triangle fa-2x"></i>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <h5 class="card-title">Documents Disponibles</h5>
+            <p class="card-text display-6">{{ documentsDisponibles }}</p>
+            <i class="fas fa-file-alt fa-2x"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

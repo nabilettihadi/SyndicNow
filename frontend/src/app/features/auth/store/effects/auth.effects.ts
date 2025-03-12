@@ -32,7 +32,7 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.loginSuccess),
-        tap(() => this.router.navigate(['/']))
+        tap(() => this.router.navigate(['/dashboard']))
       ),
     {dispatch: false}
   );
@@ -45,7 +45,14 @@ export class AuthEffects {
           map(user => AuthActions.registerSuccess({user})),
           catchError(error => {
             console.error('Register error:', error);
-            const errorMessage = error.error?.message || 'Une erreur est survenue';
+            let errorMessage = 'Une erreur est survenue lors de l\'inscription';
+            if (error.error?.message) {
+              errorMessage = error.error.message;
+            } else if (error.message) {
+              errorMessage = error.message;
+            } else if (typeof error.error === 'string') {
+              errorMessage = error.error;
+            }
             return of(AuthActions.registerFailure({error: errorMessage}));
           })
         )
@@ -58,7 +65,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.registerSuccess),
         tap(() => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/dashboard']);
         })
       ),
     {dispatch: false}

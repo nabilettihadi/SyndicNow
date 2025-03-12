@@ -75,11 +75,27 @@
         formControlName="adresse"
         class="form-input"
         [class.error]="registerForm.get('adresse')?.invalid && registerForm.get('adresse')?.touched"
-        placeholder="Votre adresse complète"
+        placeholder="Votre adresse"
       />
       <div *ngIf="registerForm.get('adresse')?.invalid && registerForm.get('adresse')?.touched" class="error-message">
         <span *ngIf="registerForm.get('adresse')?.errors?.['required']">L'adresse est requise</span>
         <span *ngIf="registerForm.get('adresse')?.errors?.['minlength']">L'adresse doit avoir au moins 5 caractères</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="cin" class="form-label">CIN</label>
+      <input
+        type="text"
+        id="cin"
+        formControlName="cin"
+        class="form-input"
+        [class.error]="registerForm.get('cin')?.invalid && registerForm.get('cin')?.touched"
+        placeholder="Votre numéro CIN"
+      />
+      <div *ngIf="registerForm.get('cin')?.invalid && registerForm.get('cin')?.touched" class="error-message">
+        <span *ngIf="registerForm.get('cin')?.errors?.['required']">Le CIN est requis</span>
+        <span *ngIf="registerForm.get('cin')?.errors?.['minlength']">Le CIN doit avoir au moins 6 caractères</span>
       </div>
     </div>
 

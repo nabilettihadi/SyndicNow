@@ -35,6 +35,7 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
+      cin: ['', [Validators.required, Validators.minLength(6)]],
       role: ['PROPRIETAIRE', [Validators.required]],
       password: ['', [
         Validators.required,
@@ -51,14 +52,21 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Clear any previous error messages
+    // Réinitialiser les erreurs au chargement du composant
     this.store.dispatch(AuthActions.registerFailure({error: null}));
   }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
       const {confirmPassword, ...formValue} = this.registerForm.value;
-      this.store.dispatch(AuthActions.register({ userData: formValue }));
+      try {
+        this.store.dispatch(AuthActions.register({ userData: formValue }));
+      } catch (error) {
+        console.error('Error during form submission:', error);
+        this.store.dispatch(AuthActions.registerFailure({
+          error: 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.'
+        }));
+      }
     } else {
       Object.keys(this.registerForm.controls).forEach(key => {
         const control = this.registerForm.get(key);

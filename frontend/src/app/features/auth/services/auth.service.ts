@@ -48,14 +48,18 @@ export class AuthService {
             errorMessage = error.error.message;
         } else {
             // Erreur côté serveur
-            if (error.status === 401) {
-                errorMessage = 'Email ou mot de passe incorrect';
-            } else if (error.error?.message) {
+            if (error.error?.message) {
                 errorMessage = error.error.message;
+            } else if (error.status === 0) {
+                errorMessage = 'Le serveur est inaccessible. Veuillez vérifier votre connexion.';
+            } else if (error.status === 400) {
+                errorMessage = 'Données invalides. Veuillez vérifier vos informations.';
+            } else if (error.status === 409) {
+                errorMessage = 'Cette adresse email est déjà utilisée.';
             }
         }
         
-        return throwError(() => errorMessage);
+        return throwError(() => new Error(errorMessage));
     }
 
     login(request: LoginRequest): Observable<LoginResponse> {
@@ -66,19 +70,18 @@ export class AuthService {
             );
     }
 
-    register(request: RegisterRequest): Observable<RegisterResponse> {
-        return this.http.post<RegisterResponse>(`${this.API_URL}/register`, request)
+    register(userData: RegisterRequest): Observable<RegisterResponse> {
+        return this.http.post<RegisterResponse>(`${this.API_URL}/register`, userData)
             .pipe(
-                tap(response => this.handleAuthSuccess({
-                    userId: response.userId,
-                    email: response.email,
-                    nom: response.nom,
-                    prenom: response.prenom,
-                    role: response.role,
-                    token: response.token,
-                    isActive: true
-                })),
-                catchError(error => this.handleError(error))
+                tap(response => {
+                    if (response.token) {
+                        const userWithActive = { ...response, isActive: true };
+                        localStorage.setItem(this.TOKEN_KEY, response.token);
+                        localStorage.setItem(this.USER_KEY, JSON.stringify(userWithActive));
+                        this.currentUserSubject.next(userWithActive);
+                    }
+                }),
+                catchError(this.handleError.bind(this))
             );
     }
 

@@ -6,15 +6,17 @@ import {provideStoreDevtools} from '@ngrx/store-devtools';
 import {provideHttpClient} from '@angular/common/http';
 import {HTTP_INTERCEPTORS} from '@angular/common/http';
 import {AuthInterceptor} from './core/interceptors/auth.interceptor';
+import {provideAnimations} from '@angular/platform-browser/animations';
+import {AuthService} from './features/auth/services/auth.service';
 
 import {routes} from './app.routes';
 import {authReducer} from './features/auth/store/reducers/auth.reducer';
 import {AuthEffects} from './features/auth/store/effects/auth.effects';
-import {AuthService} from './features/auth/services/auth.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes, withComponentInputBinding()),
+    provideAnimations(),
     provideStore({auth: authReducer}),
     provideEffects([AuthEffects]),
     provideHttpClient(),

@@ -111,6 +111,12 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                     .build();
             user = proprietaireRepository.save((Proprietaire) user);
         } else if (request.getRole() == Role.SYNDIC) {
+            // Vérifier que les champs obligatoires du syndic sont présents
+            if (request.getSiret() == null || request.getNumeroLicence() == null || 
+                request.getSociete() == null || request.getDateDebutActivite() == null) {
+                throw new InvalidOperationException("Les champs SIRET, numéro de licence, société et date de début d'activité sont obligatoires pour un syndic");
+            }
+            
             user = Syndic.builder()
                     .nom(request.getNom())
                     .prenom(request.getPrenom())
@@ -119,6 +125,10 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                     .telephone(request.getTelephone())
                     .adresse(request.getAdresse())
                     .cin(request.getCin())
+                    .siret(request.getSiret())
+                    .numeroLicence(request.getNumeroLicence())
+                    .societe(request.getSociete())
+                    .dateDebutActivite(request.getDateDebutActivite())
                     .build();
             user = syndicRepository.save((Syndic) user);
         } else {

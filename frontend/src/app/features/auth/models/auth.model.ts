@@ -35,6 +35,10 @@ export interface RegisterRequest {
   telephone: string;
   adresse: string;
   cin: string;
+  siret?: string;
+  numeroLicence?: string;
+  societe?: string;
+  dateDebutActivite?: string;
 }
 
 export interface AuthState {

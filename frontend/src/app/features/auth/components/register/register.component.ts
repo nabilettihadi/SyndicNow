@@ -16,7 +16,7 @@ import {AuthState, UserRole} from '../../models/auth.model';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  registerForm: FormGroup;
+  registerForm!: FormGroup;
   loading$: Observable<boolean>;
   error$: Observable<string | null>;
 
@@ -29,6 +29,12 @@ export class RegisterComponent implements OnInit {
     private formBuilder: FormBuilder,
     private store: Store<{ auth: AuthState }>
   ) {
+    this.initializeForm();
+    this.loading$ = this.store.select(state => state.auth.loading);
+    this.error$ = this.store.select(state => state.auth.error);
+  }
+
+  private initializeForm(): void {
     this.registerForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [
@@ -42,23 +48,70 @@ export class RegisterComponent implements OnInit {
       telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       cin: ['', [Validators.required, Validators.minLength(6)]],
-      role: [UserRole.PROPRIETAIRE, [Validators.required]]
+      role: [UserRole.PROPRIETAIRE, [Validators.required]],
+      siret: [''],
+      numeroLicence: [''],
+      societe: [''],
+      dateDebutActivite: ['']
     }, {
       validator: this.passwordMatchValidator
     });
 
-    this.loading$ = this.store.select(state => state.auth.loading);
-    this.error$ = this.store.select(state => state.auth.error);
+    // Écouter les changements de rôle
+    this.registerForm.get('role')?.valueChanges.subscribe(role => {
+      this.updateSyndicValidators(role);
+    });
+
+    // Initialiser les validateurs en fonction du rôle initial
+    this.updateSyndicValidators(this.registerForm.get('role')?.value);
+  }
+
+  private updateSyndicValidators(role: UserRole): void {
+    const syndicControls = {
+      siret: [Validators.required, Validators.pattern(/^[0-9]{14}$/)],
+      numeroLicence: [Validators.required],
+      societe: [Validators.required],
+      dateDebutActivite: [Validators.required]
+    };
+
+    Object.entries(syndicControls).forEach(([controlName, validators]) => {
+      const control = this.registerForm.get(controlName);
+      if (control) {
+        if (role === UserRole.SYNDIC) {
+          control.setValidators(validators);
+        } else {
+          control.clearValidators();
+          control.setValue('');
+        }
+        control.updateValueAndValidity();
+      }
+    });
   }
 
   ngOnInit(): void {
-    // Réinitialiser l'état d'erreur au chargement du composant
     this.store.dispatch(AuthActions.registerFailure({error: ''}));
   }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
       const {confirmPassword, ...userData} = this.registerForm.value;
+      
+      if (userData.role === UserRole.SYNDIC) {
+        // Vérification supplémentaire pour les champs syndic
+        if (!userData.siret || !userData.numeroLicence || !userData.societe || !userData.dateDebutActivite) {
+          this.store.dispatch(AuthActions.registerFailure({
+            error: 'Tous les champs spécifiques au syndic sont obligatoires'
+          }));
+          return;
+        }
+      } else {
+        // Réinitialiser explicitement les champs syndic pour les propriétaires
+        userData.siret = null;
+        userData.numeroLicence = null;
+        userData.societe = null;
+        userData.dateDebutActivite = null;
+      }
+      
       this.store.dispatch(AuthActions.register({userData}));
     } else {
       Object.keys(this.registerForm.controls).forEach(key => {

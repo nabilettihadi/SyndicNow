@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ma.Nabil.SyndicNow.enums.Role;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -41,4 +43,14 @@ public class RegisterRequest {
     private String cin;
 
     private Role role;
+
+    // Champs spécifiques au syndic
+    @Pattern(regexp = "^[0-9]{14}$", message = "Le SIRET doit contenir exactement 14 chiffres")
+    private String siret;
+
+    private String numeroLicence;
+    
+    private String societe;
+    
+    private LocalDateTime dateDebutActivite;
 } 

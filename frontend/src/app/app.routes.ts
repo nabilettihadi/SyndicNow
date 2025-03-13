@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
+import { RequireAuthGuard } from './core/guards/require-auth.guard';
+import { AuthGuard } from './features/auth/guards/auth.guard';
 
 // Composant Home
 import { HomeComponent } from './features/home/home.component';
@@ -39,11 +40,13 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: 'register',
-        component: RegisterComponent
+        component: RegisterComponent,
+        canActivate: [AuthGuard]
       },
       {
         path: '',
@@ -57,14 +60,13 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [AuthGuard]
+    canActivate: [RequireAuthGuard]
   },
 
   // Routes Admin
   {
     path: 'admin',
-    canActivate: [AuthGuard],
-    data: { role: 'ADMIN' },
+    canActivate: [RequireAuthGuard],
     children: [
       {
         path: 'users',
@@ -85,8 +87,7 @@ export const routes: Routes = [
   // Routes Syndic
   {
     path: 'syndic',
-    canActivate: [AuthGuard],
-    data: { role: 'SYNDIC' },
+    canActivate: [RequireAuthGuard],
     children: [
       {
         path: 'immeubles',
@@ -111,8 +112,7 @@ export const routes: Routes = [
   // Routes Propriétaire
   {
     path: 'proprietaire',
-    canActivate: [AuthGuard],
-    data: { role: 'PROPRIETAIRE' },
+    canActivate: [RequireAuthGuard],
     children: [
       {
         path: 'appartements',

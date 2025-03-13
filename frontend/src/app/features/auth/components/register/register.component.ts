@@ -6,7 +6,7 @@ import {CommonModule} from '@angular/common';
 import {RouterLink} from '@angular/router';
 
 import * as AuthActions from '../../store/actions/auth.actions';
-import {AuthState} from '../../models/auth.model';
+import {AuthState, UserRole} from '../../models/auth.model';
 
 @Component({
   selector: 'app-register',
@@ -21,87 +21,45 @@ export class RegisterComponent implements OnInit {
   error$: Observable<string | null>;
 
   roles = [
-    {value: 'PROPRIETAIRE', label: 'Propriétaire'},
-    {value: 'SYNDIC', label: 'Syndic'}
+    {value: UserRole.PROPRIETAIRE, label: 'Propriétaire'},
+    {value: UserRole.SYNDIC, label: 'Syndic'}
   ];
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private store: Store<{ auth: AuthState }>
   ) {
-    this.registerForm = this.fb.group({
-      nom: ['', [Validators.required, Validators.minLength(3)]],
-      prenom: ['', [Validators.required, Validators.minLength(3)]],
+    this.registerForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
-      adresse: ['', [Validators.required, Validators.minLength(5)]],
-      cin: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['PROPRIETAIRE', [Validators.required]],
-      siret: [''],
-      numeroLicence: [''],
-      societe: [''],
-      dateDebutActivite: [''],
       password: ['', [
         Validators.required,
         Validators.minLength(6),
         Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[\w\W]{6,}$/)
       ]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
+      nom: ['', [Validators.required, Validators.minLength(2)]],
+      prenom: ['', [Validators.required, Validators.minLength(2)]],
+      telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      adresse: ['', [Validators.required, Validators.minLength(5)]],
+      cin: ['', [Validators.required, Validators.minLength(6)]],
+      role: [UserRole.PROPRIETAIRE, [Validators.required]]
     }, {
-      validators: this.passwordMatchValidator
+      validator: this.passwordMatchValidator
     });
 
     this.loading$ = this.store.select(state => state.auth.loading);
     this.error$ = this.store.select(state => state.auth.error);
-
-    this.registerForm.get('role')?.valueChanges.subscribe(role => {
-      this.updateValidators(role);
-    });
   }
 
   ngOnInit(): void {
-    this.store.dispatch(AuthActions.registerFailure({error: null}));
-  }
-
-  private updateValidators(role: string): void {
-    const siretControl = this.registerForm.get('siret');
-    const numeroLicenceControl = this.registerForm.get('numeroLicence');
-    const societeControl = this.registerForm.get('societe');
-    const dateDebutActiviteControl = this.registerForm.get('dateDebutActivite');
-
-    if (role === 'SYNDIC') {
-      siretControl?.setValidators([Validators.required, Validators.pattern(/^[0-9]{14}$/)]);
-      numeroLicenceControl?.setValidators([Validators.required]);
-      societeControl?.setValidators([Validators.required]);
-      dateDebutActiviteControl?.setValidators([Validators.required]);
-    } else {
-      siretControl?.clearValidators();
-      numeroLicenceControl?.clearValidators();
-      societeControl?.clearValidators();
-      dateDebutActiviteControl?.clearValidators();
-    }
-
-    siretControl?.updateValueAndValidity();
-    numeroLicenceControl?.updateValueAndValidity();
-    societeControl?.updateValueAndValidity();
-    dateDebutActiviteControl?.updateValueAndValidity();
+    // Réinitialiser l'état d'erreur au chargement du composant
+    this.store.dispatch(AuthActions.registerFailure({error: ''}));
   }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
-      const {confirmPassword, ...formValue} = this.registerForm.value;
-
-      if (formValue.role === 'PROPRIETAIRE') {
-        const {siret, numeroLicence, societe, dateDebutActivite, ...proprietaireData} = formValue;
-        this.store.dispatch(AuthActions.register({userData: proprietaireData}));
-      } else {
-        // Format the date to ISO string for syndic registration
-        const formattedData = {
-          ...formValue,
-          dateDebutActivite: formValue.dateDebutActivite ? new Date(formValue.dateDebutActivite).toISOString() : null
-        };
-        this.store.dispatch(AuthActions.register({userData: formattedData}));
-      }
+      const {confirmPassword, ...userData} = this.registerForm.value;
+      this.store.dispatch(AuthActions.register({userData}));
     } else {
       Object.keys(this.registerForm.controls).forEach(key => {
         const control = this.registerForm.get(key);
@@ -112,10 +70,9 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  passwordMatchValidator(g: FormGroup) {
-    return g.get('password')?.value === g.get('confirmPassword')?.value
-      ? null
-      : {mismatch: true};
+  passwordContainsLetter(): boolean {
+    const password = this.registerForm.get('password')?.value;
+    return /[a-zA-Z]/.test(password);
   }
 
   passwordContainsNumber(): boolean {
@@ -123,8 +80,13 @@ export class RegisterComponent implements OnInit {
     return /\d/.test(password);
   }
 
-  passwordContainsLetter(): boolean {
-    const password = this.registerForm.get('password')?.value;
-    return /[a-zA-Z]/.test(password);
+  private passwordMatchValidator(group: FormGroup): {[key: string]: any} | null {
+    const password = group.get('password');
+    const confirmPassword = group.get('confirmPassword');
+
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      return {mismatch: true};
+    }
+    return null;
   }
 }

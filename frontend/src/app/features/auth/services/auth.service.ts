@@ -4,6 +4,8 @@ import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import {LoginRequest, LoginResponse, RegisterRequest, RegisterResponse} from '../models/auth.model';
 import {environment} from '@env/environment';
+import {Store} from '@ngrx/store';
+import * as AuthActions from '../store/actions/auth.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +17,10 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private store: Store
+  ) {
     this.loadStoredUser();
   }
 
@@ -27,6 +32,7 @@ export class AuthService {
       try {
         const user = JSON.parse(storedUser);
         this.currentUserSubject.next(user);
+        this.store.dispatch(AuthActions.initializeAuthStateSuccess({user}));
       } catch (error) {
         console.error('Error parsing stored user:', error);
         this.clearStorage();

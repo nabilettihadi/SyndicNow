@@ -1,8 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Router} from '@angular/router';
-import {of} from 'rxjs';
-import {catchError, exhaustMap, map, tap} from 'rxjs/operators';
+import {catchError, exhaustMap, map, of, tap} from 'rxjs';
 import {AuthService} from '../../services/auth.service';
 import * as AuthActions from '../actions/auth.actions';
 
@@ -44,7 +43,10 @@ export class AuthEffects {
       ofType(AuthActions.register),
       exhaustMap(({userData}) =>
         this.authService.register(userData).pipe(
-          map(user => AuthActions.registerSuccess({user})),
+          map(response => {
+            const userWithActive = {...response, isActive: true};
+            return AuthActions.registerSuccess({user: userWithActive});
+          }),
           catchError(error => {
             console.error('Register error:', error);
             let errorMessage = 'Une erreur est survenue lors de l\'inscription';
@@ -52,8 +54,6 @@ export class AuthEffects {
               errorMessage = error.error.message;
             } else if (error.message) {
               errorMessage = error.message;
-            } else if (typeof error.error === 'string') {
-              errorMessage = error.error;
             }
             return of(AuthActions.registerFailure({error: errorMessage}));
           })
@@ -79,11 +79,7 @@ export class AuthEffects {
       exhaustMap(() =>
         this.authService.logout().pipe(
           map(() => AuthActions.logoutSuccess()),
-          catchError(error => {
-            console.error('Logout error:', error);
-            const errorMessage = error.error?.message || 'Une erreur est survenue';
-            return of(AuthActions.logoutFailure({error: errorMessage}));
-          })
+          catchError(error => of(AuthActions.logoutFailure({error: error.message})))
         )
       )
     )

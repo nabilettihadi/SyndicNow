@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, map, tap } from 'rxjs';
-import { selectIsAuthenticated } from '../store/auth.selectors';
+import { Observable, map, tap, take } from 'rxjs';
+import { selectIsAuthenticated } from '../store/selectors/auth.selectors';
 import { AuthState } from '../models/auth.model';
 
 @Injectable({
@@ -19,19 +19,16 @@ export class RequireAuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     return this.store.select(selectIsAuthenticated).pipe(
+      take(1),
       tap(isAuthenticated => {
-        console.log('RequireAuthGuard - État authentification:', isAuthenticated);
-        console.log('Route tentée:', state.url);
-      }),
-      map(isAuthenticated => {
         if (!isAuthenticated) {
           console.log('Utilisateur non authentifié, redirection vers login');
           this.router.navigate(['/auth/login']);
-          return false;
+        } else {
+          console.log('Accès autorisé à la route protégée');
         }
-        console.log('Accès autorisé à la route protégée');
-        return true;
-      })
+      }),
+      map(isAuthenticated => isAuthenticated)
     );
   }
 } 

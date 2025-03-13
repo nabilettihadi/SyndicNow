@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -36,8 +35,6 @@ import java.util.concurrent.TimeUnit;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-
-import io.jsonwebtoken.ExpiredJwtException;
 
 @Service
 @RequiredArgsConstructor

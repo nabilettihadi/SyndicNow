@@ -3,42 +3,59 @@ package ma.Nabil.SyndicNow.mapper;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
 import ma.Nabil.SyndicNow.entity.Immeuble;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
+import ma.Nabil.SyndicNow.entity.Syndic;
+import ma.Nabil.SyndicNow.repository.SyndicRepository;
+import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Set;
-
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE, unmappedTargetPolicy = ReportingPolicy.IGNORE)
 @Component
-public interface ImmeubleMapper {
+@RequiredArgsConstructor
+public class ImmeubleMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "appartements", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "syndic", ignore = true)
-    @Mapping(target = "ville", source = "ville")
-    @Mapping(target = "description", source = "description")
-    Immeuble toEntity(ImmeubleRequest request);
+    private final SyndicRepository syndicRepository;
 
-    @Mapping(target = "appartements", ignore = true)
-    @Mapping(target = "syndic", ignore = true)
-    @Mapping(target = "ville", source = "ville")
-    @Mapping(target = "description", source = "description")
-    void updateEntityFromDto(ImmeubleRequest request, @MappingTarget Immeuble immeuble);
+    public ImmeubleResponse toResponse(Immeuble immeuble) {
+        return ImmeubleResponse.builder()
+                .id(immeuble.getId())
+                .nom(immeuble.getNom())
+                .adresse(immeuble.getAdresse())
+                .ville(immeuble.getVille())
+                .codePostal(immeuble.getCodePostal())
+                .nombreEtages(immeuble.getNombreEtages())
+                .nombreAppartements(immeuble.getNombreAppartements())
+                .anneeConstruction(immeuble.getAnneeConstruction())
+                .description(immeuble.getDescription())
+                .syndicId(immeuble.getSyndic().getId())
+                .dateCreation(immeuble.getDateCreation())
+                .dateModification(immeuble.getDateModification())
+                .build();
+    }
 
-    @Mapping(target = "syndicName", source = "syndic.nom")
-    @Mapping(target = "syndicId", source = "syndic.id")
-    ImmeubleResponse toResponseDto(Immeuble immeuble);
+    public Immeuble toEntity(ImmeubleRequest request) {
+        Syndic syndic = syndicRepository.findById(request.getSyndicId())
+                .orElseThrow(() -> new ResourceNotFoundException("Syndic non trouvé avec l'ID: " + request.getSyndicId()));
+        
+        Immeuble immeuble = new Immeuble();
+        updateEntityFromRequest(request, immeuble, syndic);
+        return immeuble;
+    }
 
-    default Set<ImmeubleResponse> toResponseDtoSet(Set<Immeuble> immeubles) {
-        if (immeubles == null) {
-            return null;
-        }
-        return immeubles.stream().map(this::toResponseDto).collect(java.util.stream.Collectors.toSet());
+    public void updateEntityFromRequest(ImmeubleRequest request, Immeuble immeuble) {
+        Syndic syndic = syndicRepository.findById(request.getSyndicId())
+                .orElseThrow(() -> new ResourceNotFoundException("Syndic non trouvé avec l'ID: " + request.getSyndicId()));
+        updateEntityFromRequest(request, immeuble, syndic);
+    }
+
+    private void updateEntityFromRequest(ImmeubleRequest request, Immeuble immeuble, Syndic syndic) {
+        immeuble.setNom(request.getNom());
+        immeuble.setAdresse(request.getAdresse());
+        immeuble.setVille(request.getVille());
+        immeuble.setCodePostal(request.getCodePostal());
+        immeuble.setNombreEtages(request.getNombreEtages());
+        immeuble.setNombreAppartements(request.getNombreAppartements());
+        immeuble.setAnneeConstruction(request.getAnneeConstruction());
+        immeuble.setDescription(request.getDescription());
+        immeuble.setSyndic(syndic);
     }
 }

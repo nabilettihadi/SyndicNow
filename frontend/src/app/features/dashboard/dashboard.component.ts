@@ -5,13 +5,15 @@ import {Observable, Subscription} from 'rxjs';
 import {AuthState} from '../auth/models/auth.model';
 import {NavbarComponent} from '@shared/components/navbar/navbar.component';
 import {DashboardService} from './services/dashboard.service';
+import {RouterModule, Router} from '@angular/router';
+import {AuthService} from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
   standalone: true,
-  imports: [CommonModule, NavbarComponent]
+  imports: [CommonModule, NavbarComponent, RouterModule]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   userRole$: Observable<string | null>;
@@ -39,12 +41,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private store: Store<{ auth: AuthState }>,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private router: Router,
+    public authService: AuthService
   ) {
     this.userRole$ = this.store.select(state => state.auth.user?.role ?? null);
     this.userName$ = this.store.select(state =>
       state.auth.user ? `${state.auth.user.prenom} ${state.auth.user.nom}` : null
     );
+
+    // Vérifier l'état de l'authentification au démarrage
+    const currentUser = this.authService.getCurrentUser();
+    console.log('=== État de l\'authentification ===');
+    console.log('Utilisateur actuel:', currentUser);
+    console.log('Est authentifié:', this.authService.isAuthenticated());
   }
 
   ngOnInit(): void {
@@ -124,5 +134,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     });
     this.subscription.add(propSub);
+  }
+
+  navigateToImmeubles(): void {
+    const currentUser = this.authService.getCurrentUser();
+    console.log('=== Tentative de navigation vers Immeubles ===');
+    console.log('Utilisateur:', currentUser);
+    console.log('Est authentifié:', this.authService.isAuthenticated());
+
+    if (!this.authService.isAuthenticated()) {
+      console.log('⚠️ Utilisateur non authentifié');
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+
+    this.userRole$.subscribe(role => {
+      console.log('Rôle actuel:', role);
+      if (role === 'SYNDIC') {
+        console.log('✅ Navigation vers /immeubles autorisée');
+        this.router.navigate(['/immeubles']);
+      } else {
+        console.log('⛔ Accès refusé - Rôle incorrect');
+        // Optionnel : afficher un message d'erreur
+      }
+    }).unsubscribe();
   }
 }

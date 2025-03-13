@@ -51,7 +51,7 @@ export interface AuthResponse {
   token: string;
   type: string;
   refreshToken: string;
-  id: number;
+  userId: number;
   email: string;
   role: UserRole;
 }

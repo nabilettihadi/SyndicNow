@@ -80,18 +80,17 @@ export class AuthGuard {
   private isRoleSpecificRoute(path: string, userRole: string): boolean {
     // Routes spécifiques au SYNDIC
     if (userRole !== 'SYNDIC' && (
-      path.includes('buildings') ||
-      path.includes('syndic/payments')
+      path.includes('immeubles') ||
+      path.includes('appartements') ||
+      path.includes('charges')
     )) {
       return true;
     }
 
     // Routes spécifiques au PROPRIETAIRE
     return userRole !== 'PROPRIETAIRE' && (
-      path.includes('my-properties') ||
-      path.includes('payments')
+      path.includes('mes-appartements') ||
+      path.includes('mes-paiements')
     );
-
-
   }
 }

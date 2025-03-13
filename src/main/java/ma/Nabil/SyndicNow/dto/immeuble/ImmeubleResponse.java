@@ -15,11 +15,13 @@ public class ImmeubleResponse {
     private Long id;
     private String nom;
     private String adresse;
+    private String codePostal;
+    private String ville;
     private Integer nombreEtages;
     private Integer nombreAppartements;
-    private Long syndicId;
-    private String syndicName;
+    private Integer anneeConstruction;
     private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Long syndicId;
+    private LocalDateTime dateCreation;
+    private LocalDateTime dateModification;
 } 

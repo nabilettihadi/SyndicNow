@@ -23,6 +23,7 @@ import java.util.List;
 @Validated
 @Slf4j
 @Tag(name = "Building Management", description = "APIs for managing buildings")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ImmeubleController {
 
     private final ImmeubleService immeubleService;
@@ -32,9 +33,9 @@ public class ImmeubleController {
             description = "Creates a new building with the provided information")
     @ApiResponse(responseCode = "201", description = "Building successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
-    public ResponseEntity<ImmeubleResponse> createImmeuble(@Valid @RequestBody ImmeubleRequest dto) {
-        log.info("Creating new building with data: {}", dto);
-        ImmeubleResponse response = immeubleService.createImmeuble(dto);
+    public ResponseEntity<ImmeubleResponse> createImmeuble(@Valid @RequestBody ImmeubleRequest request) {
+        log.info("Creating new building with data: {}", request);
+        ImmeubleResponse response = immeubleService.createImmeuble(request);
         log.info("Successfully created building with ID: {}", response.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -46,9 +47,9 @@ public class ImmeubleController {
     @ApiResponse(responseCode = "404", description = "Building not found")
     public ResponseEntity<ImmeubleResponse> updateImmeuble(
             @Parameter(description = "ID of the building to update") @PathVariable Long id,
-            @Valid @RequestBody ImmeubleRequest dto) {
-        log.info("Updating building with ID: {} with data: {}", id, dto);
-        ImmeubleResponse response = immeubleService.updateImmeuble(id, dto);
+            @Valid @RequestBody ImmeubleRequest request) {
+        log.info("Updating building with ID: {} with data: {}", id, request);
+        ImmeubleResponse response = immeubleService.updateImmeuble(id, request);
         log.info("Successfully updated building with ID: {}", id);
         return ResponseEntity.ok(response);
     }
@@ -71,8 +72,12 @@ public class ImmeubleController {
     @ApiResponse(responseCode = "200", description = "List of buildings retrieved successfully")
     public ResponseEntity<List<ImmeubleResponse>> getAllImmeubles() {
         log.debug("Fetching all buildings");
-        List<ImmeubleResponse> response = immeubleService.getAllImmeubles();
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(immeubleService.getAllImmeubles());
+    }
+
+    @GetMapping("/syndic/{syndicId}")
+    public ResponseEntity<List<ImmeubleResponse>> getImmeublesBySyndic(@PathVariable Long syndicId) {
+        return ResponseEntity.ok(immeubleService.getImmeublesBySyndic(syndicId));
     }
 
     @DeleteMapping("/{id}")

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {environment} from '../../../../environments/environment';
+import {environment} from '@env/environment';
 
 export interface AdminStats {
   totalUsers: number;
@@ -28,20 +28,20 @@ export interface ProprietaireStats {
   providedIn: 'root'
 })
 export class DashboardService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = `${environment.apiUrl}/dashboard`;
 
   constructor(private http: HttpClient) {
   }
 
-  getAdminStats(): Observable<AdminStats> {
-    return this.http.get<AdminStats>(`${this.apiUrl}/dashboard/admin/stats`);
+  getAdminStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/admin/stats`);
   }
 
-  getSyndicStats(): Observable<SyndicStats> {
-    return this.http.get<SyndicStats>(`${this.apiUrl}/dashboard/syndic/stats`);
+  getSyndicStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/syndic/stats`);
   }
 
-  getProprietaireStats(): Observable<ProprietaireStats> {
-    return this.http.get<ProprietaireStats>(`${this.apiUrl}/dashboard/proprietaire/stats`);
+  getProprietaireStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/proprietaire/stats`);
   }
 }

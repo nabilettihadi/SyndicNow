@@ -19,10 +19,11 @@ public class ImmeubleRequest {
     @NotBlank(message = "L'adresse est obligatoire")
     private String adresse;
 
+    @NotBlank(message = "Le code postal est obligatoire")
+    private String codePostal;
+
     @NotBlank(message = "La ville est obligatoire")
     private String ville;
-
-    private String description;
 
     @NotNull(message = "Le nombre d'étages est obligatoire")
     @Positive(message = "Le nombre d'étages doit être positif")
@@ -32,5 +33,12 @@ public class ImmeubleRequest {
     @Positive(message = "Le nombre d'appartements doit être positif")
     private Integer nombreAppartements;
 
+    @NotNull(message = "L'année de construction est obligatoire")
+    @Positive(message = "L'année de construction doit être positive")
+    private Integer anneeConstruction;
+
+    private String description;
+
+    @NotNull(message = "L'ID du syndic est obligatoire")
     private Long syndicId;
 } 

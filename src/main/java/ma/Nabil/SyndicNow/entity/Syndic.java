@@ -40,12 +40,4 @@ public class Syndic extends User {
             setRole(Role.SYNDIC);
         }
     }
-
-    public String getCin() {
-        return cin;
-    }
-
-    public void setCin(String cin) {
-        this.cin = cin;
-    }
 }

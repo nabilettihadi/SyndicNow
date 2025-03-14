@@ -1,162 +1,77 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {Store} from '@ngrx/store';
-import {Observable, Subscription} from 'rxjs';
-import {AuthState} from '../auth/models/auth.model';
-import {NavbarComponent} from '@shared/components/navbar/navbar.component';
-import {DashboardService} from './services/dashboard.service';
-import {RouterModule, Router} from '@angular/router';
-import {AuthService} from '../../core/services/auth.service';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable, map } from 'rxjs';
+import { AuthState, LoginResponse, UserRole } from '../../core/authentication/models/auth.model';
+import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
+import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
   standalone: true,
-  imports: [CommonModule, NavbarComponent, RouterModule]
+  imports: [CommonModule, RouterLink, NavbarComponent],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit, OnDestroy {
-  userRole$: Observable<string | null>;
-  userName$: Observable<string | null>;
-  loading = false;
-  private subscription = new Subscription();
-
-  // Statistiques pour l'admin
-  totalUsers = 0;
-  activeUsers = 0;
-  totalSyndics = 0;
-  totalProprietaires = 0;
-
-  // Statistiques pour le syndic
-  totalImmeubles = 0;
-  totalAppartements = 0;
-  totalCharges = 0;
-  totalPaiements = 0;
-
-  // Statistiques pour le propriétaire
-  mesAppartements = 0;
-  paiementsEnAttente = 0;
-  chargesImpayees = 0;
-  documentsDisponibles = 0;
+export class DashboardComponent implements OnInit {
+  isLoading = true;
+  userName$: Observable<string>;
+  userRole$: Observable<UserRole>;
+  dashboardStats: any;
 
   constructor(
     private store: Store<{ auth: AuthState }>,
-    private dashboardService: DashboardService,
-    private router: Router,
-    public authService: AuthService
+    private dashboardService: DashboardService
   ) {
-    this.userRole$ = this.store.select(state => state.auth.user?.role ?? null);
-    this.userName$ = this.store.select(state =>
-      state.auth.user ? `${state.auth.user.prenom} ${state.auth.user.nom}` : null
+    this.userName$ = this.store.select('auth').pipe(
+      map(state => state.user?.prenom + ' ' + state.user?.nom)
     );
-
-    // Vérifier l'état de l'authentification au démarrage
-    const currentUser = this.authService.getCurrentUser();
-    console.log('=== État de l\'authentification ===');
-    console.log('Utilisateur actuel:', currentUser);
-    console.log('Est authentifié:', this.authService.isAuthenticated());
+    this.userRole$ = this.store.select('auth').pipe(
+      map(state => state.user?.role || 'PROPRIETAIRE')
+    );
   }
 
   ngOnInit(): void {
-    this.loadDashboardData();
+    this.loadDashboardStats();
   }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-
-  private loadDashboardData(): void {
-    this.loading = true;
-    const roleSub = this.userRole$.subscribe(role => {
+  private loadDashboardStats(): void {
+    this.userRole$.subscribe(role => {
       if (!role) return;
 
+      let statsObservable: Observable<any>;
+      
       switch (role) {
         case 'ADMIN':
-          this.loadAdminData();
+          statsObservable = this.dashboardService.getAdminStats();
           break;
         case 'SYNDIC':
-          this.loadSyndicData();
+          statsObservable = this.dashboardService.getSyndicStats();
           break;
         case 'PROPRIETAIRE':
-          this.loadProprietaireData();
+          statsObservable = this.dashboardService.getProprietaireStats();
           break;
+        default:
+          return;
       }
+
+      statsObservable.subscribe({
+        next: (stats) => {
+          this.dashboardStats = stats;
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors du chargement des statistiques:', error);
+          this.isLoading = false;
+        }
+      });
     });
-    this.subscription.add(roleSub);
   }
 
-  private loadAdminData(): void {
-    const adminSub = this.dashboardService.getAdminStats().subscribe({
-      next: (stats) => {
-        this.totalUsers = stats.totalUsers;
-        this.activeUsers = stats.activeUsers;
-        this.totalSyndics = stats.totalSyndics;
-        this.totalProprietaires = stats.totalProprietaires;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement des statistiques admin:', error);
-        this.loading = false;
-      }
-    });
-    this.subscription.add(adminSub);
-  }
-
-  private loadSyndicData(): void {
-    const syndicSub = this.dashboardService.getSyndicStats().subscribe({
-      next: (stats) => {
-        this.totalImmeubles = stats.totalImmeubles;
-        this.totalAppartements = stats.totalAppartements;
-        this.totalCharges = stats.totalCharges;
-        this.totalPaiements = stats.totalPaiements;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement des statistiques syndic:', error);
-        this.loading = false;
-      }
-    });
-    this.subscription.add(syndicSub);
-  }
-
-  private loadProprietaireData(): void {
-    const propSub = this.dashboardService.getProprietaireStats().subscribe({
-      next: (stats) => {
-        this.mesAppartements = stats.mesAppartements;
-        this.paiementsEnAttente = stats.paiementsEnAttente;
-        this.chargesImpayees = stats.chargesImpayees;
-        this.documentsDisponibles = stats.documentsDisponibles;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement des statistiques propriétaire:', error);
-        this.loading = false;
-      }
-    });
-    this.subscription.add(propSub);
-  }
-
-  navigateToImmeubles(): void {
-    const currentUser = this.authService.getCurrentUser();
-    console.log('=== Tentative de navigation vers Immeubles ===');
-    console.log('Utilisateur:', currentUser);
-    console.log('Est authentifié:', this.authService.isAuthenticated());
-
-    if (!this.authService.isAuthenticated()) {
-      console.log('⚠️ Utilisateur non authentifié');
-      this.router.navigate(['/auth/login']);
-      return;
-    }
-
-    this.userRole$.subscribe(role => {
-      console.log('Rôle actuel:', role);
-      if (role === 'SYNDIC') {
-        console.log('✅ Navigation vers /immeubles autorisée');
-        this.router.navigate(['/immeubles']);
-      } else {
-        console.log('⛔ Accès refusé - Rôle incorrect');
-        // Optionnel : afficher un message d'erreur
-      }
-    }).unsubscribe();
+  hasRole(role: UserRole): Observable<boolean> {
+    return this.userRole$.pipe(
+      map(userRole => userRole === role)
+    );
   }
 }

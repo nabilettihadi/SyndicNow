@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterModule } from '@angular/router';
@@ -14,6 +14,7 @@ import { AuthService } from '../../../../core/services/auth.service';
   imports: [CommonModule, ReactiveFormsModule, RouterModule, NavbarComponent]
 })
 export class ImmeubleFormComponent implements OnInit {
+  @Output() onSubmitEvent = new EventEmitter<ImmeubleCreate>();
   immeubleForm: FormGroup;
   isEditMode = false;
   immeubleId: number | null = null;
@@ -63,25 +64,11 @@ export class ImmeubleFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.immeubleForm.valid) {
-      this.loading = true;
-      const immeubleData: ImmeubleCreate = {
+      const immeuble = {
         ...this.immeubleForm.value,
-        syndicId: this.authService.getCurrentUserId() || 0
+        syndicId: this.authService.getCurrentUser()?.userId || 0
       };
-
-      const request$ = this.isEditMode && this.immeubleId
-        ? this.immeubleService.updateImmeuble(this.immeubleId, immeubleData)
-        : this.immeubleService.createImmeuble(immeubleData);
-
-      request$.subscribe({
-        next: () => {
-          this.router.navigate(['/immeubles']);
-        },
-        error: (error) => {
-          this.error = 'Erreur lors de l\'enregistrement de l\'immeuble';
-          this.loading = false;
-        }
-      });
+      this.onSubmitEvent.emit(immeuble);
     }
   }
 } 

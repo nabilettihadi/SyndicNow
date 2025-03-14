@@ -2,7 +2,8 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {map, Observable, take, tap} from 'rxjs';
-import {AuthState} from '@features/auth/models/auth.model';
+import {AuthState} from '../authentication/models/auth.model';
+import {AuthService} from '../services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,8 @@ import {AuthState} from '@features/auth/models/auth.model';
 export class AuthGuard {
   constructor(
     private router: Router,
-    private store: Store<{ auth: AuthState }>
+    private store: Store<{ auth: AuthState }>,
+    private authService: AuthService
   ) {
   }
 
@@ -91,6 +93,39 @@ export class AuthGuard {
     return userRole !== 'PROPRIETAIRE' && (
       path.includes('mes-appartements') ||
       path.includes('mes-paiements')
+    );
+  }
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DashboardGuard {
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private store: Store<{ auth: AuthState }>
+  ) {}
+
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/auth/login']);
+      return false;
+    }
+
+    const requiredRole = route.data['role'];
+    if (!requiredRole) {
+      return true;
+    }
+
+    return this.store.select('auth').pipe(
+      map(state => {
+        if (state.user?.role === requiredRole) {
+          return true;
+        }
+        this.router.navigate(['/dashboard']);
+        return false;
+      })
     );
   }
 }

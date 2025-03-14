@@ -22,9 +22,6 @@ import java.util.List;
 @EntityListeners(AuditingEntityListener.class)
 public class Proprietaire extends User {
 
-    @Column(unique = true)
-    private String cin;
-
     @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Appartement> appartements = new ArrayList<>();

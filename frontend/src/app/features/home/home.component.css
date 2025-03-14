@@ -1,26 +1,4 @@
 /* Animations */
-.animate-fade-in {
-  animation: fadeIn 0.8s ease-in;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.8s ease-out;
-}
-
-.feature-card {
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.feature-card:hover {
-  transform: translateY(-5px);
-}
-
-.counter {
-  transition: all 0.3s ease;
-}
-
-/* Keyframes */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -32,23 +10,54 @@
 
 @keyframes slideUp {
   from {
-    opacity: 0;
     transform: translateY(20px);
+    opacity: 0;
   }
   to {
-    opacity: 1;
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .hero-text {
-    font-size: 2.5rem;
-  }
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
 
-  .feature-grid {
+.animate-slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+/* Counter animation */
+.counter {
+  transition: all 0.5s ease-out;
+}
+
+/* Feature cards */
+.feature-card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease-out;
+}
+
+.feature-card.animate-fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .grid {
     grid-template-columns: 1fr;
+  }
+  
+  .space-x-4 > * {
+    margin: 0.5rem 0;
+  }
+  
+  .space-x-4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 }
 

@@ -25,24 +25,24 @@ export class ImmeublesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadImmeubles();
+    const syndicId = this.authService.getCurrentUser()?.userId;
+    if (syndicId) {
+      this.loadImmeubles(Number(syndicId));
+    }
   }
 
-  loadImmeubles(): void {
-    const syndicId = this.authService.getCurrentUserId();
-    if (syndicId) {
-      this.immeubleService.getImmeublesBySyndic(syndicId).subscribe({
-        next: (data) => {
-          this.immeubles = data;
-          this.filteredImmeubles = data;
-          this.loading = false;
-        },
-        error: (error) => {
-          this.error = 'Erreur lors du chargement des immeubles';
-          this.loading = false;
-        }
-      });
-    }
+  loadImmeubles(syndicId: number): void {
+    this.immeubleService.getImmeublesBySyndic(syndicId).subscribe({
+      next: (data) => {
+        this.immeubles = data;
+        this.filteredImmeubles = data;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = 'Erreur lors du chargement des immeubles';
+        this.loading = false;
+      }
+    });
   }
 
   filterImmeubles(searchTerm: string): void {

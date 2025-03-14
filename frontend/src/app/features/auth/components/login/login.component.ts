@@ -1,49 +1,45 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {CommonModule} from '@angular/common';
-import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {AuthState} from '../../store/reducers/auth.reducer';
-import * as AuthActions from '../../store/actions/auth.actions';
-import {RouterLink} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { AuthState } from '../../../../core/authentication/models/auth.model';
+import * as AuthActions from '../../../../core/authentication/store/actions/auth.actions';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink]
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-  loading$: Observable<boolean>;
-  error$: Observable<string | null>;
+  loading$!: Observable<boolean>;
+  error$!: Observable<string | null>;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
     private store: Store<{ auth: AuthState }>
   ) {
-    this.loginForm = this.formBuilder.group({
+    this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
-
-    this.loading$ = this.store.select(state => state.auth.loading);
-    this.error$ = this.store.select(state => state.auth.error);
   }
 
   ngOnInit(): void {
+    // Initialiser les observables du store
+    this.loading$ = this.store.select(state => state.auth.loading);
+    this.error$ = this.store.select(state => state.auth.error);
     // Réinitialiser les erreurs au chargement du composant
     this.store.dispatch(AuthActions.loginFailure({error: ''}));
   }
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      const credentials = {
-        email: this.loginForm.get('email')?.value,
-        password: this.loginForm.get('password')?.value
-      };
-      this.store.dispatch(AuthActions.login({credentials}));
+      this.store.dispatch(AuthActions.login({ credentials: this.loginForm.value }));
     } else {
       Object.keys(this.loginForm.controls).forEach(key => {
         const control = this.loginForm.get(key);

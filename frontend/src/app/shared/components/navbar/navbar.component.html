@@ -13,61 +13,50 @@
       </div>
     </button>
 
-    <!-- Menu pour utilisateurs authentifiés -->
+    <!-- Menu principal -->
     <ng-container *ngIf="isAuthenticated$ | async">
-      <div class="navbar-menu" [@slideInOut]="isMobileMenuOpen ? 'in' : 'out'" [class.active]="isMobileMenuOpen">
+      <div class="navbar-menu" [class.active]="isMobileMenuOpen">
         <div class="nav-links">
-          <!-- Liens communs -->
-          <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
-            <i class="fas fa-home"></i>
-            Tableau de bord
-          </a>
-
-          <!-- Liens spécifiques au rôle -->
-          <ng-container *ngIf="userRole$ | async as role">
-            <!-- Liens pour SYNDIC -->
-            <ng-container *ngIf="role === 'SYNDIC'">
-              <a routerLink="/buildings" routerLinkActive="active" class="nav-link">
-                <i class="fas fa-building"></i>
-                Immeubles
-              </a>
-              <a routerLink="/syndic/payments" routerLinkActive="active" class="nav-link">
-                <i class="fas fa-money-bill"></i>
-                Gestion des paiements
-              </a>
-            </ng-container>
-
-            <!-- Liens pour PROPRIETAIRE -->
-            <ng-container *ngIf="role === 'PROPRIETAIRE'">
-              <a routerLink="/my-properties" routerLinkActive="active" class="nav-link">
-                <i class="fas fa-home"></i>
-                Mes propriétés
-              </a>
-              <a routerLink="/payments" routerLinkActive="active" class="nav-link">
-                <i class="fas fa-money-bill"></i>
-                Mes paiements
-              </a>
-            </ng-container>
+          <!-- Liens pour tous les utilisateurs -->
+          <a routerLink="/dashboard" routerLinkActive="active">Tableau de bord</a>
+          
+          <!-- Liens pour les propriétaires -->
+          <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
+            <a routerLink="/mes-appartements" routerLinkActive="active">Mes Appartements</a>
+            <a routerLink="/mes-paiements" routerLinkActive="active">Mes Paiements</a>
           </ng-container>
 
-          <!-- Documents (commun aux deux rôles) -->
-          <a routerLink="/documents" routerLinkActive="active" class="nav-link">
-            <i class="fas fa-file-alt"></i>
-            Documents
-          </a>
+          <!-- Liens pour les syndics -->
+          <ng-container *ngIf="hasRole('SYNDIC') | async">
+            <a routerLink="/gestion-immeubles" routerLinkActive="active">Gestion Immeubles</a>
+            <a routerLink="/gestion-paiements" routerLinkActive="active">Gestion Paiements</a>
+          </ng-container>
         </div>
-      </div>
 
-      <div class="auth-section">
+        <!-- Menu utilisateur -->
         <div class="user-menu">
-          <div class="user-info">
-            <i class="fas fa-user-circle"></i>
-            <span class="username">{{ userName$ | async }}</span>
-          </div>
-          <button class="logout-button" (click)="onLogout($event)">
-            <i class="fas fa-sign-out-alt"></i>
-            Se déconnecter
+          <button 
+            class="user-button"
+            (click)="toggleUserMenu()"
+            [attr.aria-expanded]="isUserMenuOpen">
+            <span class="sr-only">Menu utilisateur</span>
+            <span class="user-name">{{ userName$ | async }}</span>
           </button>
+
+          <!-- Dropdown menu utilisateur -->
+          <div 
+            class="user-dropdown" 
+            *ngIf="isUserMenuOpen"
+            (clickOutside)="isUserMenuOpen = false">
+            <div class="user-info">
+              <div class="user-name">{{ userName$ | async }}</div>
+              <div class="user-role">{{ userRole$ | async }}</div>
+            </div>
+            <div class="dropdown-items">
+              <a routerLink="/profile">Mon Profil</a>
+              <button (click)="logout()">Se déconnecter</button>
+            </div>
+          </div>
         </div>
       </div>
     </ng-container>

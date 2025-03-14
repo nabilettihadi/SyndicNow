@@ -2,6 +2,7 @@
   background-color: #1f2937;
   color: #9ca3af;
   padding: 4rem 1rem;
+  margin-top: auto;
 }
 
 .footer-content {
@@ -81,11 +82,11 @@
   color: #9ca3af;
   text-decoration: none;
   font-size: 0.875rem;
-  transition: color 0.15s ease-in-out;
+  transition: color 0.2s ease-in-out;
 }
 
 .footer-link:hover {
-  color: white;
+  color: #ffffff;
 }
 
 .footer-bottom {
@@ -122,4 +123,14 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+@media (max-width: 768px) {
+  .grid-cols-1 {
+    gap: 2rem;
+  }
+  
+  .text-center {
+    text-align: center;
+  }
 }

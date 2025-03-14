@@ -1,110 +1,133 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, tap} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
-import {LoginResponse, LoginRequest} from '@features/auth/models/auth.model';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
+import {catchError, tap} from 'rxjs/operators';
+import {LoginRequest, LoginResponse, RegisterRequest, RegisterResponse} from '../authentication/models/auth.model';
 import {environment} from '@env/environment';
+import {Store} from '@ngrx/store';
+import * as AuthActions from '../authentication/store/actions/auth.actions';
 import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject: BehaviorSubject<LoginResponse | null>;
-  public currentUser: Observable<LoginResponse | null>;
-  private readonly API_URL = environment.apiUrl;
+  private readonly API_URL = `${environment.apiUrl}/auth`;
+  private readonly TOKEN_KEY = 'token';
+  private readonly USER_KEY = 'currentUser';
+  private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+  public currentUserValue = this.currentUserSubject.value;
 
-  constructor(private http: HttpClient, private router: Router) {
-    const storedUser = localStorage.getItem('currentUser');
-    this.currentUserSubject = new BehaviorSubject<LoginResponse | null>(storedUser ? JSON.parse(storedUser) : null);
-    this.currentUser = this.currentUserSubject.asObservable();
-    
-    if (storedUser) {
-      console.log('=== Current User Debug ===');
-      console.log('User from localStorage:', JSON.parse(storedUser));
+  constructor(
+    private http: HttpClient,
+    private store: Store,
+    private router: Router
+  ) {
+    this.loadStoredUser();
+  }
+
+  private loadStoredUser(): void {
+    const storedUser = localStorage.getItem(this.USER_KEY);
+    const token = localStorage.getItem(this.TOKEN_KEY);
+
+    if (storedUser && token) {
+      try {
+        const user = JSON.parse(storedUser);
+        this.currentUserSubject.next(user);
+        this.store.dispatch(AuthActions.initializeAuthStateSuccess({user}));
+        this.redirectBasedOnRole(user.role);
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        this.clearStorage();
+      }
     }
   }
 
-  public get currentUserValue(): LoginResponse | null {
-    return this.currentUserSubject.value;
+  private clearStorage(): void {
+    localStorage.removeItem(this.USER_KEY);
+    localStorage.removeItem(this.TOKEN_KEY);
+    this.currentUserSubject.next(null);
   }
 
-  public setCurrentUser(user: LoginResponse | null): void {
-    if (user) {
-      localStorage.setItem('currentUser', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('currentUser');
-    }
-    this.currentUserSubject.next(user);
-  }
-
-  private getUserFromLocalStorage(): LoginResponse | null {
-    try {
-      const userStr = localStorage.getItem('currentUser');
-      return userStr ? JSON.parse(userStr) : null;
-    } catch (error) {
-      console.error('Error parsing user from localStorage:', error);
-      localStorage.removeItem('currentUser');
-      return null;
-    }
-  }
-
-  public isAuthenticated(): boolean {
-    const currentUser = this.currentUserValue;
-    return !!currentUser && !!currentUser.token;
-  }
-
-  getCurrentUser(): LoginResponse | null {
-    const userStr = localStorage.getItem('currentUser');
-    if (!userStr) {
-      console.log('Aucun utilisateur trouvé dans le localStorage');
-      return null;
-    }
-    try {
-      const user = JSON.parse(userStr);
-      console.log('=== Current User Debug ===');
-      console.log('User from localStorage:', user);
-      return user;
-    } catch (error) {
-      console.error('Erreur lors de la récupération de l\'utilisateur:', error);
-      return null;
-    }
-  }
-
-  getCurrentUserId(): number | null {
-    const currentUser = this.currentUserValue;
-    return currentUser ? currentUser.userId : null;
-  }
-
-  getToken(): string | null {
-    const currentUser = this.currentUserValue;
-    if (currentUser && currentUser.token) {
-      console.log('Token récupéré:', currentUser.token);
-      return currentUser.token;
-    }
-    console.log('Aucun token trouvé');
-    return null;
-  }
-
-  login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/auth/login`, { email, password })
+  login(request: LoginRequest): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.API_URL}/authenticate`, request)
       .pipe(
         tap(response => {
-          if (response && response.token) {
-            localStorage.setItem('currentUser', JSON.stringify(response));
-            this.currentUserSubject.next(response);
-          }
+          this.handleAuthSuccess(response);
+          this.redirectBasedOnRole(response.role);
+        }),
+        catchError(error => this.handleError(error))
+      );
+  }
+
+  register(userData: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.API_URL}/register`, userData)
+      .pipe(
+        tap(() => {
+          this.router.navigate(['/auth/login']);
+        }),
+        catchError(this.handleError.bind(this))
+      );
+  }
+
+  private handleAuthSuccess(response: LoginResponse): void {
+    localStorage.setItem(this.USER_KEY, JSON.stringify(response));
+    localStorage.setItem(this.TOKEN_KEY, response.token);
+    this.currentUserSubject.next(response);
+  }
+
+  private redirectBasedOnRole(role: string): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  logout(): Observable<void> {
+    const token = this.getToken();
+    if (!token) {
+      this.clearStorage();
+      this.router.navigate(['/auth/login']);
+      return of(void 0);
+    }
+
+    return this.http.post<void>(`${this.API_URL}/logout`, {})
+      .pipe(
+        tap(() => {
+          this.clearStorage();
+          this.router.navigate(['/auth/login']);
+        }),
+        catchError(error => {
+          console.error('Logout error:', error);
+          this.clearStorage();
+          this.router.navigate(['/auth/login']);
+          return throwError(() => error);
         })
       );
   }
 
-  logout() {
-    localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/login']);
+  isAuthenticated(): boolean {
+    return !!this.getToken() && !!this.getCurrentUser();
+  }
+
+  getCurrentUser(): LoginResponse | null {
+    return this.currentUserSubject.value;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
   hasRole(role: string): boolean {
-    const currentUser = this.currentUserValue;
+    const currentUser = this.getCurrentUser();
     return Boolean(currentUser && currentUser.role === role);
   }
-}
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Une erreur est survenue';
+    if (error.error?.message) {
+      errorMessage = error.error.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    return throwError(() => new Error(errorMessage));
+  }
+} 

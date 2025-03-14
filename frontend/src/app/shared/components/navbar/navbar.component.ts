@@ -1,67 +1,55 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, Router, RouterLinkActive } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { trigger, state, style, transition, animate } from '@angular/animations';
-import { AuthState, LoginResponse, UserRole } from '../../../features/auth/models/auth.model';
-import * as AuthActions from '../../../features/auth/store/actions/auth.actions';
+import { map } from 'rxjs/operators';
 import { AuthService } from '../../../core/services/auth.service';
+import { AuthState, LoginResponse, UserRole } from '../../../core/authentication/models/auth.model';
+import * as AuthActions from '../../../core/authentication/store/actions/auth.actions';
 
 @Component({
   selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css'],
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
-  animations: [
-    trigger('slideInOut', [
-      state('in', style({
-        height: '*',
-        opacity: 1
-      })),
-      state('out', style({
-        height: '0',
-        opacity: 0,
-        overflow: 'hidden'
-      })),
-      transition('in => out', [
-        animate('200ms ease-out')
-      ]),
-      transition('out => in', [
-        animate('200ms ease-in')
-      ])
-    ])
-  ]
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated$: Observable<boolean>;
-  userName$: Observable<string | undefined>;
-  userRole$: Observable<UserRole | undefined>;
+  currentUser$: Observable<LoginResponse | null>;
+  userName$: Observable<string>;
+  userRole$: Observable<UserRole | null>;
   private subscription = new Subscription();
+  isUserMenuOpen = false;
   isMobileMenuOpen = false;
 
   constructor(
+    private router: Router,
     private store: Store<{ auth: AuthState }>,
     private authService: AuthService
   ) {
     this.isAuthenticated$ = this.store.select(state => !!state.auth.user);
-    this.userName$ = this.store.select(state => 
-      state.auth.user ? `${state.auth.user.prenom} ${state.auth.user.nom}` : undefined
+    this.currentUser$ = this.store.select(state => state.auth.user);
+    this.userName$ = this.currentUser$.pipe(
+      map(user => user ? `${user.prenom} ${user.nom}` : '')
     );
-    this.userRole$ = this.store.select(state => 
-      state.auth.user ? state.auth.user.role : undefined
+    this.userRole$ = this.currentUser$.pipe(
+      map(user => user ? user.role : null)
     );
   }
 
+  @HostListener('window:resize')
+  onResize(): void {
+    if (window.innerWidth >= 768 && this.isMobileMenuOpen) {
+      this.toggleMobileMenu(false);
+    }
+  }
+
   ngOnInit(): void {
+    // Vérifier l'état d'authentification au démarrage
     this.subscription.add(
-      this.store.select(state => state.auth.user).subscribe(storeUser => {
-        const storedUser = this.authService.currentUserValue;
-        if (storedUser && !storeUser) {
-          this.store.dispatch(AuthActions.loginSuccess({ user: storedUser }));
-        }
-      })
+      this.store.select(state => !!state.auth.user).subscribe()
     );
   }
 
@@ -69,21 +57,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  onLogout(event: Event): void {
-    event.preventDefault();
+  logout(): void {
     this.store.dispatch(AuthActions.logout());
-    this.authService.setCurrentUser(null);
-    this.toggleMobileMenu(false);
+    this.router.navigate(['/login']);
+  }
+
+  hasRole(role: UserRole): Observable<boolean> {
+    return this.userRole$.pipe(
+      map(userRole => userRole === role)
+    );
+  }
+
+  toggleUserMenu(): void {
+    this.isUserMenuOpen = !this.isUserMenuOpen;
   }
 
   toggleMobileMenu(force?: boolean): void {
     this.isMobileMenuOpen = force !== undefined ? force : !this.isMobileMenuOpen;
-  }
-
-  @HostListener('window:resize')
-  onResize(): void {
-    if (window.innerWidth > 768 && this.isMobileMenuOpen) {
-      this.toggleMobileMenu(false);
-    }
   }
 }

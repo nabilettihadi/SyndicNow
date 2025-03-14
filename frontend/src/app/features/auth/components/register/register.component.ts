@@ -1,126 +1,126 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {CommonModule} from '@angular/common';
-import {RouterLink} from '@angular/router';
-
-import * as AuthActions from '../../store/actions/auth.actions';
-import {AuthState, UserRole} from '../../models/auth.model';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { register } from '../../../../core/authentication/store/actions/auth.actions';
+import { AuthState, RegisterRequest } from '../../../../core/authentication/models/auth.model';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
-export class RegisterComponent implements OnInit {
-  registerForm!: FormGroup;
-  loading$: Observable<boolean>;
-  error$: Observable<string | null>;
+export class RegisterComponent {
+  registerForm: FormGroup;
+  loading = false;
+  error: string | null = null;
 
   roles = [
-    {value: UserRole.PROPRIETAIRE, label: 'Propriétaire'},
-    {value: UserRole.SYNDIC, label: 'Syndic'}
+    { value: 'SYNDIC', label: 'Syndic' },
+    { value: 'PROPRIETAIRE', label: 'Propriétaire' }
   ];
 
   constructor(
-    private formBuilder: FormBuilder,
-    private store: Store<{ auth: AuthState }>
+    private fb: FormBuilder,
+    private store: Store<{ auth: AuthState }>,
+    private router: Router
   ) {
-    this.initializeForm();
-    this.loading$ = this.store.select(state => state.auth.loading);
-    this.error$ = this.store.select(state => state.auth.error);
-  }
-
-  private initializeForm(): void {
-    this.registerForm = this.formBuilder.group({
+    this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [
-        Validators.required,
-        Validators.minLength(6),
-        Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[\w\W]{6,}$/)
-      ]],
-      confirmPassword: ['', [Validators.required]],
-      nom: ['', [Validators.required, Validators.minLength(2)]],
-      prenom: ['', [Validators.required, Validators.minLength(2)]],
-      telephone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+      nom: ['', [Validators.required, Validators.minLength(3)]],
+      prenom: ['', [Validators.required, Validators.minLength(3)]],
+      role: ['PROPRIETAIRE', Validators.required],
+      telephone: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       adresse: ['', [Validators.required, Validators.minLength(5)]],
       cin: ['', [Validators.required, Validators.minLength(6)]],
-      role: [UserRole.PROPRIETAIRE, [Validators.required]],
+      // Champs spécifiques au syndic
       siret: [''],
       numeroLicence: [''],
       societe: [''],
       dateDebutActivite: ['']
-    }, {
-      validator: this.passwordMatchValidator
-    });
+    }, { validator: this.passwordMatchValidator });
 
-    // Écouter les changements de rôle
+    // Écouter les changements du rôle pour mettre à jour les validations
     this.registerForm.get('role')?.valueChanges.subscribe(role => {
       this.updateSyndicValidators(role);
     });
-
-    // Initialiser les validateurs en fonction du rôle initial
-    this.updateSyndicValidators(this.registerForm.get('role')?.value);
   }
 
-  private updateSyndicValidators(role: UserRole): void {
-    const syndicControls = {
-      siret: [Validators.required, Validators.pattern(/^[0-9]{14}$/)],
-      numeroLicence: [Validators.required],
-      societe: [Validators.required],
-      dateDebutActivite: [Validators.required]
-    };
+  private updateSyndicValidators(role: string) {
+    const syndicControls = ['siret', 'numeroLicence', 'societe', 'dateDebutActivite'];
+    
+    if (role === 'SYNDIC') {
+      this.registerForm.get('siret')?.setValidators([Validators.required, Validators.pattern(/^\d{14}$/)]);
+      this.registerForm.get('numeroLicence')?.setValidators([Validators.required]);
+      this.registerForm.get('societe')?.setValidators([Validators.required]);
+      this.registerForm.get('dateDebutActivite')?.setValidators([Validators.required]);
+    } else {
+      syndicControls.forEach(control => {
+        this.registerForm.get(control)?.clearValidators();
+        this.registerForm.get(control)?.setValue('');
+      });
+    }
 
-    Object.entries(syndicControls).forEach(([controlName, validators]) => {
-      const control = this.registerForm.get(controlName);
-      if (control) {
-        if (role === UserRole.SYNDIC) {
-          control.setValidators(validators);
-        } else {
-          control.clearValidators();
-          control.setValue('');
-        }
-        control.updateValueAndValidity();
-      }
+    syndicControls.forEach(control => {
+      this.registerForm.get(control)?.updateValueAndValidity();
     });
-  }
-
-  ngOnInit(): void {
-    this.store.dispatch(AuthActions.registerFailure({error: ''}));
   }
 
   onSubmit(): void {
     if (this.registerForm.valid) {
-      const {confirmPassword, ...userData} = this.registerForm.value;
-      
-      if (userData.role === UserRole.SYNDIC) {
-        // Vérification supplémentaire pour les champs syndic
-        if (!userData.siret || !userData.numeroLicence || !userData.societe || !userData.dateDebutActivite) {
-          this.store.dispatch(AuthActions.registerFailure({
-            error: 'Tous les champs spécifiques au syndic sont obligatoires'
-          }));
-          return;
-        }
-      } else {
-        // Réinitialiser explicitement les champs syndic pour les propriétaires
-        userData.siret = null;
-        userData.numeroLicence = null;
-        userData.societe = null;
-        userData.dateDebutActivite = null;
+      this.loading = true;
+      this.error = null;
+
+      const formValue = this.registerForm.value;
+      const userData: RegisterRequest = {
+        email: formValue.email,
+        password: formValue.password,
+        nom: formValue.nom,
+        prenom: formValue.prenom,
+        role: formValue.role,
+        telephone: formValue.telephone,
+        adresse: formValue.adresse,
+        cin: formValue.cin
+      };
+
+      // Ajouter les champs du syndic si nécessaire
+      if (formValue.role === 'SYNDIC') {
+        Object.assign(userData, {
+          siret: formValue.siret,
+          numeroLicence: formValue.numeroLicence,
+          societe: formValue.societe,
+          dateDebutActivite: formValue.dateDebutActivite
+        });
       }
-      
-      this.store.dispatch(AuthActions.register({userData}));
+
+      this.store.dispatch(register({ userData }));
     } else {
-      Object.keys(this.registerForm.controls).forEach(key => {
-        const control = this.registerForm.get(key);
-        if (control?.invalid) {
-          control.markAsTouched();
-        }
-      });
+      this.markFormGroupTouched(this.registerForm);
     }
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup) {
+    Object.values(formGroup.controls).forEach(control => {
+      control.markAsTouched();
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
+  }
+
+  private passwordMatchValidator(group: FormGroup): {[key: string]: any} | null {
+    const password = group.get('password');
+    const confirmPassword = group.get('confirmPassword');
+
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      return { mismatch: true };
+    }
+    return null;
   }
 
   passwordContainsLetter(): boolean {
@@ -131,15 +131,5 @@ export class RegisterComponent implements OnInit {
   passwordContainsNumber(): boolean {
     const password = this.registerForm.get('password')?.value;
     return /\d/.test(password);
-  }
-
-  private passwordMatchValidator(group: FormGroup): {[key: string]: any} | null {
-    const password = group.get('password');
-    const confirmPassword = group.get('confirmPassword');
-
-    if (password && confirmPassword && password.value !== confirmPassword.value) {
-      return {mismatch: true};
-    }
-    return null;
   }
 }

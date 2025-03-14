@@ -36,8 +36,7 @@
           />
           <div *ngIf="registerForm.get('prenom')?.invalid && registerForm.get('prenom')?.touched" class="error-message">
             <span *ngIf="registerForm.get('prenom')?.errors?.['required']">Le prénom est requis</span>
-            <span
-              *ngIf="registerForm.get('prenom')?.errors?.['minlength']">Le prénom doit avoir au moins 3 caractères</span>
+            <span *ngIf="registerForm.get('prenom')?.errors?.['minlength']">Le prénom doit avoir au moins 3 caractères</span>
           </div>
         </div>
       </div>
@@ -68,8 +67,7 @@
           [class.error]="registerForm.get('telephone')?.invalid && registerForm.get('telephone')?.touched"
           placeholder="0600000000"
         />
-        <div *ngIf="registerForm.get('telephone')?.invalid && registerForm.get('telephone')?.touched"
-             class="error-message">
+        <div *ngIf="registerForm.get('telephone')?.invalid && registerForm.get('telephone')?.touched" class="error-message">
           <span *ngIf="registerForm.get('telephone')?.errors?.['required']">Le téléphone est requis</span>
           <span *ngIf="registerForm.get('telephone')?.errors?.['pattern']">Le numéro doit contenir 10 chiffres</span>
         </div>
@@ -87,8 +85,7 @@
         />
         <div *ngIf="registerForm.get('adresse')?.invalid && registerForm.get('adresse')?.touched" class="error-message">
           <span *ngIf="registerForm.get('adresse')?.errors?.['required']">L'adresse est requise</span>
-          <span
-            *ngIf="registerForm.get('adresse')?.errors?.['minlength']">L'adresse doit avoir au moins 5 caractères</span>
+          <span *ngIf="registerForm.get('adresse')?.errors?.['minlength']">L'adresse doit avoir au moins 5 caractères</span>
         </div>
       </div>
 
@@ -156,8 +153,7 @@
           [class.error]="registerForm.get('numeroLicence')?.invalid && registerForm.get('numeroLicence')?.touched"
           placeholder="Numéro de licence professionnelle"
         />
-        <div *ngIf="registerForm.get('numeroLicence')?.invalid && registerForm.get('numeroLicence')?.touched"
-             class="error-message">
+        <div *ngIf="registerForm.get('numeroLicence')?.invalid && registerForm.get('numeroLicence')?.touched" class="error-message">
           <span *ngIf="registerForm.get('numeroLicence')?.errors?.['required']">Le numéro de licence est requis</span>
         </div>
       </div>
@@ -186,8 +182,7 @@
           class="form-input"
           [class.error]="registerForm.get('dateDebutActivite')?.invalid && registerForm.get('dateDebutActivite')?.touched"
         />
-        <div *ngIf="registerForm.get('dateDebutActivite')?.invalid && registerForm.get('dateDebutActivite')?.touched"
-             class="error-message">
+        <div *ngIf="registerForm.get('dateDebutActivite')?.invalid && registerForm.get('dateDebutActivite')?.touched" class="error-message">
           <span *ngIf="registerForm.get('dateDebutActivite')?.errors?.['required']">La date de début d'activité est requise</span>
         </div>
       </div>
@@ -207,11 +202,9 @@
           [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
           placeholder="••••••••"
         />
-        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
-             class="error-message">
+        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
           <span *ngIf="registerForm.get('password')?.errors?.['required']">Le mot de passe est requis</span>
           <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Le mot de passe doit avoir au moins 6 caractères</span>
-          <span *ngIf="registerForm.get('password')?.errors?.['pattern']">Le mot de passe doit contenir au moins une lettre et un chiffre</span>
         </div>
 
         <div class="password-requirements">
@@ -234,17 +227,16 @@
           [class.error]="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched"
           placeholder="••••••••"
         />
-        <div *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.hasError('mismatch')"
-             class="error-message">
+        <div *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.hasError('mismatch')" class="error-message">
           Les mots de passe ne correspondent pas
         </div>
       </div>
     </div>
 
     <!-- Bouton de soumission -->
-    <button type="submit" class="submit-button" [disabled]="registerForm.invalid || (loading$ | async)">
-      <span *ngIf="!(loading$ | async)">Créer mon compte</span>
-      <div *ngIf="loading$ | async" class="loading-spinner">
+    <button type="submit" class="submit-button w-full text-white" [disabled]="registerForm.invalid || loading">
+      <span *ngIf="!loading">Créer mon compte</span>
+      <div *ngIf="loading" class="loading-spinner">
         <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor"
@@ -254,7 +246,7 @@
     </button>
 
     <!-- Message d'erreur -->
-    <div *ngIf="error$ | async as error" class="error-message text-center mt-4">
+    <div *ngIf="error" class="error-message text-center mt-4">
       {{ error }}
     </div>
 

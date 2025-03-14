@@ -1,37 +1,37 @@
-import {ApplicationConfig, isDevMode} from '@angular/core';
-import {provideRouter, withComponentInputBinding} from '@angular/router';
-import {provideStore} from '@ngrx/store';
-import {provideEffects} from '@ngrx/effects';
-import {provideStoreDevtools} from '@ngrx/store-devtools';
-import {provideHttpClient} from '@angular/common/http';
-import {HTTP_INTERCEPTORS} from '@angular/common/http';
-import {AuthInterceptor} from './core/interceptors/auth.interceptor';
-import {provideAnimations} from '@angular/platform-browser/animations';
-import {AuthService} from './features/auth/services/auth.service';
-
-import {routes} from './app.routes';
-import {authReducer} from './features/auth/store/reducers/auth.reducer';
-import {AuthEffects} from './features/auth/store/effects/auth.effects';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { routes } from './app.routes';
+import { AuthService } from './core/services/auth.service';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { authReducer } from './core/authentication/store/reducers/auth.reducer';
+import { AuthEffects } from './core/authentication/store/effects/auth.effects';
+import { environment } from '../environments/environment';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes, withComponentInputBinding()),
-    provideAnimations(),
-    provideStore({auth: authReducer}),
-    provideEffects([AuthEffects]),
-    provideHttpClient(),
-    AuthService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
+    importProvidersFrom(
+      BrowserModule,
+      BrowserAnimationsModule
+    ),
+    provideRouter(routes),
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideStore({
+      auth: authReducer
+    }),
+    provideEffects(AuthEffects),
     provideStoreDevtools({
       maxAge: 25,
-      logOnly: !isDevMode(),
+      logOnly: environment.production,
       autoPause: true,
       trace: false,
       traceLimit: 75,
-    })
+    }),
+    AuthService
   ]
 };

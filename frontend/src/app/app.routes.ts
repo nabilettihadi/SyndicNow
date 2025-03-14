@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
-import { RequireAuthGuard } from './core/guards/require-auth.guard';
-import { AuthGuard } from './features/auth/guards/auth.guard';
+import { AuthGuard, DashboardGuard } from './core/guards/auth.guard';
 
 // Composant Home
 import { HomeComponent } from './features/home/home.component';
@@ -13,53 +12,96 @@ import { RegisterComponent } from './features/auth/components/register/register.
 import { DashboardComponent } from './features/dashboard/dashboard.component';
 
 export const routes: Routes = [
-  // Routes d'authentification
+  {
+    path: '',
+    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+  },
   {
     path: 'auth',
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'login',
-        component: LoginComponent,
-        canActivate: [AuthGuard]
+        loadComponent: () => import('./features/auth/components/login/login.component').then(m => m.LoginComponent)
       },
       {
         path: 'register',
-        component: RegisterComponent,
-        canActivate: [AuthGuard]
-      },
-      {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full'
+        loadComponent: () => import('./features/auth/components/register/register.component').then(m => m.RegisterComponent)
       }
     ]
   },
-
-  // Dashboard et routes protégées
   {
-    path: '',
-    canActivate: [RequireAuthGuard],
+    path: 'dashboard',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+  },
+  // Routes pour l'Admin
+  {
+    path: 'admin',
+    canActivate: [DashboardGuard],
+    data: { role: 'ADMIN' },
     children: [
       {
-        path: 'dashboard',
-        component: DashboardComponent
+        path: 'syndics',
+        loadComponent: () => import('./features/admin/syndics/syndics.component').then(m => m.SyndicsComponent)
       },
       {
-        path: 'immeubles',
-        loadChildren: () => import('./features/immeubles/immeubles.module').then(m => m.ImmeublesModule),
-        data: { role: 'SYNDIC' }
-      },
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
+        path: 'reports',
+        loadComponent: () => import('./features/admin/reports/reports.component').then(m => m.ReportsComponent)
       }
     ]
   },
-
-  // Route fallback
+  // Routes pour le Syndic
+  {
+    path: 'immeubles',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/immeubles/immeubles.component').then(m => m.ImmeublesComponent),
+    data: { role: 'SYNDIC' }
+  },
+  {
+    path: 'appartements',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/appartements/appartements.component').then(m => m.AppartementsComponent),
+    data: { role: 'SYNDIC' }
+  },
+  {
+    path: 'charges',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/charges/charges.component').then(m => m.ChargesComponent),
+    data: { role: 'SYNDIC' }
+  },
+  {
+    path: 'paiements',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/paiements/paiements.component').then(m => m.PaiementsComponent),
+    data: { role: 'SYNDIC' }
+  },
+  // Routes pour le Propriétaire
+  {
+    path: 'mes-appartements',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/proprietaire/mes-appartements/mes-appartements.component').then(m => m.MesAppartementsComponent),
+    data: { role: 'PROPRIETAIRE' }
+  },
+  {
+    path: 'mes-paiements',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/proprietaire/mes-paiements/mes-paiements.component').then(m => m.MesPaiementsComponent),
+    data: { role: 'PROPRIETAIRE' }
+  },
+  {
+    path: 'mes-documents',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/proprietaire/mes-documents/mes-documents.component').then(m => m.MesDocumentsComponent),
+    data: { role: 'PROPRIETAIRE' }
+  },
+  {
+    path: 'profile',
+    canActivate: [DashboardGuard],
+    loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+  },
   {
     path: '**',
-    redirectTo: 'dashboard'
+    redirectTo: ''
   }
 ];

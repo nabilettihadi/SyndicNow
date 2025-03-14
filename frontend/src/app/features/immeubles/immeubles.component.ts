@@ -4,13 +4,14 @@ import { RouterModule } from '@angular/router';
 import { ImmeubleService, Immeuble } from './services/immeuble.service';
 import { AuthService } from '../../core/services/auth.service';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { FooterComponent } from '../../shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-immeubles',
   templateUrl: './immeubles.component.html',
   styleUrls: ['./immeubles.component.css'],
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent]
+  imports: [CommonModule, RouterModule, NavbarComponent, FooterComponent]
 })
 export class ImmeublesComponent implements OnInit {
   immeubles: Immeuble[] = [];

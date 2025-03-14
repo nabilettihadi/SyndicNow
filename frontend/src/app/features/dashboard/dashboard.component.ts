@@ -5,12 +5,13 @@ import { Store } from '@ngrx/store';
 import { Observable, map } from 'rxjs';
 import { AuthState, LoginResponse, UserRole } from '../../core/authentication/models/auth.model';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
+import { FooterComponent } from '../../shared/components/footer/footer.component';
 import { DashboardService } from './services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, RouterLink, NavbarComponent, FooterComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })

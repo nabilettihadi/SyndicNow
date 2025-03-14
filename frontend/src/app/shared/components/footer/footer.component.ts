@@ -32,7 +32,7 @@ import { RouterLink } from '@angular/router';
           <div>
             <h3 class="text-lg font-semibold mb-4">Contact</h3>
             <ul class="space-y-2 text-gray-400">
-              <li>Email: contact@syndicnow.com</li>
+              <li>Email: contact&#64;syndicnow.com</li>
               <li>Tél: +33 1 23 45 67 89</li>
               <li>Adresse: 123 Rue de la Paix, Paris</li>
             </ul>
@@ -56,11 +56,13 @@ import { RouterLink } from '@angular/router';
         </div>
 
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; ${new Date().getFullYear()} SyndicNow. Tous droits réservés.</p>
+          <p>&copy; {{currentYear}} SyndicNow. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
   `,
   styles: []
 })
-export class FooterComponent {}
+export class FooterComponent {
+  currentYear = new Date().getFullYear();
+}

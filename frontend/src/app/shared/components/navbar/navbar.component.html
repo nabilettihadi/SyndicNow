@@ -1,78 +1,266 @@
-<nav class="navbar">
+<nav class="navbar" [class.scrolled]="isScrolled" role="navigation" aria-label="Navigation principale">
   <div class="navbar-container">
-    <div class="navbar-brand">
-      <a routerLink="/" class="logo">SyndicNow</a>
-    </div>
+    <div class="navbar-content">
+      <!-- Logo et Navigation principale -->
+      <div class="navbar-left">
+        <div class="navbar-logo">
+          <a routerLink="/" class="logo-link" aria-label="Accueil SyndicNow">
+            <span class="logo-text" aria-hidden="true">SyndicNow</span>
+          </a>
+        </div>
+        <!-- Navigation Desktop -->
+        <div class="navbar-links" role="menubar">
+          <ng-container *ngIf="isAuthenticated$ | async">
+            <a routerLink="/dashboard" 
+               routerLinkActive="active"
+               class="nav-link"
+               role="menuitem">
+               <i class="fas fa-chart-line"></i>
+               Tableau de bord
+            </a>
+            
+            <!-- Menu Admin -->
+            <ng-container *ngIf="hasRole('ADMIN') | async">
+              <div class="nav-group">
+                <a routerLink="/admin/syndics" 
+                   routerLinkActive="active"
+                   class="nav-link"
+                   role="menuitem">
+                   <i class="fas fa-users-cog"></i>
+                   Syndics
+                </a>
+                <a routerLink="/admin/reports" 
+                   routerLinkActive="active"
+                   class="nav-link"
+                   role="menuitem">
+                   <i class="fas fa-chart-bar"></i>
+                   Rapports
+                </a>
+              </div>
+            </ng-container>
 
-    <button class="mobile-menu-button" (click)="toggleMobileMenu()" [attr.aria-expanded]="isMobileMenuOpen" *ngIf="isAuthenticated$ | async">
-      <span class="sr-only">Menu</span>
-      <div class="hamburger" [class.active]="isMobileMenuOpen">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </button>
+            <!-- Menu Syndic -->
+            <ng-container *ngIf="hasRole('SYNDIC') | async">
+              <div class="nav-group">
+                <a routerLink="/immeubles" 
+                   routerLinkActive="active"
+                   class="nav-link"
+                   role="menuitem">
+                   <i class="fas fa-building"></i>
+                   Immeubles
+                </a>
+                <a routerLink="/charges" 
+                   routerLinkActive="active"
+                   class="nav-link"
+                   role="menuitem">
+                   <i class="fas fa-file-invoice-dollar"></i>
+                   Charges
+                </a>
+              </div>
+            </ng-container>
 
-    <!-- Menu principal -->
-    <ng-container *ngIf="isAuthenticated$ | async">
-      <div class="navbar-menu" [class.active]="isMobileMenuOpen">
-        <div class="nav-links">
-          <!-- Liens pour tous les utilisateurs -->
-          <a routerLink="/dashboard" routerLinkActive="active">Tableau de bord</a>
-          
-          <!-- Liens pour les propriétaires -->
-          <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
-            <a routerLink="/mes-appartements" routerLinkActive="active">Mes Appartements</a>
-            <a routerLink="/mes-paiements" routerLinkActive="active">Mes Paiements</a>
-          </ng-container>
-
-          <!-- Liens pour les syndics -->
-          <ng-container *ngIf="hasRole('SYNDIC') | async">
-            <a routerLink="/gestion-immeubles" routerLinkActive="active">Gestion Immeubles</a>
-            <a routerLink="/gestion-paiements" routerLinkActive="active">Gestion Paiements</a>
+            <!-- Menu Propriétaire -->
+            <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
+              <div class="nav-group">
+                <a routerLink="/mes-appartements" 
+                   routerLinkActive="active"
+                   class="nav-link"
+                   role="menuitem">
+                   <i class="fas fa-home"></i>
+                   Mes Appartements
+                </a>
+                <a routerLink="/mes-paiements" 
+                   routerLinkActive="active"
+                   class="nav-link"
+                   role="menuitem">
+                   <i class="fas fa-money-bill-wave"></i>
+                   Mes Paiements
+                </a>
+                <a routerLink="/mes-documents" 
+                   routerLinkActive="active"
+                   class="nav-link"
+                   role="menuitem">
+                   <i class="fas fa-folder"></i>
+                   Mes Documents
+                </a>
+              </div>
+            </ng-container>
           </ng-container>
         </div>
+      </div>
 
-        <!-- Menu utilisateur -->
-        <div class="user-menu">
-          <button 
-            class="user-button"
-            (click)="toggleUserMenu()"
-            [attr.aria-expanded]="isUserMenuOpen">
+      <!-- Menu utilisateur -->
+      <div class="navbar-right">
+        <ng-container *ngIf="!(isAuthenticated$ | async)">
+          <a routerLink="/login" 
+             class="auth-link login" 
+             aria-label="Se connecter">
+            <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+            <span>Connexion</span>
+          </a>
+          <a routerLink="/register" 
+             class="auth-link register"
+             aria-label="S'inscrire">
+            <i class="fas fa-user-plus" aria-hidden="true"></i>
+            <span>Inscription</span>
+          </a>
+        </ng-container>
+
+        <div *ngIf="isAuthenticated$ | async" 
+             class="user-menu" 
+             role="menu">
+          <button (click)="toggleUserMenu()" 
+                  class="user-avatar"
+                  [attr.aria-expanded]="isUserMenuOpen"
+                  aria-haspopup="true"
+                  [attr.aria-label]="'Menu de ' + (userName$ | async)">
             <span class="sr-only">Menu utilisateur</span>
-            <span class="user-name">{{ userName$ | async }}</span>
+            <div class="avatar" aria-hidden="true">
+              {{ (userName$ | async)?.charAt(0) }}
+            </div>
           </button>
 
-          <!-- Dropdown menu utilisateur -->
-          <div 
-            class="user-dropdown" 
-            *ngIf="isUserMenuOpen"
-            (clickOutside)="isUserMenuOpen = false">
+          <div *ngIf="isUserMenuOpen" 
+               class="user-dropdown"
+               role="menu"
+               aria-label="Menu utilisateur"
+               (keydown.escape)="closeUserMenu()">
             <div class="user-info">
               <div class="user-name">{{ userName$ | async }}</div>
-              <div class="user-role">{{ userRole$ | async }}</div>
+              <div class="user-role">{{ userRole$ | async | titlecase }}</div>
             </div>
-            <div class="dropdown-items">
-              <a routerLink="/profile">Mon Profil</a>
-              <button (click)="logout()">Se déconnecter</button>
-            </div>
+            <div class="dropdown-divider"></div>
+            <a routerLink="/profile" class="dropdown-item">
+              <i class="fas fa-user"></i>
+              Mon profil
+            </a>
+            <div class="dropdown-divider"></div>
+            <button (click)="logout()" class="dropdown-item logout">
+              <i class="fas fa-sign-out-alt"></i>
+              Déconnexion
+            </button>
           </div>
         </div>
-      </div>
-    </ng-container>
 
-    <!-- Boutons d'authentification pour utilisateurs non connectés -->
-    <ng-container *ngIf="!(isAuthenticated$ | async)">
-      <div class="auth-buttons">
-        <a routerLink="/auth/login" class="nav-link login-button">
-          <i class="fas fa-sign-in-alt"></i>
-          Se connecter
-        </a>
-        <a routerLink="/auth/register" class="nav-link register-button">
-          <i class="fas fa-user-plus"></i>
-          S'inscrire
-        </a>
+        <!-- Bouton menu mobile -->
+        <div class="mobile-menu-button">
+          <button (click)="toggleMobileMenu()" 
+                  class="hamburger"
+                  [class.is-active]="isMobileMenuOpen"
+                  [attr.aria-expanded]="isMobileMenuOpen"
+                  aria-label="Menu mobile">
+            <span class="sr-only">Ouvrir le menu</span>
+            <span class="hamburger-box" aria-hidden="true">
+              <span class="hamburger-inner"></span>
+            </span>
+          </button>
+        </div>
       </div>
-    </ng-container>
+    </div>
+  </div>
+
+  <!-- Menu mobile -->
+  <div class="mobile-menu" 
+       [class.is-open]="isMobileMenuOpen"
+       role="dialog"
+       aria-modal="true"
+       aria-label="Menu mobile"
+       [attr.aria-hidden]="!isMobileMenuOpen">
+    <div class="mobile-menu-content">
+      <ng-container *ngIf="isAuthenticated$ | async">
+        <a routerLink="/dashboard" 
+           routerLinkActive="active"
+           class="mobile-nav-link">
+           <i class="fas fa-chart-line"></i>
+           Tableau de bord
+        </a>
+
+        <!-- Menu Admin Mobile -->
+        <ng-container *ngIf="hasRole('ADMIN') | async">
+          <div class="mobile-nav-group">
+            <div class="group-title">Administration</div>
+            <a routerLink="/admin/syndics" 
+               routerLinkActive="active"
+               class="mobile-nav-link">
+               <i class="fas fa-users-cog"></i>
+               Syndics
+            </a>
+            <a routerLink="/admin/reports" 
+               routerLinkActive="active"
+               class="mobile-nav-link">
+               <i class="fas fa-chart-bar"></i>
+               Rapports
+            </a>
+          </div>
+        </ng-container>
+
+        <!-- Menu Syndic Mobile -->
+        <ng-container *ngIf="hasRole('SYNDIC') | async">
+          <div class="mobile-nav-group">
+            <div class="group-title">Gestion</div>
+            <a routerLink="/immeubles" 
+               routerLinkActive="active"
+               class="mobile-nav-link">
+               <i class="fas fa-building"></i>
+               Immeubles
+            </a>
+            <a routerLink="/charges" 
+               routerLinkActive="active"
+               class="mobile-nav-link">
+               <i class="fas fa-file-invoice-dollar"></i>
+               Charges
+            </a>
+          </div>
+        </ng-container>
+
+        <!-- Menu Propriétaire Mobile -->
+        <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
+          <div class="mobile-nav-group">
+            <div class="group-title">Mon espace</div>
+            <a routerLink="/mes-appartements" 
+               routerLinkActive="active"
+               class="mobile-nav-link">
+               <i class="fas fa-home"></i>
+               Mes Appartements
+            </a>
+            <a routerLink="/mes-paiements" 
+               routerLinkActive="active"
+               class="mobile-nav-link">
+               <i class="fas fa-money-bill-wave"></i>
+               Mes Paiements
+            </a>
+            <a routerLink="/mes-documents" 
+               routerLinkActive="active"
+               class="mobile-nav-link">
+               <i class="fas fa-folder"></i>
+               Mes Documents
+            </a>
+          </div>
+        </ng-container>
+
+        <!-- Profil Mobile -->
+        <div class="mobile-user-menu">
+          <div class="mobile-user-info">
+            <div class="mobile-avatar">
+              {{ (userName$ | async)?.charAt(0) }}
+            </div>
+            <div class="mobile-user-details">
+              <div class="mobile-user-name">{{ userName$ | async }}</div>
+              <div class="mobile-user-role">{{ userRole$ | async | titlecase }}</div>
+            </div>
+          </div>
+          <a routerLink="/profile" class="mobile-nav-link">
+            <i class="fas fa-user"></i>
+            Mon profil
+          </a>
+          <button (click)="logout()" class="mobile-nav-link logout">
+            <i class="fas fa-sign-out-alt"></i>
+            Déconnexion
+          </button>
+        </div>
+      </ng-container>
+    </div>
   </div>
 </nav>
+<!-- Spacer pour compenser la navbar fixe -->
+<div class="navbar-spacer" aria-hidden="true"></div>

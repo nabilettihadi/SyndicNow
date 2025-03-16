@@ -4,15 +4,23 @@ package ma.Nabil.SyndicNow.service.impl;
 import ma.Nabil.SyndicNow.dto.appartement.AppartementRequest;
 import ma.Nabil.SyndicNow.dto.appartement.AppartementResponse;
 import ma.Nabil.SyndicNow.entity.Appartement;
+import ma.Nabil.SyndicNow.entity.Proprietaire;
+import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.mapper.AppartementMapper;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
+import ma.Nabil.SyndicNow.repository.ProprietaireRepository;
 import ma.Nabil.SyndicNow.service.AppartementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class AppartementServiceImpl implements AppartementService {
 
     @Autowired
@@ -20,6 +28,9 @@ public class AppartementServiceImpl implements AppartementService {
 
     @Autowired
     private AppartementMapper appartementMapper;
+
+    @Autowired
+    private ProprietaireRepository proprietaireRepository;
 
     @Override
     public AppartementResponse createAppartement(AppartementRequest dto) {
@@ -53,5 +64,25 @@ public class AppartementServiceImpl implements AppartementService {
             throw new RuntimeException("Appartement not found");
         }
         appartementRepository.deleteById(id);
+    }
+
+    @Override
+    public List<AppartementResponse> getAppartementsByProprietaire(Long proprietaireId) {
+        log.debug("Fetching apartments for proprietaire with ID: {}", proprietaireId);
+        List<Appartement> appartements = appartementRepository.findByProprietaireId(proprietaireId);
+        log.debug("Found {} apartments for proprietaire {}", appartements.size(), proprietaireId);
+        return appartements.stream()
+                .map(appartementMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public AppartementResponse createAppartementForProprietaire(Long proprietaireId, AppartementRequest dto) {
+        Proprietaire proprietaire = proprietaireRepository.findById(proprietaireId)
+                .orElseThrow(() -> new ResourceNotFoundException("Proprietaire not found"));
+        Appartement appartement = appartementMapper.toEntity(dto);
+        appartement.setProprietaire(proprietaire);
+        appartement = appartementRepository.save(appartement);
+        return appartementMapper.toResponseDto(appartement);
     }
 }

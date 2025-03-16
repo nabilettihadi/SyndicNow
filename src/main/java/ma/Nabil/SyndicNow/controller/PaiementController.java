@@ -20,15 +20,26 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/paiements")
+@RequestMapping("/api/v1/paiements")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Payment Management", description = "APIs for managing payments")
 public class PaiementController {
 
     private final PaiementService paiementService;
+
+    @GetMapping("/statistics")
+    @Operation(summary = "Get payment statistics",
+            description = "Retrieves payment statistics")
+    @ApiResponse(responseCode = "200", description = "Statistics retrieved successfully")
+    public ResponseEntity<Map<String, Object>> getPaiementStatistics() {
+        log.debug("Fetching payment statistics");
+        Map<String, Object> statistics = paiementService.getPaiementStatistics();
+        return ResponseEntity.ok(statistics);
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('SYNDIC')")
@@ -211,6 +222,17 @@ public class PaiementController {
         log.info("Canceling payment with ID: {}", id);
         PaiementResponse response = paiementService.cancelPaiement(id);
         log.info("Successfully canceled payment with ID: {}", id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/proprietaire/{proprietaireId}")
+    @Operation(summary = "Get payments by proprietaire",
+            description = "Retrieves a list of payments for a specific proprietaire")
+    @ApiResponse(responseCode = "200", description = "List of payments retrieved successfully")
+    public ResponseEntity<List<PaiementResponse>> getPaiementsByProprietaire(
+            @PathVariable Long proprietaireId) {
+        log.debug("Fetching payments for proprietaire with ID: {}", proprietaireId);
+        List<PaiementResponse> response = paiementService.getPaiementsByProprietaire(proprietaireId);
         return ResponseEntity.ok(response);
     }
 }

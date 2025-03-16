@@ -15,7 +15,7 @@ public interface AppartementRepository extends JpaRepository<Appartement, Long> 
     @Query("SELECT a FROM Appartement a WHERE a.immeuble.id = :immeubleId")
     List<Appartement> findByImmeubleId(@Param("immeubleId") Long immeubleId);
 
-    @Query("SELECT a FROM Appartement a WHERE a.proprietaire.id = :proprietaireId")
+    @Query("SELECT a FROM Appartement a LEFT JOIN FETCH a.immeuble LEFT JOIN FETCH a.proprietaire WHERE a.proprietaire.id = :proprietaireId")
     List<Appartement> findByProprietaireId(@Param("proprietaireId") Long proprietaireId);
 
     @Query("SELECT a FROM Appartement a WHERE " + 

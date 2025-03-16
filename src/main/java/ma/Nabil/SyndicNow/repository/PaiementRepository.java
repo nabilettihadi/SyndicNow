@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -71,4 +72,12 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
             @Param("proprietaireId") Long proprietaireId,
             @Param("debut") LocalDateTime debut,
             @Param("fin") LocalDateTime fin);
+
+    long countByStatus(PaiementStatus status);
+
+    @Query("SELECT COALESCE(SUM(p.montant), 0) FROM Paiement p WHERE p.status = :status AND p.datePaiement BETWEEN :startDate AND :endDate")
+    BigDecimal sumMontantByStatusAndMonth(PaiementStatus status, LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT COALESCE(SUM(p.montant), 0) FROM Paiement p WHERE p.status = :status")
+    BigDecimal sumMontantByStatus(PaiementStatus status);
 }

@@ -1,14 +1,11 @@
 export interface Paiement {
   id: number;
+  date: string;
   montant: number;
-  datePaiement: Date;
-  status: 'EN_ATTENTE' | 'VALIDE' | 'REJETE';
-  proprietaireId: number;
-  appartementId: number;
-  moisConcerne: string;
-  anneeConcerne: number;
+  type: string;
+  status: string;
   methodePaiement: string;
-  reference?: string;
+  dateEcheance: string;
 }
 
 export interface PaiementStatistics {

@@ -18,9 +18,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.LinkedHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -157,5 +162,55 @@ public class PaiementServiceImpl implements PaiementService {
                 .orElseThrow(() -> new ResourceNotFoundException("Paiement not found"));
         paiement.setStatus(PaiementStatus.ANNULE);
         return paiementMapper.toPaiementResponse(paiementRepository.save(paiement));
+    }
+
+    @Override
+    public List<PaiementResponse> getPaiementsByProprietaire(Long proprietaireId) {
+        return paiementRepository.findByProprietaireId(proprietaireId).stream()
+                .map(paiementMapper::toPaiementResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, Object> getPaiementStatistics() {
+        Map<String, Object> statistics = new HashMap<>();
+        
+        // Statistiques globales
+        long totalPaiements = paiementRepository.count();
+        long paiementsEnAttente = paiementRepository.countByStatus(PaiementStatus.EN_ATTENTE);
+        long paiementsValides = paiementRepository.countByStatus(PaiementStatus.PAYE);
+        long paiementsRejetes = paiementRepository.countByStatus(PaiementStatus.ANNULE);
+        
+        // Montants
+        BigDecimal montantTotal = paiementRepository.sumMontantByStatus(PaiementStatus.PAYE);
+        BigDecimal montantMoisCourant = paiementRepository.sumMontantByStatusAndMonth(
+            PaiementStatus.PAYE, 
+            YearMonth.now().atDay(1), 
+            YearMonth.now().atEndOfMonth()
+        );
+        
+        // Statistiques par mois (derniers 12 mois)
+        Map<String, BigDecimal> parMois = new LinkedHashMap<>();
+        YearMonth currentMonth = YearMonth.now();
+        for (int i = 0; i < 12; i++) {
+            YearMonth month = currentMonth.minusMonths(i);
+            BigDecimal montant = paiementRepository.sumMontantByStatusAndMonth(
+                PaiementStatus.PAYE,
+                month.atDay(1),
+                month.atEndOfMonth()
+            );
+            parMois.put(month.toString(), montant != null ? montant : BigDecimal.ZERO);
+        }
+        
+        // Construction de la réponse
+        statistics.put("totalPaiements", totalPaiements);
+        statistics.put("paiementsEnAttente", paiementsEnAttente);
+        statistics.put("paiementsValides", paiementsValides);
+        statistics.put("paiementsRejetes", paiementsRejetes);
+        statistics.put("montantTotal", montantTotal != null ? montantTotal : BigDecimal.ZERO);
+        statistics.put("montantMoisCourant", montantMoisCourant != null ? montantMoisCourant : BigDecimal.ZERO);
+        statistics.put("parMois", parMois);
+        
+        return statistics;
     }
 }

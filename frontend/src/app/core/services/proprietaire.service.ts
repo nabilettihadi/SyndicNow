@@ -8,7 +8,7 @@ import { Proprietaire, ProprietaireStatistics } from '../models/proprietaire.mod
   providedIn: 'root'
 })
 export class ProprietaireService {
-  private apiUrl = `${environment.apiUrl}/api/v1/proprietaires`;
+  private apiUrl = `${environment.apiUrl}/api/proprietaires`;
 
   constructor(private http: HttpClient) {}
 

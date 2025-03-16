@@ -51,4 +51,8 @@ export class PaiementService {
   rejectPaiement(id: number, reason: string): Observable<Paiement> {
     return this.http.post<Paiement>(`${this.apiUrl}/${id}/reject`, { reason });
   }
-} 
+
+  downloadRecu(paiementId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${paiementId}/recu`, { responseType: 'blob' });
+  }
+}

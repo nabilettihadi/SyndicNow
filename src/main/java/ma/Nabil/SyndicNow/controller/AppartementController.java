@@ -19,6 +19,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/appartements")
 @RequiredArgsConstructor
@@ -93,5 +95,32 @@ public class AppartementController {
         appartementService.deleteAppartement(id);
         log.info("Successfully deleted apartment with ID: {}", id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/proprietaire/{proprietaireId}")
+    @Operation(summary = "Get apartments by proprietaire",
+            description = "Retrieves a list of apartments for a specific proprietaire")
+    @ApiResponse(responseCode = "200", description = "List of apartments retrieved successfully")
+    @PreAuthorize("hasAnyRole('PROPRIETAIRE', 'ADMIN')")
+    public ResponseEntity<List<AppartementResponse>> getAppartementsByProprietaire(
+            @PathVariable Long proprietaireId) {
+        log.debug("Fetching apartments for proprietaire with ID: {}", proprietaireId);
+        List<AppartementResponse> response = appartementService.getAppartementsByProprietaire(proprietaireId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/proprietaire/{proprietaireId}")
+    @Operation(summary = "Create a new apartment for a proprietaire",
+            description = "Creates a new apartment and associates it with the specified proprietaire")
+    @ApiResponse(responseCode = "201", description = "Apartment successfully created")
+    @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<AppartementResponse> createAppartementForProprietaire(
+            @PathVariable Long proprietaireId,
+            @Valid @RequestBody AppartementRequest dto) {
+        log.info("Creating new apartment for proprietaire {} with data: {}", proprietaireId, dto);
+        AppartementResponse response = appartementService.createAppartementForProprietaire(proprietaireId, dto);
+        log.info("Successfully created apartment with ID: {} for proprietaire: {}", response.getId(), proprietaireId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

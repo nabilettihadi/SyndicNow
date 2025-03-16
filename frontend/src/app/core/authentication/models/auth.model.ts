@@ -4,7 +4,7 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  userId: string;
+  userId: number;
   email: string;
   nom: string;
   prenom: string;

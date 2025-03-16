@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PaiementService {
     PaiementResponse createPaiement(PaiementRequest request);
@@ -39,4 +40,8 @@ public interface PaiementService {
     PaiementResponse markAsPaid(Long id);
 
     PaiementResponse cancelPaiement(Long id);
+
+    List<PaiementResponse> getPaiementsByProprietaire(Long proprietaireId);
+
+    Map<String, Object> getPaiementStatistics();
 }

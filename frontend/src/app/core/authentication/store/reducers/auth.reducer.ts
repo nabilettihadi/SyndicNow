@@ -67,7 +67,7 @@ export const authReducer = createReducer(
   on(AuthActions.registerSuccess, (state, {user}) => ({
     ...state,
     user: {
-      userId: user.userId,
+      userId: Number(user.userId),
       email: user.email,
       nom: user.nom,
       prenom: user.prenom,

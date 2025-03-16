@@ -8,7 +8,7 @@ import { Immeuble, ImmeubleStatistics } from '../models/immeuble.model';
   providedIn: 'root'
 })
 export class ImmeubleService {
-  private apiUrl = `${environment.apiUrl}/api/v1/immeubles`;
+  private apiUrl = `${environment.apiUrl}/api/immeubles`;
 
   constructor(private http: HttpClient) {}
 
@@ -17,7 +17,7 @@ export class ImmeubleService {
   }
 
   getImmeubleStatistics(): Observable<ImmeubleStatistics> {
-    return this.http.get<ImmeubleStatistics>(`${this.apiUrl}/statistics`);
+    return this.http.get<ImmeubleStatistics>(`${this.apiUrl}/stats`);
   }
 
   getImmeubleById(id: number): Observable<Immeuble> {
@@ -39,4 +39,8 @@ export class ImmeubleService {
   getImmeublesByRegion(region: string): Observable<Immeuble[]> {
     return this.http.get<Immeuble[]>(`${this.apiUrl}/region/${region}`);
   }
-} 
+
+  getImmeublesBySyndic(syndicId: number): Observable<Immeuble[]> {
+    return this.http.get<Immeuble[]>(`${this.apiUrl}/syndic/${syndicId}`);
+  }
+}

@@ -53,27 +53,28 @@ export const routes: Routes = [
   },
   // Routes pour le Syndic
   {
-    path: 'immeubles',
-    canActivate: [DashboardGuard],
-    loadComponent: () => import('./features/immeubles/immeubles.component').then(m => m.ImmeublesComponent),
-    data: { role: 'SYNDIC' }
+    path: 'syndic',
+    canActivate: [AuthGuard],
+    data: { roles: ['SYNDIC'] },
+    children: [
+      {
+        path: 'immeubles',
+        loadComponent: () => import('./features/syndics/immeubles/immeubles.component').then(m => m.ImmeublesComponent)
+      },
+      {
+        path: 'paiements',
+        loadComponent: () => import('./features/syndics/paiements/paiements.component').then(m => m.PaiementsComponent)
+      },
+      {
+        path: 'charges',
+        loadComponent: () => import('./features/syndics/charges/charges.component').then(m => m.ChargesComponent)
+      }
+    ]
   },
   {
     path: 'appartements',
     canActivate: [DashboardGuard],
     loadComponent: () => import('./features/appartements/appartements.component').then(m => m.AppartementsComponent),
-    data: { role: 'SYNDIC' }
-  },
-  {
-    path: 'charges',
-    canActivate: [DashboardGuard],
-    loadComponent: () => import('./features/charges/charges.component').then(m => m.ChargesComponent),
-    data: { role: 'SYNDIC' }
-  },
-  {
-    path: 'paiements',
-    canActivate: [DashboardGuard],
-    loadComponent: () => import('./features/paiements/paiements.component').then(m => m.PaiementsComponent),
     data: { role: 'SYNDIC' }
   },
   // Routes pour le Propriétaire

@@ -59,6 +59,12 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "headers": {
+              "Access-Control-Allow-Origin": "*",
+              "X-Content-Type-Options": "nosniff"
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "frontend:build:production"

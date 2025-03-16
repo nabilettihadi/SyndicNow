@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ImmeubleService, Immeuble } from './services/immeuble.service';
-import { AuthService } from '../../core/services/auth.service';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { ImmeubleService } from '../../../core/services/immeuble.service';
+import { Immeuble } from '../../../core/models/immeuble.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
+import { FooterComponent } from '../../../shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-immeubles',
@@ -34,12 +35,12 @@ export class ImmeublesComponent implements OnInit {
 
   loadImmeubles(syndicId: number): void {
     this.immeubleService.getImmeublesBySyndic(syndicId).subscribe({
-      next: (data) => {
+      next: (data: Immeuble[]) => {
         this.immeubles = data;
         this.filteredImmeubles = data;
         this.loading = false;
       },
-      error: (error) => {
+      error: (error: Error) => {
         this.error = 'Erreur lors du chargement des immeubles';
         this.loading = false;
       }
@@ -62,7 +63,7 @@ export class ImmeublesComponent implements OnInit {
           this.immeubles = this.immeubles.filter(im => im.id !== id);
           this.filteredImmeubles = this.filteredImmeubles.filter(im => im.id !== id);
         },
-        error: (error) => {
+        error: (error: Error) => {
           this.error = 'Erreur lors de la suppression de l\'immeuble';
         }
       });

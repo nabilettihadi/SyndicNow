@@ -1,0 +1,29 @@
+/* Styles spécifiques pour les cartes d'appartement */
+.appartement-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.appartement-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Animation du loader */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Style pour les images qui ne se chargent pas */
+img.error {
+  object-fit: contain;
+  background-color: #f3f4f6;
+  padding: 1rem;
+}
+
+/* Style pour le conteneur principal */
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+} 

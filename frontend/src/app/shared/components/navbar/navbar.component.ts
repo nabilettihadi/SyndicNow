@@ -24,9 +24,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isUserMenuOpen = false;
   isMobileMenuOpen = false;
   isScrolled = false;
+  isNavbarVisible = true;
   private scrollThreshold = 50;
   private lastScrollPosition = 0;
-  private isNavbarVisible = true;
 
   constructor(
     private router: Router,

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, map, switchMap, forkJoin, of, catchError } from 'rxjs';
 import { AuthState, LoginResponse, UserRole } from '../../core/authentication/models/auth.model';
@@ -14,11 +15,12 @@ import { Paiement, PaiementStatistics } from '../../core/models/paiement.model';
 import { Proprietaire, ProprietaireStatistics } from '../../core/models/proprietaire.model';
 import { DashboardStats } from '../../core/models/dashboard.model';
 import { selectAuthState } from '../../core/authentication/store/selectors/auth.selectors';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, FooterComponent],
+  imports: [CommonModule, NavbarComponent, FooterComponent, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
@@ -35,6 +37,7 @@ export class DashboardComponent implements OnInit {
   private readonly paiementService = inject(PaiementService);
   private readonly proprietaireService = inject(ProprietaireService);
   private readonly store = inject(Store<{ auth: AuthState }>);
+  private readonly router = inject(Router);
 
   constructor() {
     this.userName$ = this.store.select(selectAuthState).pipe(
@@ -70,10 +73,27 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.isLoading = true;
-    this.hasError = false;
-    this.errorMessage = '';
+    this.loadStats();
+  }
 
+  navigateToImmeubles(): void {
+    this.router.navigate(['/syndic/immeubles']);
+  }
+
+  navigateToPaiements(): void {
+    this.router.navigate(['/syndic/paiements']);
+  }
+
+  navigateToCharges(): void {
+    this.router.navigate(['/syndic/charges']);
+  }
+
+  logout(): void {
+    // Implémentez la logique de déconnexion ici
+    this.router.navigate(['/auth/login']);
+  }
+
+  private loadStats(): void {
     this.userRole$.pipe(
       switchMap(role => {
         switch (role) {
@@ -120,19 +140,24 @@ export class DashboardComponent implements OnInit {
   }
 
   private loadSyndicStats(): Observable<DashboardStats> {
+    const userId = this.getCurrentUserId();
     return forkJoin({
-      immeubles: this.immeubleService.getAllImmeubles(),
-      paiementsRecents: this.paiementService.getAllPaiements(),
-      statistiques: forkJoin({
-        totalAppartements: this.immeubleService.getImmeubleStatistics(),
-        paiementsEnAttente: this.paiementService.getPaiementStatistics()
-      })
+      immeubles: this.immeubleService.getImmeublesBySyndic(userId),
+      paiementsRecents: this.paiementService.getAllPaiements()
     }).pipe(
+      map(data => {
+        const paiementsRecents = Array.isArray(data.paiementsRecents) ? data.paiementsRecents : [];
+        return {
+          buildingsCount: data.immeubles.length,
+          pendingPayments: paiementsRecents.filter(p => p.status === 'EN_ATTENTE').length,
+          apartmentsCount: data.immeubles.reduce((acc, imm) => acc + (imm.nombreAppartements || 0), 0)
+        } as DashboardStats;
+      }),
       catchError(error => {
         console.error('Erreur lors du chargement des statistiques syndic:', error);
         throw error;
       })
-    ) as Observable<DashboardStats>;
+    );
   }
 
   private loadProprietaireStats(): Observable<DashboardStats> {

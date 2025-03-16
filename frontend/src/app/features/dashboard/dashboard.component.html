@@ -1,145 +1,403 @@
-<div class="min-h-screen bg-gray-100">
+<div class="min-h-screen flex flex-col">
+  <!-- Navbar -->
   <app-navbar></app-navbar>
 
-  <div class="container mx-auto px-4 py-8">
-    <!-- En-tête du dashboard -->
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">
-        Tableau de bord
-      </h1>
-      <p class="mt-2 text-gray-600">
-        Bienvenue, {{ userName$ | async }}
-      </p>
-    </div>
-
-    <!-- État de chargement -->
-    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
-      <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-indigo-600"></div>
-    </div>
-
-    <!-- Message d'erreur -->
-    <div *ngIf="hasError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
-      <strong class="font-bold">Erreur!</strong>
-      <span class="block sm:inline"> {{ errorMessage }}</span>
-    </div>
-
-    <!-- Contenu du dashboard -->
-    <div *ngIf="!isLoading && !hasError" class="space-y-6">
-      <!-- Statistiques pour ADMIN -->
-      <ng-container *ngIf="hasRole('ADMIN') | async">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <!-- Carte des immeubles -->
-          <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
-            <div class="flex items-center justify-between mb-4">
-              <div class="bg-blue-100 rounded-full p-3">
-                <i class="fas fa-building text-blue-600 text-xl"></i>
-              </div>
-              <span class="text-sm font-semibold text-blue-600">Total Immeubles</span>
-            </div>
-            <div class="text-3xl font-bold text-gray-900">{{ dashboardStats.totalBuildings || 0 }}</div>
-            <div class="text-sm text-gray-500 mt-2">
-              {{ dashboardStats.activeBuildings || 0 }} actifs
-            </div>
+  <!-- Contenu principal -->
+  <div class="flex-grow">
+    <div class="dashboard-container" [class.loading]="isLoading">
+      <div class="dashboard-content">
+        <!-- En-tête -->
+        <header class="dashboard-header">
+          <div class="header-content">
+            <h1 class="dashboard-title">
+              <i class="fas fa-chart-pie"></i>
+              Tableau de bord
+              <div class="title-indicator"></div>
+            </h1>
+            <p class="dashboard-subtitle">
+              <i class="fas fa-user-circle"></i>
+              Bienvenue, <span class="user-name">{{ userName$ | async }}</span>
+            </p>
           </div>
+        </header>
 
-          <!-- Carte des revenus -->
-          <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
-            <div class="flex items-center justify-between mb-4">
-              <div class="bg-green-100 rounded-full p-3">
-                <i class="fas fa-euro-sign text-green-600 text-xl"></i>
+        <!-- Statistiques -->
+        <div class="stats-grid">
+          <!-- Statistiques pour ADMIN -->
+          <ng-container *ngIf="hasRole('ADMIN') | async">
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-purple">
+                  <i class="fas fa-users-cog"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-user-shield"></i>
+                    Syndics actifs
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.syndicsCount || 0 }}
+                    <small>syndics</small>
+                  </div>
+                  <div class="stat-details">
+                    <i class="fas fa-chart-line"></i>
+                    +{{ dashboardStats.newSyndicsThisMonth || 0 }} ce mois
+                  </div>
+                </div>
               </div>
-              <span class="text-sm font-semibold text-green-600">Revenus</span>
             </div>
-            <div class="text-3xl font-bold text-gray-900">{{ dashboardStats.revenue || 0 }}€</div>
-            <div class="text-sm" [ngClass]="{'text-green-500': (dashboardStats.revenueGrowth || 0) > 0, 'text-red-500': (dashboardStats.revenueGrowth || 0) < 0}">
-              <i class="fas" [ngClass]="{'fa-arrow-up': (dashboardStats.revenueGrowth || 0) > 0, 'fa-arrow-down': (dashboardStats.revenueGrowth || 0) < 0}"></i>
-              {{ dashboardStats.revenueGrowth || 0 }}% ce mois
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-blue">
+                  <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-city"></i>
+                    Total Immeubles
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.totalBuildings || 0 }}
+                    <small>immeubles</small>
+                  </div>
+                  <div class="stat-details">
+                    <i class="fas fa-check-circle"></i>
+                    {{ dashboardStats.activeBuildings || 0 }} actifs
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-green">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-euro-sign"></i>
+                    Chiffre d'affaires
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.revenue || 0 }}
+                    <small>€</small>
+                  </div>
+                  <div class="stat-trend" [class.positive]="(dashboardStats.revenueGrowth || 0) > 0" [class.negative]="(dashboardStats.revenueGrowth || 0) < 0">
+                    <i class="fas" [class.fa-arrow-up]="(dashboardStats.revenueGrowth || 0) > 0" [class.fa-arrow-down]="(dashboardStats.revenueGrowth || 0) < 0"></i>
+                    {{ dashboardStats.revenueGrowth || 0 }}% ce mois
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Statistiques pour SYNDIC -->
+          <ng-container *ngIf="hasRole('SYNDIC') | async">
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-blue">
+                  <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-key"></i>
+                    Immeubles gérés
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.buildingsCount || 0 }}
+                    <small>immeubles</small>
+                  </div>
+                  <div class="stat-details">
+                    <i class="fas fa-plus-circle"></i>
+                    +{{ dashboardStats.newBuildingsThisMonth || 0 }} ce mois
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-purple">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-user-friends"></i>
+                    Propriétaires
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.ownersCount || 0 }}
+                    <small>propriétaires</small>
+                  </div>
+                  <div class="stat-details">
+                    <i class="fas fa-user-plus"></i>
+                    +{{ dashboardStats.newOwnersThisMonth || 0 }} ce mois
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-green">
+                  <i class="fas fa-euro-sign"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-money-bill-wave"></i>
+                    Paiements du mois
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.monthlyPayments || 0 }}
+                    <small>€</small>
+                  </div>
+                  <div class="stat-details">
+                    <i class="fas fa-percentage"></i>
+                    {{ dashboardStats.paymentPercentage || 0 }}% des paiements reçus
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Statistiques pour PROPRIETAIRE -->
+          <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-indigo">
+                  <i class="fas fa-home"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-key"></i>
+                    Appartements possédés
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.apartmentsCount || 0 }}
+                    <small>appartements</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-yellow">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-exclamation-circle"></i>
+                    Paiements en attente
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.pendingPayments || 0 }}
+                    <small>paiements</small>
+                  </div>
+                  <div class="stat-details">
+                    <i class="fas fa-calendar-alt"></i>
+                    Échéance: {{ dashboardStats.nextPaymentDue || '-' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon bg-green">
+                  <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-title">
+                    <i class="fas fa-money-check-alt"></i>
+                    Paiements effectués
+                  </div>
+                  <div class="stat-value">
+                    {{ dashboardStats.totalPaid || 0 }}
+                    <small>€</small>
+                  </div>
+                  <div class="stat-details">
+                    <i class="fas fa-calendar-check"></i>
+                    Dernier paiement: {{ dashboardStats.lastPaymentDate || '-' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
         </div>
-      </ng-container>
 
-      <!-- Statistiques pour SYNDIC -->
-      <ng-container *ngIf="hasRole('SYNDIC') | async">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Carte des immeubles gérés -->
-          <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
-            <div class="flex items-center justify-between mb-4">
-              <div class="bg-indigo-100 rounded-full p-3">
-                <i class="fas fa-building text-indigo-600 text-xl"></i>
+        <!-- Actions rapides -->
+        <div class="actions-grid">
+          <!-- Actions pour ADMIN -->
+          <ng-container *ngIf="hasRole('ADMIN') | async">
+            <div class="action-card">
+              <div class="action-header">
+                <div class="action-icon bg-purple">
+                  <i class="fas fa-users-cog"></i>
+                </div>
+                <h3 class="action-title">Gestion des Syndics</h3>
               </div>
-              <span class="text-sm font-semibold text-indigo-600">Immeubles gérés</span>
+              <p class="action-content">
+                Gérez les comptes syndics, leurs permissions et suivez leurs activités.
+              </p>
+              <div class="action-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Actifs</span>
+                  <span class="stat-number">{{ dashboardStats.activeSyndics || 0 }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">En attente</span>
+                  <span class="stat-number">{{ dashboardStats.pendingSyndics || 0 }}</span>
+                </div>
+              </div>
+              <a routerLink="/admin/syndics" class="action-button">
+                Gérer les syndics
+                <i class="fas fa-arrow-right"></i>
+              </a>
             </div>
-            <div class="text-3xl font-bold text-gray-900">{{ dashboardStats.buildingsCount || 0 }}</div>
-            <div class="text-sm text-gray-500 mt-2">
-              +{{ dashboardStats.newBuildingsThisMonth || 0 }} ce mois
-            </div>
-          </div>
 
-          <!-- Carte des paiements -->
-          <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
-            <div class="flex items-center justify-between mb-4">
-              <div class="bg-green-100 rounded-full p-3">
-                <i class="fas fa-money-bill-wave text-green-600 text-xl"></i>
+            <div class="action-card">
+              <div class="action-header">
+                <div class="action-icon bg-blue">
+                  <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3 class="action-title">Rapports & Analyses</h3>
               </div>
-              <span class="text-sm font-semibold text-green-600">Paiements du mois</span>
+              <p class="action-content">
+                Consultez les statistiques globales et générez des rapports détaillés.
+              </p>
+              <div class="action-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Rapports</span>
+                  <span class="stat-number">{{ dashboardStats.reportsCount || 0 }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Ce mois</span>
+                  <span class="stat-number">{{ dashboardStats.monthlyReports || 0 }}</span>
+                </div>
+              </div>
+              <a routerLink="/admin/reports" class="action-button">
+                Voir les rapports
+                <i class="fas fa-arrow-right"></i>
+              </a>
             </div>
-            <div class="text-3xl font-bold text-gray-900">{{ dashboardStats.monthlyPayments || 0 }}€</div>
-            <div class="text-sm text-gray-500 mt-2">
-              {{ dashboardStats.paymentPercentage || 0 }}% des paiements reçus
+          </ng-container>
+
+          <!-- Actions pour SYNDIC -->
+          <ng-container *ngIf="hasRole('SYNDIC') | async">
+            <div class="action-card">
+              <div class="action-header">
+                <div class="action-icon bg-blue">
+                  <i class="fas fa-building"></i>
+                </div>
+                <h3 class="action-title">Gestion des immeubles</h3>
+              </div>
+              <p class="action-content">
+                Gérez vos immeubles, ajoutez de nouveaux bâtiments et suivez leur état.
+              </p>
+              <div class="action-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Total</span>
+                  <span class="stat-number">{{ dashboardStats.totalBuildings || 0 }} immeubles</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">En maintenance</span>
+                  <span class="stat-number">{{ dashboardStats.buildingsInMaintenance || 0 }} immeubles</span>
+                </div>
+              </div>
+              <a routerLink="/buildings" class="action-button">
+                Gérer les immeubles
+                <i class="fas fa-arrow-right"></i>
+              </a>
             </div>
-          </div>
+
+            <div class="action-card">
+              <div class="action-header">
+                <div class="action-icon bg-purple">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="action-title">Suivi des paiements</h3>
+              </div>
+              <p class="action-content">
+                Suivez les paiements, gérez les retards et envoyez des rappels.
+              </p>
+              <div class="action-stats">
+                <div class="stat-item">
+                  <span class="stat-label">À recevoir</span>
+                  <span class="stat-number">{{ dashboardStats.pendingAmount || 0 }} €</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">En retard</span>
+                  <span class="stat-number">{{ dashboardStats.latePayments || 0 }} paiements</span>
+                </div>
+              </div>
+              <a routerLink="/payments" class="action-button">
+                Voir les paiements
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </ng-container>
+
+          <!-- Actions pour PROPRIETAIRE -->
+          <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
+            <div class="action-card">
+              <div class="action-header">
+                <div class="action-icon bg-indigo">
+                  <i class="fas fa-home"></i>
+                </div>
+                <h3 class="action-title">Mes appartements</h3>
+              </div>
+              <p class="action-content">
+                Consultez les détails de vos appartements et leurs charges.
+              </p>
+              <div class="action-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Possédés</span>
+                  <span class="stat-number">{{ dashboardStats.apartmentsCount || 0 }} appartements</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Surface totale</span>
+                  <span class="stat-number">{{ dashboardStats.totalArea || 0 }} m²</span>
+                </div>
+              </div>
+              <a routerLink="/my-apartments" class="action-button">
+                Voir mes appartements
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+
+            <div class="action-card">
+              <div class="action-header">
+                <div class="action-icon bg-green">
+                  <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <h3 class="action-title">Mes paiements</h3>
+              </div>
+              <p class="action-content">
+                Gérez vos paiements et consultez l'historique des charges.
+              </p>
+              <div class="action-stats">
+                <div class="stat-item">
+                  <span class="stat-label">À payer</span>
+                  <span class="stat-number">{{ dashboardStats.amountDue || 0 }} €</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Échéance</span>
+                  <span class="stat-number">{{ dashboardStats.nextDueDate || '-' }}</span>
+                </div>
+              </div>
+              <a routerLink="/my-payments" class="action-button">
+                Gérer mes paiements
+                <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </ng-container>
         </div>
-      </ng-container>
-
-      <!-- Statistiques pour PROPRIETAIRE -->
-      <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Carte des appartements -->
-          <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
-            <div class="flex items-center justify-between mb-4">
-              <div class="bg-purple-100 rounded-full p-3">
-                <i class="fas fa-home text-purple-600 text-xl"></i>
-              </div>
-              <span class="text-sm font-semibold text-purple-600">Mes appartements</span>
-            </div>
-            <div class="text-3xl font-bold text-gray-900">{{ dashboardStats.apartmentsCount || 0 }}</div>
-            <div class="text-sm text-gray-500 mt-2">
-              Surface totale: {{ dashboardStats.totalArea || 0 }} m²
-            </div>
-          </div>
-
-          <!-- Carte des paiements en attente -->
-          <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
-            <div class="flex items-center justify-between mb-4">
-              <div class="bg-yellow-100 rounded-full p-3">
-                <i class="fas fa-clock text-yellow-600 text-xl"></i>
-              </div>
-              <span class="text-sm font-semibold text-yellow-600">Paiements en attente</span>
-            </div>
-            <div class="text-3xl font-bold text-gray-900">{{ dashboardStats.pendingPayments || 0 }}</div>
-            <div class="text-sm text-gray-500 mt-2">
-              Prochain paiement: {{ dashboardStats.nextPaymentDue || '-' }}
-            </div>
-          </div>
-
-          <!-- Carte des paiements effectués -->
-          <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform duration-200">
-            <div class="flex items-center justify-between mb-4">
-              <div class="bg-green-100 rounded-full p-3">
-                <i class="fas fa-check-circle text-green-600 text-xl"></i>
-              </div>
-              <span class="text-sm font-semibold text-green-600">Paiements effectués</span>
-            </div>
-            <div class="text-3xl font-bold text-gray-900">{{ dashboardStats.totalPaid || 0 }}€</div>
-            <div class="text-sm text-gray-500 mt-2">
-              Dernier paiement: {{ dashboardStats.lastPaymentDate || '-' }}
-            </div>
-          </div>
-        </div>
-      </ng-container>
+      </div>
     </div>
   </div>
 
+  <!-- Footer -->
   <app-footer></app-footer>
 </div> 

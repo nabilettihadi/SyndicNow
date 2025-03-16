@@ -513,3 +513,21 @@
 .navbar-spacer {
   height: var(--navbar-height);
 }
+
+/* Styles spécifiques pour les transitions */
+.transition-transform {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Styles pour l'accessibilité */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

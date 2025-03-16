@@ -4,10 +4,15 @@ export interface Immeuble {
   adresse: string;
   ville: string;
   region: string;
+  codePostal: string;
   nombreEtages: number;
   nombreAppartements: number;
   dateConstruction: Date;
-  syndic?: number;
+  anneeConstruction: number;
+  syndicId: number;
+  description?: string;
+  dateCreation: Date;
+  dateModification: Date;
 }
 
 export interface ImmeubleStatistics {

@@ -1,0 +1,64 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #f3f4f6;
+}
+
+.document-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.document-card:hover {
+  transform: translateY(-4px);
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.document-icon {
+  transition: all 0.2s ease-in-out;
+}
+
+.document-card:hover .document-icon {
+  transform: scale(1.1);
+}
+
+.error-message {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.upload-zone {
+  border: 2px dashed #e5e7eb;
+  transition: all 0.2s ease-in-out;
+}
+
+.upload-zone:hover {
+  border-color: #6366f1;
+  background-color: rgba(99, 102, 241, 0.05);
+}
+
+.filter-section {
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.8);
+} 

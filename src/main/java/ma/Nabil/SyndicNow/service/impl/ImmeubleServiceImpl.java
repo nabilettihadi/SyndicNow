@@ -1,13 +1,15 @@
 package ma.Nabil.SyndicNow.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleStatistics;
 import ma.Nabil.SyndicNow.entity.Immeuble;
 import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.mapper.ImmeubleMapper;
-import ma.Nabil.SyndicNow.repository.ImmeubleRepository;
+import ma.Nabil.SyndicNow.repository.*;
 import ma.Nabil.SyndicNow.service.ImmeubleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,17 +17,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class ImmeubleServiceImpl implements ImmeubleService {
 
     private final ImmeubleRepository immeubleRepository;
+    private final AppartementRepository appartementRepository;
+    private final ProprietaireRepository proprietaireRepository;
+    private final PaiementRepository paiementRepository;
     private final ImmeubleMapper immeubleMapper;
-
-    @Autowired
-    public ImmeubleServiceImpl(ImmeubleRepository immeubleRepository, ImmeubleMapper immeubleMapper) {
-        this.immeubleRepository = immeubleRepository;
-        this.immeubleMapper = immeubleMapper;
-    }
 
     @Override
     public List<ImmeubleResponse> getAllImmeubles() {
@@ -71,5 +72,24 @@ public class ImmeubleServiceImpl implements ImmeubleService {
             throw new ResourceNotFoundException("Immeuble non trouvé avec l'id: " + id);
         }
         immeubleRepository.deleteById(id);
+    }
+
+    @Override
+    public ImmeubleStatistics getImmeubleStatistics() {
+        log.debug("Calculating buildings statistics");
+        
+        Long totalImmeubles = immeubleRepository.count();
+        Long totalAppartements = appartementRepository.count();
+        Long totalProprietaires = proprietaireRepository.count();
+        Double totalRevenu = paiementRepository.findAll().stream()
+                .mapToDouble(paiement -> paiement.getMontant().doubleValue())
+                .sum();
+
+        return ImmeubleStatistics.builder()
+                .totalImmeubles(totalImmeubles)
+                .totalAppartements(totalAppartements)
+                .totalProprietaires(totalProprietaires)
+                .totalRevenu(totalRevenu)
+                .build();
     }
 }

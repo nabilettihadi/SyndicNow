@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
+import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleStatistics;
 import ma.Nabil.SyndicNow.service.ImmeubleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,36 @@ import java.util.List;
 public class ImmeubleController {
 
     private final ImmeubleService immeubleService;
+
+    @GetMapping("/stats")
+    @Operation(summary = "Get buildings statistics",
+            description = "Retrieves statistics about all buildings in the system")
+    @ApiResponse(responseCode = "200", description = "Statistics retrieved successfully")
+    public ResponseEntity<ImmeubleStatistics> getImmeubleStatistics() {
+        log.debug("Fetching buildings statistics");
+        return ResponseEntity.ok(immeubleService.getImmeubleStatistics());
+    }
+
+    @GetMapping
+    @Operation(summary = "Get all buildings",
+            description = "Retrieves a list of all buildings in the system")
+    @ApiResponse(responseCode = "200", description = "List of buildings retrieved successfully")
+    public ResponseEntity<List<ImmeubleResponse>> getAllImmeubles() {
+        log.debug("Fetching all buildings");
+        return ResponseEntity.ok(immeubleService.getAllImmeubles());
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Get a building by ID",
+            description = "Retrieves a building's information based on the provided ID")
+    @ApiResponse(responseCode = "200", description = "Building found and returned")
+    @ApiResponse(responseCode = "404", description = "Building not found")
+    public ResponseEntity<ImmeubleResponse> getImmeubleById(
+            @Parameter(description = "ID of the building to retrieve") @PathVariable Long id) {
+        log.debug("Fetching building with ID: {}", id);
+        ImmeubleResponse response = immeubleService.getImmeubleById(id);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping
     @Operation(summary = "Create a new building",
@@ -54,32 +85,6 @@ public class ImmeubleController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Get a building by ID",
-            description = "Retrieves a building's information based on the provided ID")
-    @ApiResponse(responseCode = "200", description = "Building found and returned")
-    @ApiResponse(responseCode = "404", description = "Building not found")
-    public ResponseEntity<ImmeubleResponse> getImmeubleById(
-            @Parameter(description = "ID of the building to retrieve") @PathVariable Long id) {
-        log.debug("Fetching building with ID: {}", id);
-        ImmeubleResponse response = immeubleService.getImmeubleById(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping
-    @Operation(summary = "Get all buildings",
-            description = "Retrieves a list of all buildings in the system")
-    @ApiResponse(responseCode = "200", description = "List of buildings retrieved successfully")
-    public ResponseEntity<List<ImmeubleResponse>> getAllImmeubles() {
-        log.debug("Fetching all buildings");
-        return ResponseEntity.ok(immeubleService.getAllImmeubles());
-    }
-
-    @GetMapping("/syndic/{syndicId}")
-    public ResponseEntity<List<ImmeubleResponse>> getImmeublesBySyndic(@PathVariable Long syndicId) {
-        return ResponseEntity.ok(immeubleService.getImmeublesBySyndic(syndicId));
-    }
-
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a building",
             description = "Deletes a building based on the provided ID")
@@ -91,5 +96,10 @@ public class ImmeubleController {
         immeubleService.deleteImmeuble(id);
         log.info("Successfully deleted building with ID: {}", id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/syndic/{syndicId}")
+    public ResponseEntity<List<ImmeubleResponse>> getImmeublesBySyndic(@PathVariable Long syndicId) {
+        return ResponseEntity.ok(immeubleService.getImmeublesBySyndic(syndicId));
     }
 }

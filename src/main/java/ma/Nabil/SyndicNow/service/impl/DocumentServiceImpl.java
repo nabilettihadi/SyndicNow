@@ -54,4 +54,9 @@ public class DocumentServiceImpl implements DocumentService {
     public List<Document> listDocuments() {
         return documentRepository.findAll();
     }
+
+    @Override
+    public List<Document> getDocumentsByProprietaire(Long proprietaireId) {
+        return documentRepository.findByProprietaireId(proprietaireId);
+    }
 }

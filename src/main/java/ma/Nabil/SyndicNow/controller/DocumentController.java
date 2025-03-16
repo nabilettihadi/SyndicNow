@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/documents")
+@RequestMapping("/api/v1/documents")
 @RequiredArgsConstructor
 public class DocumentController {
 
@@ -25,6 +25,12 @@ public class DocumentController {
     public ResponseEntity<Document> getDocumentById(@PathVariable Long id) {
         Document document = documentService.getDocumentById(id);
         return ResponseEntity.ok(document);
+    }
+
+    @GetMapping("/proprietaire/{proprietaireId}")
+    public ResponseEntity<List<Document>> getDocumentsByProprietaire(@PathVariable Long proprietaireId) {
+        List<Document> documents = documentService.getDocumentsByProprietaire(proprietaireId);
+        return ResponseEntity.ok(documents);
     }
 
     @PutMapping("/{id}")

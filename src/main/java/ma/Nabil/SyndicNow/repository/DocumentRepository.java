@@ -19,6 +19,9 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     @Query("SELECT d FROM Document d WHERE d.immeuble.syndic.id = :syndicId")
     List<Document> findBySyndicId(@Param("syndicId") Long syndicId);
 
+    @Query("SELECT DISTINCT d FROM Document d JOIN d.immeuble i JOIN i.appartements a WHERE a.proprietaire.id = :proprietaireId")
+    List<Document> findByProprietaireId(@Param("proprietaireId") Long proprietaireId);
+
     @Query("SELECT d FROM Document d WHERE " + "LOWER(d.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " + "LOWER(d.description) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Document> searchDocuments(@Param("search") String search, Pageable pageable);
 

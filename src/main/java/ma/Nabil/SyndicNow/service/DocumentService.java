@@ -14,4 +14,6 @@ public interface DocumentService {
     void deleteDocument(Long id);
 
     List<Document> listDocuments();
+
+    List<Document> getDocumentsByProprietaire(Long proprietaireId);
 }

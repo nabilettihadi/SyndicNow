@@ -1,14 +1,14 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
-import { LoginComponent } from '../features/auth/components/login/login.component';
-import { RegisterComponent } from '../features/auth/components/register/register.component';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule, Routes} from '@angular/router';
+import {ReactiveFormsModule} from '@angular/forms';
+import {LoginComponent} from '@features/auth/components/login/login.component';
+import {RegisterComponent} from '@features/auth/components/register/register.component';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: '', redirectTo: 'login', pathMatch: 'full' }
+  {path: 'login', component: LoginComponent},
+  {path: 'register', component: RegisterComponent},
+  {path: '', redirectTo: 'login', pathMatch: 'full'}
 ];
 
 @NgModule({
@@ -20,4 +20,5 @@ const routes: Routes = [
     RegisterComponent
   ]
 })
-export class AuthModule { } 
+export class AuthModule {
+}

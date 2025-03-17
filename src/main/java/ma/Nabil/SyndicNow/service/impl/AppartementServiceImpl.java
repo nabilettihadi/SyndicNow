@@ -1,6 +1,7 @@
 package ma.Nabil.SyndicNow.service.impl;
 
 
+import lombok.extern.slf4j.Slf4j;
 import ma.Nabil.SyndicNow.dto.appartement.AppartementRequest;
 import ma.Nabil.SyndicNow.dto.appartement.AppartementResponse;
 import ma.Nabil.SyndicNow.entity.Appartement;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.stream.Collectors;

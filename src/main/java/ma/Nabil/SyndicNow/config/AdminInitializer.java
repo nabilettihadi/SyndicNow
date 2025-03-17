@@ -41,17 +41,10 @@ public class AdminInitializer implements CommandLineRunner {
         // Vérifier si un administrateur existe déjà
         if (userRepository.findByRole(Role.ADMIN).isEmpty()) {
             log.info("Aucun administrateur trouvé, création d'un compte administrateur par défaut");
-            
+
             // Créer un utilisateur administrateur
-            Admin admin = Admin.builder()
-                    .nom(adminNom)
-                    .prenom(adminPrenom)
-                    .email(adminEmail)
-                    .password(passwordEncoder.encode(adminPassword))
-                    .telephone(adminTelephone)
-                    .cin(adminCin)
-                    .build();
-            
+            Admin admin = Admin.builder().nom(adminNom).prenom(adminPrenom).email(adminEmail).password(passwordEncoder.encode(adminPassword)).telephone(adminTelephone).cin(adminCin).build();
+
             userRepository.save(admin);
             log.info("Compte administrateur créé avec succès: {}", adminEmail);
         } else {

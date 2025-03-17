@@ -28,8 +28,7 @@ public class ProprietaireController {
     private final ProprietaireService proprietaireService;
 
     @PostMapping
-    @Operation(summary = "Create a new owner",
-            description = "Creates a new property owner with the provided information")
+    @Operation(summary = "Create a new owner", description = "Creates a new property owner with the provided information")
     @ApiResponse(responseCode = "201", description = "Owner successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     public ResponseEntity<ProprietaireResponse> createProprietaire(@Valid @RequestBody ProprietaireRequest dto) {
@@ -40,13 +39,10 @@ public class ProprietaireController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update an existing owner",
-            description = "Updates a property owner's information based on the provided ID")
+    @Operation(summary = "Update an existing owner", description = "Updates a property owner's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Owner successfully updated")
     @ApiResponse(responseCode = "404", description = "Owner not found")
-    public ResponseEntity<ProprietaireResponse> updateProprietaire(
-            @Parameter(description = "ID of the owner to update") @PathVariable Long id,
-            @Valid @RequestBody ProprietaireRequest dto) {
+    public ResponseEntity<ProprietaireResponse> updateProprietaire(@Parameter(description = "ID of the owner to update") @PathVariable Long id, @Valid @RequestBody ProprietaireRequest dto) {
         log.info("Updating owner with ID: {} with data: {}", id, dto);
         ProprietaireResponse response = proprietaireService.updateProprietaire(id, dto);
         log.info("Successfully updated owner with ID: {}", id);
@@ -54,20 +50,17 @@ public class ProprietaireController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get an owner by ID",
-            description = "Retrieves a property owner's information based on the provided ID")
+    @Operation(summary = "Get an owner by ID", description = "Retrieves a property owner's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Owner found and returned")
     @ApiResponse(responseCode = "404", description = "Owner not found")
-    public ResponseEntity<ProprietaireResponse> getProprietaireById(
-            @Parameter(description = "ID of the owner to retrieve") @PathVariable Long id) {
+    public ResponseEntity<ProprietaireResponse> getProprietaireById(@Parameter(description = "ID of the owner to retrieve") @PathVariable Long id) {
         log.debug("Fetching owner with ID: {}", id);
         ProprietaireResponse response = proprietaireService.getProprietaireById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    @Operation(summary = "Get all owners",
-            description = "Retrieves a list of all property owners in the system")
+    @Operation(summary = "Get all owners", description = "Retrieves a list of all property owners in the system")
     @ApiResponse(responseCode = "200", description = "List of owners retrieved successfully")
     public ResponseEntity<List<ProprietaireResponse>> getAllProprietaires() {
         log.debug("Fetching all owners");
@@ -76,12 +69,10 @@ public class ProprietaireController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an owner",
-            description = "Deletes a property owner based on the provided ID")
+    @Operation(summary = "Delete an owner", description = "Deletes a property owner based on the provided ID")
     @ApiResponse(responseCode = "204", description = "Owner successfully deleted")
     @ApiResponse(responseCode = "404", description = "Owner not found")
-    public ResponseEntity<Void> deleteProprietaire(
-            @Parameter(description = "ID of the owner to delete") @PathVariable Long id) {
+    public ResponseEntity<Void> deleteProprietaire(@Parameter(description = "ID of the owner to delete") @PathVariable Long id) {
         log.info("Deleting owner with ID: {}", id);
         proprietaireService.deleteProprietaire(id);
         log.info("Successfully deleted owner with ID: {}", id);

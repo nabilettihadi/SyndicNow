@@ -30,8 +30,7 @@ public class ImmeubleController {
     private final ImmeubleService immeubleService;
 
     @GetMapping("/stats")
-    @Operation(summary = "Get buildings statistics",
-            description = "Retrieves statistics about all buildings in the system")
+    @Operation(summary = "Get buildings statistics", description = "Retrieves statistics about all buildings in the system")
     @ApiResponse(responseCode = "200", description = "Statistics retrieved successfully")
     public ResponseEntity<ImmeubleStatistics> getImmeubleStatistics() {
         log.debug("Fetching buildings statistics");
@@ -39,8 +38,7 @@ public class ImmeubleController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all buildings",
-            description = "Retrieves a list of all buildings in the system")
+    @Operation(summary = "Get all buildings", description = "Retrieves a list of all buildings in the system")
     @ApiResponse(responseCode = "200", description = "List of buildings retrieved successfully")
     public ResponseEntity<List<ImmeubleResponse>> getAllImmeubles() {
         log.debug("Fetching all buildings");
@@ -48,20 +46,17 @@ public class ImmeubleController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get a building by ID",
-            description = "Retrieves a building's information based on the provided ID")
+    @Operation(summary = "Get a building by ID", description = "Retrieves a building's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Building found and returned")
     @ApiResponse(responseCode = "404", description = "Building not found")
-    public ResponseEntity<ImmeubleResponse> getImmeubleById(
-            @Parameter(description = "ID of the building to retrieve") @PathVariable Long id) {
+    public ResponseEntity<ImmeubleResponse> getImmeubleById(@Parameter(description = "ID of the building to retrieve") @PathVariable Long id) {
         log.debug("Fetching building with ID: {}", id);
         ImmeubleResponse response = immeubleService.getImmeubleById(id);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    @Operation(summary = "Create a new building",
-            description = "Creates a new building with the provided information")
+    @Operation(summary = "Create a new building", description = "Creates a new building with the provided information")
     @ApiResponse(responseCode = "201", description = "Building successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     public ResponseEntity<ImmeubleResponse> createImmeuble(@Valid @RequestBody ImmeubleRequest request) {
@@ -72,13 +67,10 @@ public class ImmeubleController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update an existing building",
-            description = "Updates a building's information based on the provided ID")
+    @Operation(summary = "Update an existing building", description = "Updates a building's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Building successfully updated")
     @ApiResponse(responseCode = "404", description = "Building not found")
-    public ResponseEntity<ImmeubleResponse> updateImmeuble(
-            @Parameter(description = "ID of the building to update") @PathVariable Long id,
-            @Valid @RequestBody ImmeubleRequest request) {
+    public ResponseEntity<ImmeubleResponse> updateImmeuble(@Parameter(description = "ID of the building to update") @PathVariable Long id, @Valid @RequestBody ImmeubleRequest request) {
         log.info("Updating building with ID: {} with data: {}", id, request);
         ImmeubleResponse response = immeubleService.updateImmeuble(id, request);
         log.info("Successfully updated building with ID: {}", id);
@@ -86,12 +78,10 @@ public class ImmeubleController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a building",
-            description = "Deletes a building based on the provided ID")
+    @Operation(summary = "Delete a building", description = "Deletes a building based on the provided ID")
     @ApiResponse(responseCode = "204", description = "Building successfully deleted")
     @ApiResponse(responseCode = "404", description = "Building not found")
-    public ResponseEntity<Void> deleteImmeuble(
-            @Parameter(description = "ID of the building to delete") @PathVariable Long id) {
+    public ResponseEntity<Void> deleteImmeuble(@Parameter(description = "ID of the building to delete") @PathVariable Long id) {
         log.info("Deleting building with ID: {}", id);
         immeubleService.deleteImmeuble(id);
         log.info("Successfully deleted building with ID: {}", id);

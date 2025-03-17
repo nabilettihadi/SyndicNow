@@ -105,7 +105,8 @@ export class DashboardGuard {
     private authService: AuthService,
     private router: Router,
     private store: Store<{ auth: AuthState }>
-  ) {}
+  ) {
+  }
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     if (!this.authService.isAuthenticated()) {

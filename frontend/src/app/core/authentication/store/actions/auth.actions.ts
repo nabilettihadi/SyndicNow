@@ -1,5 +1,5 @@
-import { createAction, props } from '@ngrx/store';
-import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../../models/auth.model';
+import {createAction, props} from '@ngrx/store';
+import {LoginRequest, LoginResponse, RegisterRequest, RegisterResponse} from '../../models/auth.model';
 
 export const initializeAuthState = createAction('[Auth] Initialize State');
 
@@ -52,4 +52,4 @@ export const logoutFailure = createAction(
   props<{ error: string }>()
 );
 
-export const clearAuthError = createAction('[Auth] Clear Error'); 
+export const clearAuthError = createAction('[Auth] Clear Error');

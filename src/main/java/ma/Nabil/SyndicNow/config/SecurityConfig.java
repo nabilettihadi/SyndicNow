@@ -26,47 +26,25 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        // Endpoints publics
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        
-                        // Endpoints d'authentification
-                        .requestMatchers("/api/auth/authenticate").permitAll()
-                        .requestMatchers("/api/auth/register").permitAll()
-                        
-                        // Endpoints spécifiques aux rôles
-                        // Admin
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        
-                        // Syndic
-                        .requestMatchers("/api/syndic/**").hasRole("SYNDIC")
-                        .requestMatchers(HttpMethod.POST, "/api/immeubles/**").hasRole("SYNDIC")
-                        .requestMatchers(HttpMethod.PUT, "/api/immeubles/**").hasRole("SYNDIC")
-                        .requestMatchers(HttpMethod.DELETE, "/api/immeubles/**").hasRole("SYNDIC")
-                        .requestMatchers(HttpMethod.POST, "/api/appartements/**").hasRole("SYNDIC")
-                        .requestMatchers(HttpMethod.PUT, "/api/appartements/**").hasRole("SYNDIC")
-                        .requestMatchers(HttpMethod.DELETE, "/api/appartements/**").hasRole("SYNDIC")
-                        
-                        // Propriétaire
-                        .requestMatchers("/api/proprietaire/**").hasRole("PROPRIETAIRE")
-                        .requestMatchers(HttpMethod.GET, "/api/immeubles/**").hasAnyRole("SYNDIC", "PROPRIETAIRE")
-                        .requestMatchers(HttpMethod.GET, "/api/appartements/**").hasAnyRole("SYNDIC", "PROPRIETAIRE")
-                        
-                        // Autres endpoints nécessitent une authentification
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.csrf(AbstractHttpConfigurer::disable).cors(cors -> cors.configurationSource(corsConfig.corsConfigurationSource())).authorizeHttpRequests(auth -> auth
+                // Endpoints publics
+                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
+                // Endpoints d'authentification
+                .requestMatchers("/api/auth/authenticate").permitAll().requestMatchers("/api/auth/register").permitAll()
+
+                // Endpoints spécifiques aux rôles
+                // Admin
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                // Syndic
+                .requestMatchers("/api/syndic/**").hasRole("SYNDIC").requestMatchers(HttpMethod.POST, "/api/immeubles/**").hasRole("SYNDIC").requestMatchers(HttpMethod.PUT, "/api/immeubles/**").hasRole("SYNDIC").requestMatchers(HttpMethod.DELETE, "/api/immeubles/**").hasRole("SYNDIC").requestMatchers(HttpMethod.POST, "/api/appartements/**").hasRole("SYNDIC").requestMatchers(HttpMethod.PUT, "/api/appartements/**").hasRole("SYNDIC").requestMatchers(HttpMethod.DELETE, "/api/appartements/**").hasRole("SYNDIC")
+
+                // Propriétaire
+                .requestMatchers("/api/proprietaire/**").hasRole("PROPRIETAIRE").requestMatchers(HttpMethod.GET, "/api/immeubles/**").hasAnyRole("SYNDIC", "PROPRIETAIRE").requestMatchers(HttpMethod.GET, "/api/appartements/**").hasAnyRole("SYNDIC", "PROPRIETAIRE")
+
+                // Autres endpoints nécessitent une authentification
+                .anyRequest().authenticated()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authenticationProvider(authenticationProvider).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

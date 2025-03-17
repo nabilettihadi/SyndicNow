@@ -13,9 +13,17 @@
     "src/**/*.d.ts"
   ],
   "paths": {
-    "@features/*": ["src/app/features/*"],
-    "@core/*": ["src/app/core/*"],
-    "@shared/*": ["src/app/shared/*"],
-    "@env/*": ["src/environments/*"]
+    "@features/*": [
+      "src/app/features/*"
+    ],
+    "@core/*": [
+      "src/app/core/*"
+    ],
+    "@shared/*": [
+      "src/app/shared/*"
+    ],
+    "@env/*": [
+      "src/environments/*"
+    ]
   }
 }

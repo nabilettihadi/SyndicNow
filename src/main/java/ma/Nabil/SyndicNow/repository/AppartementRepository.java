@@ -18,9 +18,7 @@ public interface AppartementRepository extends JpaRepository<Appartement, Long> 
     @Query("SELECT a FROM Appartement a LEFT JOIN FETCH a.immeuble LEFT JOIN FETCH a.proprietaire WHERE a.proprietaire.id = :proprietaireId")
     List<Appartement> findByProprietaireId(@Param("proprietaireId") Long proprietaireId);
 
-    @Query("SELECT a FROM Appartement a WHERE " + 
-           "LOWER(CAST(a.numero AS string)) LIKE LOWER(CONCAT('%', :search, '%')) OR " + 
-           "LOWER(CAST(a.etage AS string)) LIKE LOWER(CONCAT('%', :search, '%'))")
+    @Query("SELECT a FROM Appartement a WHERE " + "LOWER(CAST(a.numero AS string)) LIKE LOWER(CONCAT('%', :search, '%')) OR " + "LOWER(CAST(a.etage AS string)) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Appartement> searchAppartements(@Param("search") String search, Pageable pageable);
 
     @Query("SELECT a FROM Appartement a WHERE a.immeuble.syndic.id = :syndicId")
@@ -34,8 +32,6 @@ public interface AppartementRepository extends JpaRepository<Appartement, Long> 
     @Query("SELECT a FROM Appartement a WHERE a.immeuble.id = :immeubleId AND a.proprietaire IS NULL")
     List<Appartement> findAvailableByImmeubleId(@Param("immeubleId") Long immeubleId);
 
-    @Query("SELECT a FROM Appartement a WHERE a.immeuble.id = :immeubleId AND " + 
-           "(:search IS NULL OR LOWER(CAST(a.numero AS string)) LIKE LOWER(CONCAT('%', :search, '%')) OR " + 
-           "LOWER(CAST(a.etage AS string)) LIKE LOWER(CONCAT('%', :search, '%')))")
+    @Query("SELECT a FROM Appartement a WHERE a.immeuble.id = :immeubleId AND " + "(:search IS NULL OR LOWER(CAST(a.numero AS string)) LIKE LOWER(CONCAT('%', :search, '%')) OR " + "LOWER(CAST(a.etage AS string)) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Appartement> findByImmeubleIdAndSearch(@Param("immeubleId") Long immeubleId, @Param("search") String search, Pageable pageable);
 }

@@ -30,8 +30,7 @@ public class ProprietaireServiceImpl implements ProprietaireService {
 
     @Override
     public ProprietaireResponse updateProprietaire(Long id, ProprietaireRequest request) {
-        Proprietaire proprietaire = proprietaireRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proprietaire not found"));
+        Proprietaire proprietaire = proprietaireRepository.findById(id).orElseThrow(() -> new RuntimeException("Proprietaire not found"));
         proprietaireMapper.updateEntityFromDto(request, proprietaire);
         proprietaire = proprietaireRepository.save(proprietaire);
         return proprietaireMapper.toResponseDto(proprietaire);
@@ -39,8 +38,7 @@ public class ProprietaireServiceImpl implements ProprietaireService {
 
     @Override
     public ProprietaireResponse getProprietaireById(Long id) {
-        return proprietaireMapper.toResponseDto(proprietaireRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Proprietaire not found")));
+        return proprietaireMapper.toResponseDto(proprietaireRepository.findById(id).orElseThrow(() -> new RuntimeException("Proprietaire not found")));
     }
 
     @Override

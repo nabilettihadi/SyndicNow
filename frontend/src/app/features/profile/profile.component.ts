@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
-import { FooterComponent } from '../../shared/components/footer/footer.component';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { NavbarComponent } from '@shared/components/navbar/navbar.component';
+import { FooterComponent } from '@shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-profile',
@@ -24,27 +24,27 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Nom</label>
                     <input type="text" formControlName="nom"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Prénom</label>
                     <input type="text" formControlName="prenom"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Email</label>
                     <input type="email" formControlName="email"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Téléphone</label>
                     <input type="tel" formControlName="telephone"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
                   <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700">Adresse</label>
                     <input type="text" formControlName="adresse"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
                 </div>
 
@@ -53,23 +53,23 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
                   <div>
                     <label class="block text-sm font-medium text-gray-700">SIRET</label>
                     <input type="text" formControlName="siret"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Numéro de licence</label>
                     <input type="text" formControlName="numeroLicence"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Société</label>
                     <input type="text" formControlName="societe"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                   </div>
                 </div>
 
                 <div class="flex justify-end">
                   <button type="submit"
-                    class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                          class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
                     Enregistrer les modifications
                   </button>
                 </div>
@@ -85,21 +85,21 @@ import { FooterComponent } from '../../shared/components/footer/footer.component
                 <div>
                   <label class="block text-sm font-medium text-gray-700">Mot de passe actuel</label>
                   <input type="password" formControlName="currentPassword"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700">Nouveau mot de passe</label>
                   <input type="password" formControlName="newPassword"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700">Confirmer le mot de passe</label>
                   <input type="password" formControlName="confirmPassword"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div class="flex justify-end">
                   <button type="submit"
-                    class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                          class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
                     Changer le mot de passe
                   </button>
                 </div>
@@ -140,4 +140,4 @@ export class ProfileComponent {
   isSyndic = false;
 
   constructor(private fb: FormBuilder) {}
-} 
+}

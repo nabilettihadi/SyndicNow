@@ -1,6 +1,6 @@
 <div class="min-h-screen flex flex-col">
   <app-navbar></app-navbar>
-  
+
   <main class="container mx-auto px-4 py-8 flex-grow">
     <!-- En-tête -->
     <div class="mb-8">
@@ -12,7 +12,8 @@
     <div *ngIf="error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg error-message">
       <div class="flex items-center">
         <svg class="h-5 w-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <span class="text-red-700">{{ error }}</span>
       </div>
@@ -23,7 +24,7 @@
       <div class="flex flex-wrap gap-4">
         <div class="flex-1 min-w-[200px]">
           <label class="block text-sm font-medium text-gray-700 mb-1">Type de document</label>
-          <select [(ngModel)]="selectedType" (change)="filterDocuments()" 
+          <select [(ngModel)]="selectedType" (change)="filterDocuments()"
                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             <option value="">Tous les types</option>
             <option *ngFor="let type of documentTypes" [value]="type">
@@ -58,9 +59,11 @@
         <button (click)="uploadDocument()" [disabled]="loading"
                 class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
           <span *ngIf="!loading">Téléverser</span>
-          <svg *ngIf="loading" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg *ngIf="loading" class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+               viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
         </button>
       </div>
@@ -68,16 +71,19 @@
 
     <!-- Liste des documents -->
     <div *ngIf="loading" class="flex justify-center items-center py-12">
-      <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+           viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
     </div>
 
     <div *ngIf="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div *ngIf="filteredDocuments.length === 0" class="col-span-full text-center py-12">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
         <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun document</h3>
         <p class="mt-1 text-sm text-gray-500">Commencez par ajouter un document à votre collection.</p>
@@ -86,8 +92,10 @@
       <div *ngFor="let doc of filteredDocuments" class="bg-white rounded-lg shadow-md p-6 document-card">
         <div class="flex items-center mb-4">
           <div [class]="'p-3 rounded-lg document-icon ' + getDocumentTypeStyles(doc.type).bgColor">
-            <svg class="h-6 w-6" [class]="getDocumentTypeStyles(doc.type).textColor" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <svg class="h-6 w-6" [class]="getDocumentTypeStyles(doc.type).textColor" fill="none" stroke="currentColor"
+                 viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
           </div>
           <div class="ml-4">
@@ -98,7 +106,7 @@
         <div class="flex justify-between items-center text-sm">
           <span class="text-gray-500">{{ doc.type | titlecase }} - {{ doc.taille | number:'1.0-0' }} Ko</span>
           <div class="flex space-x-3">
-            <button (click)="previewDocument(doc)" 
+            <button (click)="previewDocument(doc)"
                     class="text-indigo-600 hover:text-indigo-900 focus:outline-none focus:underline">
               Aperçu
             </button>
@@ -113,4 +121,4 @@
   </main>
 
   <app-footer></app-footer>
-</div> 
+</div>

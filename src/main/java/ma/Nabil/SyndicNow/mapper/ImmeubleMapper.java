@@ -1,13 +1,13 @@
 package ma.Nabil.SyndicNow.mapper;
 
+import lombok.RequiredArgsConstructor;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
 import ma.Nabil.SyndicNow.entity.Immeuble;
 import ma.Nabil.SyndicNow.entity.Syndic;
-import ma.Nabil.SyndicNow.repository.SyndicRepository;
 import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
+import ma.Nabil.SyndicNow.repository.SyndicRepository;
 import org.springframework.stereotype.Component;
-import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class ImmeubleMapper {
     public Immeuble toEntity(ImmeubleRequest request) {
         Syndic syndic = syndicRepository.findById(request.getSyndicId())
                 .orElseThrow(() -> new ResourceNotFoundException("Syndic non trouvé avec l'ID: " + request.getSyndicId()));
-        
+
         Immeuble immeuble = new Immeuble();
         updateEntityFromRequest(request, immeuble, syndic);
         return immeuble;

@@ -1,6 +1,6 @@
-import { Immeuble, ImmeubleStatistics } from './immeuble.model';
-import { Paiement, PaiementStatistics } from './paiement.model';
-import { Proprietaire, ProprietaireStatistics } from './proprietaire.model';
+import {Immeuble, ImmeubleStatistics} from './immeuble.model';
+import {Paiement, PaiementStatistics} from './paiement.model';
+import {Proprietaire, ProprietaireStatistics} from './proprietaire.model';
 
 export interface DashboardStats {
   // Propriétés de base
@@ -24,7 +24,7 @@ export interface DashboardStats {
   newBuildingsThisMonth?: number;
   ownersCount?: number;
   newOwnersThisMonth?: number;
-  
+
   // Statistiques de paiement
   monthlyPayments?: number;
   paymentPercentage?: number;
@@ -33,22 +33,22 @@ export interface DashboardStats {
   nextPaymentDue?: string;
   totalPaid?: number;
   lastPaymentDate?: string;
-  
+
   // Statistiques des syndics
   activeSyndics?: number;
   pendingSyndics?: number;
-  
+
   // Statistiques des rapports
   reportsCount?: number;
   monthlyReports?: number;
-  
+
   // Statistiques des immeubles
   buildingsInMaintenance?: number;
-  
+
   // Statistiques financières
   pendingAmount?: number;
   latePayments?: number;
-  
+
   // Statistiques des appartements
   totalArea?: number;
   amountDue?: number;
@@ -63,4 +63,4 @@ export interface DashboardStats {
     paiementsEnAttente?: PaiementStatistics;
     prochainsDelais?: PaiementStatistics;
   };
-} 
+}

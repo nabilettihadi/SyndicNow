@@ -83,8 +83,10 @@
                     {{ dashboardStats.revenue || 0 }}
                     <small>€</small>
                   </div>
-                  <div class="stat-trend" [class.positive]="(dashboardStats.revenueGrowth || 0) > 0" [class.negative]="(dashboardStats.revenueGrowth || 0) < 0">
-                    <i class="fas" [class.fa-arrow-up]="(dashboardStats.revenueGrowth || 0) > 0" [class.fa-arrow-down]="(dashboardStats.revenueGrowth || 0) < 0"></i>
+                  <div class="stat-trend" [class.positive]="(dashboardStats.revenueGrowth || 0) > 0"
+                       [class.negative]="(dashboardStats.revenueGrowth || 0) < 0">
+                    <i class="fas" [class.fa-arrow-up]="(dashboardStats.revenueGrowth || 0) > 0"
+                       [class.fa-arrow-down]="(dashboardStats.revenueGrowth || 0) < 0"></i>
                     {{ dashboardStats.revenueGrowth || 0 }}% ce mois
                   </div>
                 </div>
@@ -400,4 +402,4 @@
 
   <!-- Footer -->
   <app-footer></app-footer>
-</div> 
+</div>

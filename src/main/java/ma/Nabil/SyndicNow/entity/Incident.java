@@ -81,26 +81,14 @@ public class Incident {
     private LocalDateTime updatedAt;
 
     public enum IncidentStatus {
-        NOUVEAU,
-        EN_COURS,
-        RESOLU,
-        FERME
+        NOUVEAU, EN_COURS, RESOLU, FERME
     }
 
     public enum IncidentPriority {
-        BASSE,
-        MOYENNE,
-        HAUTE,
-        URGENTE
+        BASSE, MOYENNE, HAUTE, URGENTE
     }
 
     public enum IncidentCategory {
-        PLOMBERIE,
-        ELECTRICITE,
-        ASCENSEUR,
-        NETTOYAGE,
-        SECURITE,
-        CHAUFFAGE,
-        AUTRE
+        PLOMBERIE, ELECTRICITE, ASCENSEUR, NETTOYAGE, SECURITE, CHAUFFAGE, AUTRE
     }
 }

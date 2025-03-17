@@ -35,18 +35,12 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifyPaymentCreated(Paiement paiement) {
         if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Nouveau paiement créé";
-            String content = String.format(
-                "Un nouveau paiement a été créé pour votre appartement %s.\n" +
-                "Montant: %.2f DH\n" +
-                "Date d'échéance: %s\n" +
-                "Type: %s\n" +
-                "Référence: %s",
-                paiement.getAppartement().getNumero(),
-                paiement.getMontant(),
-                paiement.getDateEcheance(),
-                paiement.getType(),
-                paiement.getReference()
-            );
+            String content = String.format("""
+                    Un nouveau paiement a été créé pour votre appartement %s.
+                    Montant: %.2f DH
+                    Date d'échéance: %s
+                    Type: %s
+                    Référence: %s""", paiement.getAppartement().getNumero(), paiement.getMontant(), paiement.getDateEcheance(), paiement.getType(), paiement.getReference());
             sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
         }
     }
@@ -56,18 +50,12 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifyPaymentDue(Paiement paiement) {
         if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Rappel de paiement";
-            String content = String.format(
-                "Un paiement arrive à échéance pour votre appartement %s.\n" +
-                "Montant: %.2f DH\n" +
-                "Date d'échéance: %s\n" +
-                "Type: %s\n" +
-                "Référence: %s",
-                paiement.getAppartement().getNumero(),
-                paiement.getMontant(),
-                paiement.getDateEcheance(),
-                paiement.getType(),
-                paiement.getReference()
-            );
+            String content = String.format("""
+                    Un paiement arrive à échéance pour votre appartement %s.
+                    Montant: %.2f DH
+                    Date d'échéance: %s
+                    Type: %s
+                    Référence: %s""", paiement.getAppartement().getNumero(), paiement.getMontant(), paiement.getDateEcheance(), paiement.getType(), paiement.getReference());
             sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
         }
     }
@@ -77,19 +65,13 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifyPaymentOverdue(Paiement paiement) {
         if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Paiement en retard";
-            String content = String.format(
-                "Un paiement est en retard pour votre appartement %s.\n" +
-                "Montant: %.2f DH\n" +
-                "Date d'échéance: %s\n" +
-                "Type: %s\n" +
-                "Référence: %s\n" +
-                "Veuillez régulariser votre situation dès que possible.",
-                paiement.getAppartement().getNumero(),
-                paiement.getMontant(),
-                paiement.getDateEcheance(),
-                paiement.getType(),
-                paiement.getReference()
-            );
+            String content = String.format("""
+                    Un paiement est en retard pour votre appartement %s.
+                    Montant: %.2f DH
+                    Date d'échéance: %s
+                    Type: %s
+                    Référence: %s
+                    Veuillez régulariser votre situation dès que possible.""", paiement.getAppartement().getNumero(), paiement.getMontant(), paiement.getDateEcheance(), paiement.getType(), paiement.getReference());
             sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
         }
     }
@@ -99,19 +81,13 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifyPaymentReceived(Paiement paiement) {
         if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Paiement reçu";
-            String content = String.format(
-                "Nous avons bien reçu votre paiement pour l'appartement %s.\n" +
-                "Montant: %.2f DH\n" +
-                "Date de paiement: %s\n" +
-                "Type: %s\n" +
-                "Référence: %s\n" +
-                "Merci pour votre paiement.",
-                paiement.getAppartement().getNumero(),
-                paiement.getMontant(),
-                paiement.getDatePaiement(),
-                paiement.getType(),
-                paiement.getReference()
-            );
+            String content = String.format("""
+                    Nous avons bien reçu votre paiement pour l'appartement %s.
+                    Montant: %.2f DH
+                    Date de paiement: %s
+                    Type: %s
+                    Référence: %s
+                    Merci pour votre paiement.""", paiement.getAppartement().getNumero(), paiement.getMontant(), paiement.getDatePaiement(), paiement.getType(), paiement.getReference());
             sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
         }
     }
@@ -121,16 +97,11 @@ public class NotificationServiceImpl implements NotificationService {
     public void notifyPaymentCancelled(Paiement paiement) {
         if (paiement.getAppartement().getProprietaire() != null) {
             String subject = "Paiement annulé";
-            String content = String.format(
-                "Le paiement suivant a été annulé pour l'appartement %s:\n" +
-                "Montant: %.2f DH\n" +
-                "Type: %s\n" +
-                "Référence: %s",
-                paiement.getAppartement().getNumero(),
-                paiement.getMontant(),
-                paiement.getType(),
-                paiement.getReference()
-            );
+            String content = String.format("""
+                    Le paiement suivant a été annulé pour l'appartement %s:
+                    Montant: %.2f DH
+                    Type: %s
+                    Référence: %s""", paiement.getAppartement().getNumero(), paiement.getMontant(), paiement.getType(), paiement.getReference());
             sendEmailNotification(paiement.getAppartement().getProprietaire().getEmail(), subject, content);
         }
     }

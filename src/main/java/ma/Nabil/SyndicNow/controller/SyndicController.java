@@ -42,9 +42,7 @@ public class SyndicController {
     @Operation(summary = "Update an existing syndic", description = "Updates a syndic's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Syndic successfully updated")
     @ApiResponse(responseCode = "404", description = "Syndic not found")
-    public ResponseEntity<SyndicResponse> updateSyndic(
-            @Parameter(description = "ID of the syndic to update") @PathVariable Long id,
-            @Valid @RequestBody SyndicRequest dto) {
+    public ResponseEntity<SyndicResponse> updateSyndic(@Parameter(description = "ID of the syndic to update") @PathVariable Long id, @Valid @RequestBody SyndicRequest dto) {
         log.info("Updating syndic with ID: {} with data: {}", id, dto);
         SyndicResponse response = syndicService.updateSyndic(id, dto);
         log.info("Successfully updated syndic with ID: {}", id);

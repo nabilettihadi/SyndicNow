@@ -3,11 +3,7 @@ package ma.Nabil.SyndicNow.mapper;
 import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireRequest;
 import ma.Nabil.SyndicNow.dto.proprietaire.ProprietaireResponse;
 import ma.Nabil.SyndicNow.entity.Proprietaire;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Set;

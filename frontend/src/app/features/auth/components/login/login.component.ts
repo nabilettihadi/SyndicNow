@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { AuthState } from '../../../../core/authentication/models/auth.model';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {RouterLink} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {AuthState} from '@core/authentication/models/auth.model';
 import * as AuthActions from '../../../../core/authentication/store/actions/auth.actions';
 
 @Component({
@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      this.store.dispatch(AuthActions.login({ credentials: this.loginForm.value }));
+      this.store.dispatch(AuthActions.login({credentials: this.loginForm.value}));
     } else {
       Object.keys(this.loginForm.controls).forEach(key => {
         const control = this.loginForm.get(key);

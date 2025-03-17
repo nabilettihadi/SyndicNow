@@ -12,7 +12,8 @@
     <div *ngIf="error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg error-message">
       <div class="flex items-center">
         <svg class="h-5 w-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <span class="text-red-700">{{ error }}</span>
       </div>
@@ -58,7 +59,7 @@
       <div class="flex flex-wrap gap-4">
         <div class="flex-1 min-w-[200px]">
           <label class="block text-sm font-medium text-gray-700 mb-1">Type de paiement</label>
-          <select [(ngModel)]="selectedType" (change)="filterPaiements()" 
+          <select [(ngModel)]="selectedType" (change)="filterPaiements()"
                   class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
             <option value="">Tous les types</option>
             <option value="CHARGES">Charges mensuelles</option>
@@ -76,9 +77,11 @@
 
     <!-- Loader -->
     <div *ngIf="loading" class="flex justify-center items-center py-12">
-      <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <svg class="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+           viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
     </div>
 
@@ -87,56 +90,56 @@
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méthode</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méthode</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <!-- Message si aucun paiement -->
-            <tr *ngIf="filteredPaiements.length === 0">
-              <td colspan="6" class="px-6 py-12 text-center">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun paiement</h3>
-                <p class="mt-1 text-sm text-gray-500">Aucun paiement ne correspond à vos critères de recherche.</p>
-              </td>
-            </tr>
+          <!-- Message si aucun paiement -->
+          <tr *ngIf="filteredPaiements.length === 0">
+            <td colspan="6" class="px-6 py-12 text-center">
+              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+              </svg>
+              <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun paiement</h3>
+              <p class="mt-1 text-sm text-gray-500">Aucun paiement ne correspond à vos critères de recherche.</p>
+            </td>
+          </tr>
 
-            <!-- Liste des paiements -->
-            <tr *ngFor="let paiement of filteredPaiements" class="payment-row hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ paiement.date | date:'dd/MM/yyyy' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ paiement.type | titlecase }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ paiement.montant }} €
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ paiement.methodePaiement | titlecase }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
+          <!-- Liste des paiements -->
+          <tr *ngFor="let paiement of filteredPaiements" class="payment-row hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {{ paiement.date | date:'dd/MM/yyyy' }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {{ paiement.type | titlecase }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+              {{ paiement.montant }} €
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {{ paiement.methodePaiement | titlecase }}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full status-badge"
                       [ngClass]="getStatusStyle(paiement.status)">
                   {{ formatStatus(paiement.status) }}
                 </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button *ngIf="paiement.status === 'PAYE'" 
-                        (click)="downloadRecu(paiement)" 
-                        class="text-blue-600 hover:text-blue-900 focus:outline-none focus:underline download-button">
-                  Télécharger le reçu
-                </button>
-              </td>
-            </tr>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <button *ngIf="paiement.status === 'PAYE'"
+                      (click)="downloadRecu(paiement)"
+                      class="text-blue-600 hover:text-blue-900 focus:outline-none focus:underline download-button">
+                Télécharger le reçu
+              </button>
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>
@@ -144,4 +147,4 @@
   </main>
 
   <app-footer></app-footer>
-</div> 
+</div>

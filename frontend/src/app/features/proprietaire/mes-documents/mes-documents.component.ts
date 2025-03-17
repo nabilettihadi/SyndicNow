@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { FooterComponent } from '../../../shared/components/footer/footer.component';
-import { DocumentService } from '../../../core/services/document.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { IDocument, DocumentType } from './models/document.model';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {DocumentService} from '@core/services/document.service';
+import {AuthService} from '@core/services/auth.service';
+import {DocumentType, IDocument} from './models/document.model';
 
 @Component({
   selector: 'app-mes-documents',
@@ -28,7 +28,8 @@ export class MesDocumentsComponent implements OnInit {
   constructor(
     private documentService: DocumentService,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.loadDocuments();
@@ -62,7 +63,7 @@ export class MesDocumentsComponent implements OnInit {
   filterDocuments() {
     this.filteredDocuments = this.documents.filter(doc => {
       const typeMatch = !this.selectedType || doc.type === this.selectedType;
-      const periodMatch = !this.selectedPeriod || 
+      const periodMatch = !this.selectedPeriod ||
         new Date(doc.date).toISOString().substring(0, 7) === this.selectedPeriod;
       return typeMatch && periodMatch;
     });
@@ -80,7 +81,7 @@ export class MesDocumentsComponent implements OnInit {
       this.error = 'Veuillez sélectionner un fichier';
       return;
     }
-    
+
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser?.userId) {
       this.error = 'Utilisateur non connecté';
@@ -153,13 +154,13 @@ export class MesDocumentsComponent implements OnInit {
   getDocumentTypeStyles(type: DocumentType): { bgColor: string; textColor: string } {
     switch (type) {
       case 'CONTRAT':
-        return { bgColor: 'bg-green-100', textColor: 'text-green-600' };
+        return {bgColor: 'bg-green-100', textColor: 'text-green-600'};
       case 'FACTURE':
-        return { bgColor: 'bg-yellow-100', textColor: 'text-yellow-600' };
+        return {bgColor: 'bg-yellow-100', textColor: 'text-yellow-600'};
       case 'QUITTANCE':
-        return { bgColor: 'bg-indigo-100', textColor: 'text-indigo-600' };
+        return {bgColor: 'bg-indigo-100', textColor: 'text-indigo-600'};
       default:
-        return { bgColor: 'bg-gray-100', textColor: 'text-gray-600' };
+        return {bgColor: 'bg-gray-100', textColor: 'text-gray-600'};
     }
   }
-} 
+}

@@ -1,21 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable, map, switchMap, forkJoin, of, catchError } from 'rxjs';
-import { AuthState, LoginResponse, UserRole } from '../../core/authentication/models/auth.model';
-import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
-import { FooterComponent } from '../../shared/components/footer/footer.component';
-import { inject } from '@angular/core';
-import { ImmeubleService } from '../../core/services/immeuble.service';
-import { PaiementService } from '../../core/services/paiement.service';
-import { ProprietaireService } from '../../core/services/proprietaire.service';
-import { Immeuble, ImmeubleStatistics } from '../../core/models/immeuble.model';
-import { Paiement, PaiementStatistics } from '../../core/models/paiement.model';
-import { Proprietaire, ProprietaireStatistics } from '../../core/models/proprietaire.model';
-import { DashboardStats } from '../../core/models/dashboard.model';
-import { selectAuthState } from '../../core/authentication/store/selectors/auth.selectors';
-import { Router } from '@angular/router';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {catchError, forkJoin, map, Observable, of, switchMap} from 'rxjs';
+import {AuthState, UserRole} from '@core/authentication/models/auth.model';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {PaiementService} from '@core/services/paiement.service';
+import {ProprietaireService} from '@core/services/proprietaire.service';
+import {DashboardStats} from '@core/models/dashboard.model';
+import {selectAuthState} from '@core/authentication/store/selectors/auth.selectors';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,7 +32,6 @@ export class DashboardComponent implements OnInit {
   private readonly paiementService = inject(PaiementService);
   private readonly proprietaireService = inject(ProprietaireService);
   private readonly store = inject(Store<{ auth: AuthState }>);
-  private readonly router = inject(Router);
 
   constructor() {
     this.userName$ = this.store.select(selectAuthState).pipe(
@@ -76,23 +70,6 @@ export class DashboardComponent implements OnInit {
     this.loadStats();
   }
 
-  navigateToImmeubles(): void {
-    this.router.navigate(['/syndic/immeubles']);
-  }
-
-  navigateToPaiements(): void {
-    this.router.navigate(['/syndic/paiements']);
-  }
-
-  navigateToCharges(): void {
-    this.router.navigate(['/syndic/charges']);
-  }
-
-  logout(): void {
-    // Implémentez la logique de déconnexion ici
-    this.router.navigate(['/auth/login']);
-  }
-
   private loadStats(): void {
     this.userRole$.pipe(
       switchMap(role => {
@@ -109,7 +86,7 @@ export class DashboardComponent implements OnInit {
       })
     ).subscribe({
       next: (stats) => {
-        this.dashboardStats = { ...this.dashboardStats, ...stats };
+        this.dashboardStats = {...this.dashboardStats, ...stats};
         this.isLoading = false;
       },
       error: (error) => {

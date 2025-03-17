@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-paiements',
@@ -11,4 +11,5 @@ import { CommonModule } from '@angular/common';
     </div>
   `
 })
-export class PaiementsComponent {} 
+export class PaiementsComponent {
+}

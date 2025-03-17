@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { ImmeubleService } from '../../../core/services/immeuble.service';
-import { Immeuble } from '../../../core/models/immeuble.model';
-import { AuthService } from '../../../core/services/auth.service';
-import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { FooterComponent } from '../../../shared/components/footer/footer.component';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {Immeuble} from '@core/models/immeuble.model';
+import {AuthService} from '@core/services/auth.service';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-immeubles',
@@ -24,7 +24,8 @@ export class ImmeublesComponent implements OnInit {
   constructor(
     private immeubleService: ImmeubleService,
     private authService: AuthService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     const syndicId = this.authService.getCurrentUser()?.userId;

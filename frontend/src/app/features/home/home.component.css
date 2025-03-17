@@ -49,11 +49,11 @@
   .grid {
     grid-template-columns: 1fr;
   }
-  
+
   .space-x-4 > * {
     margin: 0.5rem 0;
   }
-  
+
   .space-x-4 {
     display: flex;
     flex-direction: column;

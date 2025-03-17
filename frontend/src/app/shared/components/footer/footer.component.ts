@@ -56,7 +56,7 @@ import { RouterLink } from '@angular/router';
         </div>
 
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; {{currentYear}} SyndicNow. Tous droits réservés.</p>
+          <p>&copy; {{ currentYear }} SyndicNow. Tous droits réservés.</p>
         </div>
       </div>
     </footer>

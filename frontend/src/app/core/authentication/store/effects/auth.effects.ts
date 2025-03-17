@@ -2,7 +2,7 @@ import {inject, Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Router} from '@angular/router';
 import {catchError, exhaustMap, map, of, tap} from 'rxjs';
-import {AuthService} from '../../../services/auth.service';
+import {AuthService} from '@core/services/auth.service';
 import * as AuthActions from '../actions/auth.actions';
 
 @Injectable()
@@ -95,4 +95,4 @@ export class AuthEffects {
       ),
     {dispatch: false}
   );
-} 
+}

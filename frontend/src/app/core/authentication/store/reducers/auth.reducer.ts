@@ -1,6 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
 import * as AuthActions from '../actions/auth.actions';
-import {LoginResponse, RegisterResponse} from '../../models/auth.model';
+import {LoginResponse} from '../../models/auth.model';
 
 export interface AuthState {
   user: LoginResponse | null;
@@ -105,4 +105,4 @@ export const authReducer = createReducer(
     ...state,
     error: null
   }))
-); 
+);

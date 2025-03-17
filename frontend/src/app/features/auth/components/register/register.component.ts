@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { register } from '../../../../core/authentication/store/actions/auth.actions';
-import { AuthState, RegisterRequest } from '../../../../core/authentication/models/auth.model';
+import {Component} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router, RouterModule} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {register} from '@core/authentication/store/actions/auth.actions';
+import {AuthState, RegisterRequest} from '@core/authentication/models/auth.model';
 
 @Component({
   selector: 'app-register',
@@ -19,8 +19,8 @@ export class RegisterComponent {
   error: string | null = null;
 
   roles = [
-    { value: 'SYNDIC', label: 'Syndic' },
-    { value: 'PROPRIETAIRE', label: 'Propriétaire' }
+    {value: 'SYNDIC', label: 'Syndic'},
+    {value: 'PROPRIETAIRE', label: 'Propriétaire'}
   ];
 
   constructor(
@@ -43,7 +43,7 @@ export class RegisterComponent {
       numeroLicence: [''],
       societe: [''],
       dateDebutActivite: ['']
-    }, { validator: this.passwordMatchValidator });
+    }, {validator: this.passwordMatchValidator});
 
     // Écouter les changements du rôle pour mettre à jour les validations
     this.registerForm.get('role')?.valueChanges.subscribe(role => {
@@ -53,7 +53,7 @@ export class RegisterComponent {
 
   private updateSyndicValidators(role: string) {
     const syndicControls = ['siret', 'numeroLicence', 'societe', 'dateDebutActivite'];
-    
+
     if (role === 'SYNDIC') {
       this.registerForm.get('siret')?.setValidators([Validators.required, Validators.pattern(/^\d{14}$/)]);
       this.registerForm.get('numeroLicence')?.setValidators([Validators.required]);
@@ -98,7 +98,7 @@ export class RegisterComponent {
         });
       }
 
-      this.store.dispatch(register({ userData }));
+      this.store.dispatch(register({userData}));
     } else {
       this.markFormGroupTouched(this.registerForm);
     }
@@ -113,12 +113,12 @@ export class RegisterComponent {
     });
   }
 
-  private passwordMatchValidator(group: FormGroup): {[key: string]: any} | null {
+  private passwordMatchValidator(group: FormGroup): { [key: string]: any } | null {
     const password = group.get('password');
     const confirmPassword = group.get('confirmPassword');
 
     if (password && confirmPassword && password.value !== confirmPassword.value) {
-      return { mismatch: true };
+      return {mismatch: true};
     }
     return null;
   }

@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Immeuble, ImmeubleStatistics } from '../models/immeuble.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '@env/environment';
+import {Immeuble, ImmeubleStatistics} from '../models/immeuble.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,8 @@ import { Immeuble, ImmeubleStatistics } from '../models/immeuble.model';
 export class ImmeubleService {
   private apiUrl = `${environment.apiUrl}/api/immeubles`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAllImmeubles(): Observable<Immeuble[]> {
     return this.http.get<Immeuble[]>(this.apiUrl);
@@ -43,4 +44,7 @@ export class ImmeubleService {
   getImmeublesBySyndic(syndicId: number): Observable<Immeuble[]> {
     return this.http.get<Immeuble[]>(`${this.apiUrl}/syndic/${syndicId}`);
   }
+}
+
+export class ImmeubleCreate {
 }

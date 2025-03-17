@@ -26,17 +26,7 @@ public class SyndicServiceImpl implements SyndicService {
     @Override
     @Transactional
     public SyndicResponse createSyndic(SyndicRequest request) {
-        Syndic syndic = Syndic.builder()
-            .nom(request.getNom())
-            .prenom(request.getPrenom())
-            .email(request.getEmail())
-            .password(passwordEncoder.encode(request.getPassword()))
-            .telephone(request.getTelephone())
-            .adresse(request.getAdresse())
-            .societe(request.getSociete())
-            .numeroLicence(request.getNumeroLicence())
-            .role(Role.SYNDIC)
-            .build();
+        Syndic syndic = Syndic.builder().nom(request.getNom()).prenom(request.getPrenom()).email(request.getEmail()).password(passwordEncoder.encode(request.getPassword())).telephone(request.getTelephone()).adresse(request.getAdresse()).societe(request.getSociete()).numeroLicence(request.getNumeroLicence()).role(Role.SYNDIC).build();
 
         syndic = syndicRepository.save(syndic);
         return mapToResponse(syndic);
@@ -45,8 +35,7 @@ public class SyndicServiceImpl implements SyndicService {
     @Override
     @Transactional
     public SyndicResponse updateSyndic(Long id, SyndicRequest request) {
-        Syndic syndic = syndicRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Syndic non trouvé avec l'ID: " + id));
+        Syndic syndic = syndicRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Syndic non trouvé avec l'ID: " + id));
 
         syndic.setNom(request.getNom());
         syndic.setPrenom(request.getPrenom());
@@ -86,23 +75,8 @@ public class SyndicServiceImpl implements SyndicService {
     }
 
     private SyndicResponse mapToResponse(Syndic syndic) {
-        List<Long> immeubleIds = syndic.getImmeubles() != null ? 
-            syndic.getImmeubles().stream().map(Immeuble::getId).collect(Collectors.toList()) : 
-            List.of();
+        List<Long> immeubleIds = syndic.getImmeubles() != null ? syndic.getImmeubles().stream().map(Immeuble::getId).collect(Collectors.toList()) : List.of();
 
-        return SyndicResponse.builder()
-            .id(syndic.getId())
-            .nom(syndic.getNom())
-            .prenom(syndic.getPrenom())
-            .email(syndic.getEmail())
-            .telephone(syndic.getTelephone())
-            .adresse(syndic.getAdresse())
-            .societe(syndic.getSociete())
-            .numeroLicence(syndic.getNumeroLicence())
-            .role(syndic.getRole().toString())
-            .createdAt(syndic.getCreatedAt())
-            .updatedAt(syndic.getUpdatedAt())
-            .immeubleIds(immeubleIds)
-            .build();
+        return SyndicResponse.builder().id(syndic.getId()).nom(syndic.getNom()).prenom(syndic.getPrenom()).email(syndic.getEmail()).telephone(syndic.getTelephone()).adresse(syndic.getAdresse()).societe(syndic.getSociete()).numeroLicence(syndic.getNumeroLicence()).role(syndic.getRole().toString()).createdAt(syndic.getCreatedAt()).updatedAt(syndic.getUpdatedAt()).immeubleIds(immeubleIds).build();
     }
 }

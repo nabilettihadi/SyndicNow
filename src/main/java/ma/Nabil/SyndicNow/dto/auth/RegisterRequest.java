@@ -49,8 +49,8 @@ public class RegisterRequest {
     private String siret;
 
     private String numeroLicence;
-    
+
     private String societe;
-    
+
     private LocalDateTime dateDebutActivite;
 } 

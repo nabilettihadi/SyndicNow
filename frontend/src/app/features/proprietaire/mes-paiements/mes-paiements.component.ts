@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { FooterComponent } from '../../../shared/components/footer/footer.component';
-import { PaiementService } from '../../../core/services/paiement.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { IPaiement, PaiementType, PaiementStats } from './models/paiement.model';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {PaiementService} from '@core/services/paiement.service';
+import {AuthService} from '@core/services/auth.service';
+import {IPaiement, PaiementStats, PaiementType} from './models/paiement.model';
 
 @Component({
   selector: 'app-mes-paiements',
@@ -19,7 +19,7 @@ export class MesPaiementsComponent implements OnInit {
   filteredPaiements: IPaiement[] = [];
   selectedType: PaiementType | '' = '';
   selectedPeriod: string = '';
-  
+
   stats: PaiementStats = {
     prochainPaiement: null,
     totalPaye: 0,
@@ -35,7 +35,8 @@ export class MesPaiementsComponent implements OnInit {
   constructor(
     private paiementService: PaiementService,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.loadPaiements();
@@ -74,7 +75,7 @@ export class MesPaiementsComponent implements OnInit {
   filterPaiements() {
     this.filteredPaiements = this.paiements.filter(paiement => {
       const typeMatch = !this.selectedType || paiement.type === this.selectedType;
-      const periodMatch = !this.selectedPeriod || 
+      const periodMatch = !this.selectedPeriod ||
         new Date(paiement.date).toISOString().substring(0, 7) === this.selectedPeriod;
       return typeMatch && periodMatch;
     });
@@ -87,8 +88,8 @@ export class MesPaiementsComponent implements OnInit {
       .sort((a, b) => new Date(a.dateEcheance).getTime() - new Date(b.dateEcheance).getTime())[0] || null;
 
     // Total payé cette année
-    const paiementsAnnee = this.paiements.filter(p => 
-      new Date(p.date).getFullYear() === this.currentYear && 
+    const paiementsAnnee = this.paiements.filter(p =>
+      new Date(p.date).getFullYear() === this.currentYear &&
       p.status === 'PAYE'
     );
     this.stats.totalPaye = paiementsAnnee.reduce((sum, p) => sum + p.montant, 0);
@@ -127,13 +128,13 @@ export class MesPaiementsComponent implements OnInit {
   getStatusStyle(status: string): { bgColor: string; textColor: string } {
     switch (status) {
       case 'PAYE':
-        return { bgColor: 'bg-green-100', textColor: 'text-green-800' };
+        return {bgColor: 'bg-green-100', textColor: 'text-green-800'};
       case 'EN_ATTENTE':
-        return { bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' };
+        return {bgColor: 'bg-yellow-100', textColor: 'text-yellow-800'};
       case 'EN_RETARD':
-        return { bgColor: 'bg-red-100', textColor: 'text-red-800' };
+        return {bgColor: 'bg-red-100', textColor: 'text-red-800'};
       default:
-        return { bgColor: 'bg-gray-100', textColor: 'text-gray-800' };
+        return {bgColor: 'bg-gray-100', textColor: 'text-gray-800'};
     }
   }
 
@@ -151,4 +152,4 @@ export class MesPaiementsComponent implements OnInit {
         return status;
     }
   }
-} 
+}

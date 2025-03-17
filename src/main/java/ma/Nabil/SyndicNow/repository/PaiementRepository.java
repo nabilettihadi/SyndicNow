@@ -56,22 +56,11 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
     @Query("SELECT p FROM Paiement p WHERE p.appartement.immeuble.syndic.id = :syndicId")
     List<Paiement> findBySyndicId(@Param("syndicId") Long syndicId);
 
-    @Query("SELECT p FROM Paiement p WHERE " +
-            "p.appartement.immeuble.syndic.id = :syndicId AND " +
-            "p.datePaiement BETWEEN :debut AND :fin")
-    Page<Paiement> findBySyndicIdAndPeriode(
-            @Param("syndicId") Long syndicId,
-            @Param("debut") LocalDateTime debut,
-            @Param("fin") LocalDateTime fin,
-            Pageable pageable);
+    @Query("SELECT p FROM Paiement p WHERE " + "p.appartement.immeuble.syndic.id = :syndicId AND " + "p.datePaiement BETWEEN :debut AND :fin")
+    Page<Paiement> findBySyndicIdAndPeriode(@Param("syndicId") Long syndicId, @Param("debut") LocalDateTime debut, @Param("fin") LocalDateTime fin, Pageable pageable);
 
-    @Query("SELECT COALESCE(SUM(p.montant), 0) FROM Paiement p WHERE " +
-            "p.appartement.proprietaire.id = :proprietaireId AND " +
-            "p.datePaiement BETWEEN :debut AND :fin")
-    Double getTotalPaiementsByProprietaireAndPeriode(
-            @Param("proprietaireId") Long proprietaireId,
-            @Param("debut") LocalDateTime debut,
-            @Param("fin") LocalDateTime fin);
+    @Query("SELECT COALESCE(SUM(p.montant), 0) FROM Paiement p WHERE " + "p.appartement.proprietaire.id = :proprietaireId AND " + "p.datePaiement BETWEEN :debut AND :fin")
+    Double getTotalPaiementsByProprietaireAndPeriode(@Param("proprietaireId") Long proprietaireId, @Param("debut") LocalDateTime debut, @Param("fin") LocalDateTime fin);
 
     long countByStatus(PaiementStatus status);
 

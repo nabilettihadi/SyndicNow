@@ -19,10 +19,7 @@ public interface ProprietaireRepository extends JpaRepository<Proprietaire, Long
 
     Optional<Proprietaire> findByCin(String cin);
 
-    @Query("SELECT p FROM Proprietaire p WHERE " +
-            "LOWER(p.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(p.prenom) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-            "LOWER(p.email) LIKE LOWER(CONCAT('%', :search, '%'))")
+    @Query("SELECT p FROM Proprietaire p WHERE " + "LOWER(p.nom) LIKE LOWER(CONCAT('%', :search, '%')) OR " + "LOWER(p.prenom) LIKE LOWER(CONCAT('%', :search, '%')) OR " + "LOWER(p.email) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Proprietaire> searchProprietaires(@Param("search") String search, Pageable pageable);
 
     @Query("SELECT p FROM Proprietaire p LEFT JOIN FETCH p.appartements WHERE p.id = :id")

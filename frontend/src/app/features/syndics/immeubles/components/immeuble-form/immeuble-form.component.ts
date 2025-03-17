@@ -1,10 +1,10 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { ImmeubleService, ImmeubleCreate } from '../../services/immeuble.service';
-import { AuthService } from '../../../../core/services/auth.service';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {ImmeubleCreate, ImmeubleService} from '@core/services/immeuble.service';
+import {AuthService} from '@core/services/auth.service';
 
 @Component({
   selector: 'app-immeuble-form',
@@ -71,4 +71,4 @@ export class ImmeubleFormComponent implements OnInit {
       this.onSubmitEvent.emit(immeuble);
     }
   }
-} 
+}

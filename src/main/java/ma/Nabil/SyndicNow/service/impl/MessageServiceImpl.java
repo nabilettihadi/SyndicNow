@@ -30,7 +30,7 @@ public class MessageServiceImpl implements MessageService {
     public MessageResponse createMessage(MessageRequest request) {
         User sender = getCurrentUser();
         Message message = Message.builder().subject(request.getSubject()).content(request.getContent()).priority(request.getPriority()).category(request.getCategory()).sender(sender).parentMessage(request.getParentMessageId() != null ? messageRepository.findById(request.getParentMessageId()).orElse(null) : null).appartement(null) // Will be set based on appartementId if needed
-                .immeuble(null) // Will be set based on immeubleId if needed
+                .immeuble(null)
                 .attachmentUrls(request.getAttachmentUrls()).recipients(request.getRecipients()).build();
 
         return toMessageResponse(messageRepository.save(message));

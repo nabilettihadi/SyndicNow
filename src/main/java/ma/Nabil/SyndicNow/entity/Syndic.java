@@ -1,11 +1,11 @@
 package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import lombok.Builder;
 import ma.Nabil.SyndicNow.enums.Role;
 
 import java.time.LocalDateTime;

@@ -8,7 +8,10 @@ import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleStatistics;
 import ma.Nabil.SyndicNow.entity.Immeuble;
 import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.mapper.ImmeubleMapper;
-import ma.Nabil.SyndicNow.repository.*;
+import ma.Nabil.SyndicNow.repository.AppartementRepository;
+import ma.Nabil.SyndicNow.repository.ImmeubleRepository;
+import ma.Nabil.SyndicNow.repository.PaiementRepository;
+import ma.Nabil.SyndicNow.repository.ProprietaireRepository;
 import ma.Nabil.SyndicNow.service.ImmeubleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,23 +33,18 @@ public class ImmeubleServiceImpl implements ImmeubleService {
 
     @Override
     public List<ImmeubleResponse> getAllImmeubles() {
-        return immeubleRepository.findAll().stream()
-                .map(immeubleMapper::toResponse)
-                .collect(Collectors.toList());
+        return immeubleRepository.findAll().stream().map(immeubleMapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
     public ImmeubleResponse getImmeubleById(Long id) {
-        Immeuble immeuble = immeubleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé avec l'id: " + id));
+        Immeuble immeuble = immeubleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé avec l'id: " + id));
         return immeubleMapper.toResponse(immeuble);
     }
 
     @Override
     public List<ImmeubleResponse> getImmeublesBySyndic(Long syndicId) {
-        return immeubleRepository.findBySyndicId(syndicId).stream()
-                .map(immeubleMapper::toResponse)
-                .collect(Collectors.toList());
+        return immeubleRepository.findBySyndicId(syndicId).stream().map(immeubleMapper::toResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -58,9 +56,8 @@ public class ImmeubleServiceImpl implements ImmeubleService {
 
     @Override
     public ImmeubleResponse updateImmeuble(Long id, ImmeubleRequest request) {
-        Immeuble existingImmeuble = immeubleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé avec l'id: " + id));
-        
+        Immeuble existingImmeuble = immeubleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé avec l'id: " + id));
+
         immeubleMapper.updateEntityFromRequest(request, existingImmeuble);
         Immeuble updatedImmeuble = immeubleRepository.save(existingImmeuble);
         return immeubleMapper.toResponse(updatedImmeuble);
@@ -77,19 +74,12 @@ public class ImmeubleServiceImpl implements ImmeubleService {
     @Override
     public ImmeubleStatistics getImmeubleStatistics() {
         log.debug("Calculating buildings statistics");
-        
+
         Long totalImmeubles = immeubleRepository.count();
         Long totalAppartements = appartementRepository.count();
         Long totalProprietaires = proprietaireRepository.count();
-        Double totalRevenu = paiementRepository.findAll().stream()
-                .mapToDouble(paiement -> paiement.getMontant().doubleValue())
-                .sum();
+        Double totalRevenu = paiementRepository.findAll().stream().mapToDouble(paiement -> paiement.getMontant().doubleValue()).sum();
 
-        return ImmeubleStatistics.builder()
-                .totalImmeubles(totalImmeubles)
-                .totalAppartements(totalAppartements)
-                .totalProprietaires(totalProprietaires)
-                .totalRevenu(totalRevenu)
-                .build();
+        return ImmeubleStatistics.builder().totalImmeubles(totalImmeubles).totalAppartements(totalAppartements).totalProprietaires(totalProprietaires).totalRevenu(totalRevenu).build();
     }
 }

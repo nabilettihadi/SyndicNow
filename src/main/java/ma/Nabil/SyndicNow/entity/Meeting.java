@@ -64,17 +64,10 @@ public class Meeting {
     private String votingResults;
 
     public enum MeetingType {
-        ASSEMBLEE_GENERALE,
-        ASSEMBLEE_EXTRAORDINAIRE,
-        CONSEIL_SYNDICAL,
-        AUTRE
+        ASSEMBLEE_GENERALE, ASSEMBLEE_EXTRAORDINAIRE, CONSEIL_SYNDICAL, AUTRE
     }
 
     public enum MeetingStatus {
-        PLANIFIEE,
-        EN_COURS,
-        TERMINEE,
-        ANNULEE,
-        REPORTEE
+        PLANIFIEE, EN_COURS, TERMINEE, ANNULEE, REPORTEE
     }
 }

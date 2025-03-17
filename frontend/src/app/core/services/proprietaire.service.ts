@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Proprietaire, ProprietaireStatistics } from '../models/proprietaire.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '@env/environment';
+import {Proprietaire, ProprietaireStatistics} from '../models/proprietaire.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,8 @@ import { Proprietaire, ProprietaireStatistics } from '../models/proprietaire.mod
 export class ProprietaireService {
   private apiUrl = `${environment.apiUrl}/api/proprietaires`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAllProprietaires(): Observable<Proprietaire[]> {
     return this.http.get<Proprietaire[]>(this.apiUrl);
@@ -47,4 +48,4 @@ export class ProprietaireService {
   removeAppartementFromProprietaire(proprietaireId: number, appartementId: number): Observable<Proprietaire> {
     return this.http.delete<Proprietaire>(`${this.apiUrl}/${proprietaireId}/appartements/${appartementId}`);
   }
-} 
+}

@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
-import { FooterComponent } from '../../../shared/components/footer/footer.component';
-import { AppartementService } from '../../../core/services/appartement.service';
-import { AuthService } from '../../../core/services/auth.service';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {AppartementService} from '@core/services/appartement.service';
+import {AuthService} from '@core/services/auth.service';
 
 export interface Appartement {
   id: number;
@@ -33,7 +33,8 @@ export class MesAppartementsComponent implements OnInit {
   constructor(
     private appartementService: AppartementService,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     this.loadAppartements();
@@ -62,4 +63,4 @@ export class MesAppartementsComponent implements OnInit {
         }
       });
   }
-} 
+}

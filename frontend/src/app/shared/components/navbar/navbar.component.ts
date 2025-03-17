@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, HostListener, Renderer2, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink, Router, RouterLinkActive } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable, Subscription, fromEvent } from 'rxjs';
-import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { AuthService } from '../../../core/services/auth.service';
-import { AuthState, LoginResponse, UserRole } from '../../../core/authentication/models/auth.model';
+import {Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Router, RouterLink, RouterLinkActive} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {fromEvent, Observable, Subscription} from 'rxjs';
+import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
+import {AuthService} from '@core/services/auth.service';
+import {AuthState, LoginResponse, UserRole} from '@core/authentication/models/auth.model';
 import * as AuthActions from '../../../core/authentication/store/actions/auth.actions';
 
 @Component({
@@ -55,7 +55,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll', ['$event'])
   onScroll(): void {
     const currentScroll = window.scrollY;
-    
+
     // Gestion de la classe scrolled
     if (currentScroll > this.scrollThreshold) {
       this.renderer.addClass(this.el.nativeElement.querySelector('.navbar'), 'scrolled');
@@ -83,7 +83,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   onClick(event: Event): void {
     const userMenu = document.querySelector('.user-menu');
     const userButton = document.querySelector('.user-avatar');
-    
+
     if (userMenu && userButton && this.isUserMenuOpen) {
       if (!userMenu.contains(event.target as Node) && !userButton.contains(event.target as Node)) {
         this.closeUserMenu();
@@ -143,7 +143,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.closeUserMenu();
     }
     this.isMobileMenuOpen = force !== undefined ? force : !this.isMobileMenuOpen;
-    
+
     // Empêcher le défilement du body quand le menu mobile est ouvert
     if (this.isMobileMenuOpen) {
       this.renderer.setStyle(document.body, 'overflow', 'hidden');
@@ -165,7 +165,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     const navbar = this.el.nativeElement;
     const userMenu = navbar.querySelector('.user-menu');
     const mobileMenu = navbar.querySelector('.mobile-menu');
-    
+
     if (!navbar.contains(event.target as Node)) {
       this.closeUserMenu();
       if (this.isMobileMenuOpen) {

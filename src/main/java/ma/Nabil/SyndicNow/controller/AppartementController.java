@@ -32,8 +32,7 @@ public class AppartementController {
     private final AppartementService appartementService;
 
     @PostMapping
-    @Operation(summary = "Create a new apartment",
-            description = "Creates a new apartment with the provided information")
+    @Operation(summary = "Create a new apartment", description = "Creates a new apartment with the provided information")
     @ApiResponse(responseCode = "201", description = "Apartment successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     @PreAuthorize("hasRole('ADMIN')")
@@ -45,14 +44,11 @@ public class AppartementController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update an existing apartment",
-            description = "Updates an apartment's information based on the provided ID")
+    @Operation(summary = "Update an existing apartment", description = "Updates an apartment's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Apartment successfully updated")
     @ApiResponse(responseCode = "404", description = "Apartment not found")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AppartementResponse> updateAppartement(
-            @Parameter(description = "ID of the apartment to update") @PathVariable Long id,
-            @Valid @RequestBody AppartementRequest dto) {
+    public ResponseEntity<AppartementResponse> updateAppartement(@Parameter(description = "ID of the apartment to update") @PathVariable Long id, @Valid @RequestBody AppartementRequest dto) {
         log.info("Updating apartment with ID: {} with data: {}", id, dto);
         AppartementResponse response = appartementService.updateAppartement(id, dto);
         log.info("Successfully updated apartment with ID: {}", id);
@@ -60,21 +56,18 @@ public class AppartementController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get an apartment by ID",
-            description = "Retrieves an apartment's information based on the provided ID")
+    @Operation(summary = "Get an apartment by ID", description = "Retrieves an apartment's information based on the provided ID")
     @ApiResponse(responseCode = "200", description = "Apartment found and returned")
     @ApiResponse(responseCode = "404", description = "Apartment not found")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<AppartementResponse> getAppartementById(
-            @Parameter(description = "ID of the apartment to retrieve") @PathVariable Long id) {
+    public ResponseEntity<AppartementResponse> getAppartementById(@Parameter(description = "ID of the apartment to retrieve") @PathVariable Long id) {
         log.debug("Fetching apartment with ID: {}", id);
         AppartementResponse response = appartementService.getAppartementById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    @Operation(summary = "Get all apartments",
-            description = "Retrieves a paginated list of all apartments in the system")
+    @Operation(summary = "Get all apartments", description = "Retrieves a paginated list of all apartments in the system")
     @ApiResponse(responseCode = "200", description = "List of apartments retrieved successfully")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Page<AppartementResponse>> getAllAppartements(Pageable pageable) {
@@ -84,13 +77,11 @@ public class AppartementController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an apartment",
-            description = "Deletes an apartment based on the provided ID")
+    @Operation(summary = "Delete an apartment", description = "Deletes an apartment based on the provided ID")
     @ApiResponse(responseCode = "204", description = "Apartment successfully deleted")
     @ApiResponse(responseCode = "404", description = "Apartment not found")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteAppartement(
-            @Parameter(description = "ID of the apartment to delete") @PathVariable Long id) {
+    public ResponseEntity<Void> deleteAppartement(@Parameter(description = "ID of the apartment to delete") @PathVariable Long id) {
         log.info("Deleting apartment with ID: {}", id);
         appartementService.deleteAppartement(id);
         log.info("Successfully deleted apartment with ID: {}", id);
@@ -98,26 +89,21 @@ public class AppartementController {
     }
 
     @GetMapping("/proprietaire/{proprietaireId}")
-    @Operation(summary = "Get apartments by proprietaire",
-            description = "Retrieves a list of apartments for a specific proprietaire")
+    @Operation(summary = "Get apartments by proprietaire", description = "Retrieves a list of apartments for a specific proprietaire")
     @ApiResponse(responseCode = "200", description = "List of apartments retrieved successfully")
     @PreAuthorize("hasAnyRole('PROPRIETAIRE', 'ADMIN')")
-    public ResponseEntity<List<AppartementResponse>> getAppartementsByProprietaire(
-            @PathVariable Long proprietaireId) {
+    public ResponseEntity<List<AppartementResponse>> getAppartementsByProprietaire(@PathVariable Long proprietaireId) {
         log.debug("Fetching apartments for proprietaire with ID: {}", proprietaireId);
         List<AppartementResponse> response = appartementService.getAppartementsByProprietaire(proprietaireId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/proprietaire/{proprietaireId}")
-    @Operation(summary = "Create a new apartment for a proprietaire",
-            description = "Creates a new apartment and associates it with the specified proprietaire")
+    @Operation(summary = "Create a new apartment for a proprietaire", description = "Creates a new apartment and associates it with the specified proprietaire")
     @ApiResponse(responseCode = "201", description = "Apartment successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AppartementResponse> createAppartementForProprietaire(
-            @PathVariable Long proprietaireId,
-            @Valid @RequestBody AppartementRequest dto) {
+    public ResponseEntity<AppartementResponse> createAppartementForProprietaire(@PathVariable Long proprietaireId, @Valid @RequestBody AppartementRequest dto) {
         log.info("Creating new apartment for proprietaire {} with data: {}", proprietaireId, dto);
         AppartementResponse response = appartementService.createAppartementForProprietaire(proprietaireId, dto);
         log.info("Successfully created apartment with ID: {} for proprietaire: {}", response.getId(), proprietaireId);

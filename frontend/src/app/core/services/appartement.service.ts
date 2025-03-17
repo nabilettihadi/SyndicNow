@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {Observable, throwError} from 'rxjs';
+import {catchError} from 'rxjs/operators';
+import {environment} from '@env/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,8 @@ import { environment } from '../../../environments/environment';
 export class AppartementService {
   private apiUrl = `${environment.apiUrl}/api/appartements`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAppartementsProprietaire(proprietaireId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/proprietaire/${proprietaireId}`).pipe(
@@ -34,4 +35,4 @@ export class AppartementService {
     console.error('AppartementService Error:', error);
     return throwError(() => new Error(errorMessage));
   }
-} 
+}

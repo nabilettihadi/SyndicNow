@@ -43,8 +43,14 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* En-tête */
@@ -159,12 +165,29 @@
   transform: scale(1.1);
 }
 
-.bg-purple { background: var(--purple-gradient); }
-.bg-blue { background: var(--secondary-gradient); }
-.bg-green { background: var(--success-gradient); }
-.bg-yellow { background: var(--warning-gradient); }
-.bg-indigo { background: var(--primary-gradient); }
-.bg-red { background: var(--danger-gradient); }
+.bg-purple {
+  background: var(--purple-gradient);
+}
+
+.bg-blue {
+  background: var(--secondary-gradient);
+}
+
+.bg-green {
+  background: var(--success-gradient);
+}
+
+.bg-yellow {
+  background: var(--warning-gradient);
+}
+
+.bg-indigo {
+  background: var(--primary-gradient);
+}
+
+.bg-red {
+  background: var(--danger-gradient);
+}
 
 .stat-info {
   flex: 1;
@@ -439,9 +462,15 @@
 
 /* Animations de chargement */
 @keyframes pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
 }
 
 .loading .stat-value,

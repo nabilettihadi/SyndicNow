@@ -1,0 +1,50 @@
+/* Styles spécifiques au composant incident-form */
+.container {
+  max-width: 1280px;
+}
+
+/* Style des champs de formulaire en erreur */
+.ng-invalid.ng-touched {
+  border-color: rgb(239, 68, 68);
+}
+
+/* Animation des messages d'erreur */
+.text-red-600 {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Style des boutons désactivés */
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .max-w-2xl {
+    width: 100%;
+  }
+  
+  .space-x-4 {
+    gap: 0.5rem;
+  }
+  
+  button {
+    width: 100%;
+  }
+} 

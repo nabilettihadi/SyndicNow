@@ -1,5 +1,6 @@
 import {Routes} from '@angular/router';
 import {AuthGuard, DashboardGuard} from '@core/guards/auth.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -90,6 +91,29 @@ export const routes: Routes = [
     path: 'profile',
     canActivate: [DashboardGuard],
     loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+  },
+  {
+    path: 'incidents',
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/incidents/list-incidents/list-incidents.component')
+          .then(m => m.ListIncidentsComponent),
+        canActivate: [authGuard]
+      },
+      {
+        path: 'new',
+        loadComponent: () => import('./features/incidents/incident-form/incident-form.component')
+          .then(m => m.IncidentFormComponent),
+        canActivate: [authGuard]
+      },
+      {
+        path: ':id/edit',
+        loadComponent: () => import('./features/incidents/incident-form/incident-form.component')
+          .then(m => m.IncidentFormComponent),
+        canActivate: [authGuard]
+      }
+    ]
   },
   {
     path: '**',

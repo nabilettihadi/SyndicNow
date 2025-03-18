@@ -1,0 +1,122 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">Liste des Appartements</h1>
+    
+    <!-- Filtres -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <!-- Recherche -->
+      <div class="relative">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          placeholder="Rechercher un appartement..."
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+      </div>
+
+      <!-- Filtre par étage -->
+      <div>
+        <select
+          [(ngModel)]="selectedEtage"
+          (change)="onEtageChange()"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">Tous les étages</option>
+          <option *ngFor="let etage of [-1, 0, 1, 2, 3, 4, 5]" [value]="etage">
+            {{ etage === -1 ? 'Sous-sol' : (etage === 0 ? 'Rez-de-chaussée' : 'Étage ' + etage) }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Filtre par statut -->
+      <div>
+        <select
+          [(ngModel)]="selectedStatut"
+          (change)="onStatutChange()"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="">Tous les statuts</option>
+          <option value="LIBRE">Libre</option>
+          <option value="OCCUPE">Occupé</option>
+          <option value="EN_TRAVAUX">En travaux</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Bouton Nouveau -->
+    <div class="flex justify-end mb-6">
+      <button
+        routerLink="/appartements/new"
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Nouvel Appartement
+      </button>
+    </div>
+
+    <!-- Liste des appartements -->
+    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numéro</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étage</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Surface</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loyer</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Locataire</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr *ngFor="let appartement of filteredAppartements">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ appartement.numero }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ appartement.etage === -1 ? 'Sous-sol' : 
+                     (appartement.etage === 0 ? 'RDC' : 'Étage ' + appartement.etage) }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ formatSurface(appartement.surface) }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">{{ formatLoyer(appartement.loyer) }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span [class]="'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + getStatutClass(appartement.statut)">
+                  {{ appartement.statut }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div *ngIf="appartement.locataireActuel" class="text-sm text-gray-900">
+                  {{ appartement.locataireActuel.nom }} {{ appartement.locataireActuel.prenom }}
+                </div>
+                <div *ngIf="!appartement.locataireActuel" class="text-sm text-gray-500">
+                  -
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <button
+                  [routerLink]="['/appartements', appartement.id]"
+                  class="text-blue-600 hover:text-blue-900 mr-4"
+                >
+                  Détails
+                </button>
+                <button
+                  [routerLink]="['/appartements', appartement.id, 'edit']"
+                  class="text-indigo-600 hover:text-indigo-900"
+                >
+                  Modifier
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div> 

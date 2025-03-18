@@ -1,0 +1,72 @@
+<div class="container mt-4">
+  <h2>{{ isEditMode ? 'Modifier le paiement' : 'Nouveau paiement' }}</h2>
+
+  <form [formGroup]="paiementForm" (ngSubmit)="onSubmit()" class="mt-4">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="reference" class="form-label">Référence</label>
+        <input type="text" class="form-control" id="reference" formControlName="reference" readonly>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="locataireId" class="form-label">Locataire</label>
+        <select class="form-select" id="locataireId" formControlName="locataireId">
+          <option value="">Sélectionnez un locataire</option>
+          <option *ngFor="let locataire of locataires" [value]="locataire.id">
+            {{ locataire.nom }} {{ locataire.prenom }} - Apt. {{ locataire.appartement?.numero }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="paiementForm.get('locataireId')?.invalid && paiementForm.get('locataireId')?.touched">
+          Le locataire est requis
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="montant" class="form-label">Montant (€)</label>
+        <input type="number" class="form-control" id="montant" formControlName="montant" min="0" step="0.01">
+        <div class="invalid-feedback" *ngIf="paiementForm.get('montant')?.invalid && paiementForm.get('montant')?.touched">
+          Le montant doit être supérieur à 0
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="datePaiement" class="form-label">Date de paiement</label>
+        <input type="date" class="form-control" id="datePaiement" formControlName="datePaiement">
+        <div class="invalid-feedback" *ngIf="paiementForm.get('datePaiement')?.invalid && paiementForm.get('datePaiement')?.touched">
+          La date de paiement est requise
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="methodePaiement" class="form-label">Méthode de paiement</label>
+        <select class="form-select" id="methodePaiement" formControlName="methodePaiement">
+          <option value="VIREMENT">Virement</option>
+          <option value="ESPECES">Espèces</option>
+          <option value="CHEQUE">Chèque</option>
+          <option value="CARTE">Carte bancaire</option>
+        </select>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <label for="statut" class="form-label">Statut</label>
+        <select class="form-select" id="statut" formControlName="statut">
+          <option value="EN_ATTENTE">En attente</option>
+          <option value="VALIDE">Validé</option>
+          <option value="REJETE">Rejeté</option>
+        </select>
+      </div>
+
+      <div class="col-12 mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" formControlName="description" rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-primary" [disabled]="paiementForm.invalid">
+        {{ isEditMode ? 'Mettre à jour' : 'Enregistrer' }}
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="onCancel()">Annuler</button>
+    </div>
+  </form>
+</div> 

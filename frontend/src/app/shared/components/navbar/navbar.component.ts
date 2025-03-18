@@ -55,23 +55,26 @@ export class NavbarComponent implements OnInit, OnDestroy {
   @HostListener('window:scroll', ['$event'])
   onScroll(): void {
     const currentScroll = window.scrollY;
+    const navElement = this.el.nativeElement.querySelector('nav');
+
+    if (!navElement) return;
 
     // Gestion de la classe scrolled
     if (currentScroll > this.scrollThreshold) {
-      this.renderer.addClass(this.el.nativeElement.querySelector('.navbar'), 'scrolled');
+      this.renderer.addClass(navElement, 'scrolled');
     } else {
-      this.renderer.removeClass(this.el.nativeElement.querySelector('.navbar'), 'scrolled');
+      this.renderer.removeClass(navElement, 'scrolled');
     }
 
     // Gestion de la visibilité de la navbar lors du scroll
     if (currentScroll > this.lastScrollPosition && currentScroll > this.scrollThreshold) {
       if (this.isNavbarVisible && !this.isMobileMenuOpen) {
-        this.renderer.setStyle(this.el.nativeElement.querySelector('.navbar'), 'transform', 'translateY(-100%)');
+        this.renderer.setStyle(navElement, 'transform', 'translateY(-100%)');
         this.isNavbarVisible = false;
       }
     } else {
       if (!this.isNavbarVisible) {
-        this.renderer.setStyle(this.el.nativeElement.querySelector('.navbar'), 'transform', 'translateY(0)');
+        this.renderer.setStyle(navElement, 'transform', 'translateY(0)');
         this.isNavbarVisible = true;
       }
     }

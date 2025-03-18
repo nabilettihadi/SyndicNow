@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LocataireService } from '../../../core/services/locataire.service';
 import { AppartementService } from '../../../core/services/appartement.service';
 import { Locataire } from '../../../core/models/locataire.model';
@@ -10,7 +10,7 @@ import { Appartement } from '../../../core/models/appartement.model';
 @Component({
   selector: 'app-locataire-form',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './locataire-form.component.html',
   styleUrls: ['./locataire-form.component.css']
 })
@@ -65,7 +65,7 @@ export class LocataireFormComponent implements OnInit {
   loadLocataire(): void {
     if (this.locataireId) {
       this.locataireService.getLocataireById(this.locataireId).subscribe({
-        next: (locataire) => {
+        next: (locataire: Locataire) => {
           this.locataireForm.patchValue({
             nom: locataire.nom,
             prenom: locataire.prenom,
@@ -73,7 +73,7 @@ export class LocataireFormComponent implements OnInit {
             telephone: locataire.telephone,
             dateDebut: this.formatDateForInput(locataire.dateDebut),
             dateFin: locataire.dateFin ? this.formatDateForInput(locataire.dateFin) : '',
-            appartementId: locataire.appartement.id
+            appartementId: locataire.appartement?.id
           });
         },
         error: (error) => {

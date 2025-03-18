@@ -1,0 +1,71 @@
+/* Styles pour la liste des paiements */
+.table-container {
+  overflow-x: auto;
+}
+
+.search-container {
+  margin-bottom: 1rem;
+}
+
+.filter-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-valide {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-attente {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-rejete {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.montant {
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 500;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .filter-container {
+    flex-direction: column;
+  }
+  
+  .filter-group {
+    width: 100%;
+  }
+  
+  .actions-cell {
+    flex-direction: column;
+  }
+  
+  .actions-cell button {
+    width: 100%;
+  }
+} 

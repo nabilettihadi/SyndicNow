@@ -27,7 +27,7 @@ export class ListLocatairesComponent implements OnInit {
 
   loadLocataires(): void {
     this.locataireService.getAllLocataires().subscribe({
-      next: (data) => {
+      next: (data: Locataire[]) => {
         this.locataires = data;
         this.applyFilters();
       },
@@ -45,7 +45,7 @@ export class ListLocatairesComponent implements OnInit {
         locataire.email.toLowerCase().includes(this.searchTerm.toLowerCase());
       
       const matchesAppartement = !this.selectedAppartement || 
-        locataire.appartement.id.toString() === this.selectedAppartement;
+        (locataire.appartement && locataire.appartement.id.toString() === this.selectedAppartement);
 
       const isActif = !locataire.dateFin || new Date(locataire.dateFin) > new Date();
       const matchesStatut = !this.selectedStatut || 
@@ -66,6 +66,24 @@ export class ListLocatairesComponent implements OnInit {
 
   onStatutChange(): void {
     this.applyFilters();
+  }
+
+  terminerBail(locataire: Locataire): void {
+    if (confirm(`Êtes-vous sûr de vouloir terminer le bail de ${locataire.nom} ${locataire.prenom} ?`)) {
+      const updatedLocataire: Partial<Locataire> = {
+        ...locataire,
+        dateFin: new Date(),
+        statut: 'INACTIF'
+      };
+      this.locataireService.updateLocataire(locataire.id, updatedLocataire).subscribe({
+        next: () => {
+          this.loadLocataires();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la terminaison du bail:', error);
+        }
+      });
+    }
   }
 
   getStatutClass(locataire: Locataire): string {

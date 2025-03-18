@@ -78,8 +78,12 @@
                 <div class="text-sm text-gray-500">{{ locataire.telephone }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ locataire.appartement.numero }}</div>
-                <div class="text-sm text-gray-500">Étage {{ locataire.appartement.etage }}</div>
+                <div class="text-sm text-gray-900">
+                  {{ locataire.appartement?.numero || 'Non assigné' }}
+                </div>
+                <div class="text-sm text-gray-500">
+                  Étage {{ locataire.appartement?.etage || 'N/A' }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">{{ formatDate(locataire.dateDebut) }}</div>

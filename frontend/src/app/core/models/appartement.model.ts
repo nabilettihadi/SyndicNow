@@ -1,18 +1,17 @@
 export interface Appartement {
-  id?: number;
+  id: number;
   numero: string;
   etage: number;
-  superficie: number;
-  nombrePieces: number;
-  statut: 'OCCUPE' | 'LIBRE' | 'EN_TRAVAUX';
-  immeuble: {
-    id: number;
-    nom: string;
-  };
-  proprietaire: {
-    id: number;
-    nom: string;
-    prenom: string;
+  surface: number;
+  loyer: number;
+  statut: 'LIBRE' | 'OCCUPE' | 'EN_TRAVAUX';
+  description?: string;
+  caracteristiques: {
+    nbChambres: number;
+    nbSallesDeBain: number;
+    balcon: boolean;
+    parking: boolean;
+    meuble: boolean;
   };
   locataireActuel?: {
     id: number;

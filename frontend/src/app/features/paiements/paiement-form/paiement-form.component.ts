@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
 import { PaiementService } from '../../../core/services/paiement.service';
 import { LocataireService } from '../../../core/services/locataire.service';
 import { Paiement } from '../../../core/models/paiement.model';
@@ -10,7 +10,7 @@ import { Locataire } from '../../../core/models/locataire.model';
 @Component({
   selector: 'app-paiement-form',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './paiement-form.component.html',
   styleUrls: ['./paiement-form.component.css']
 })

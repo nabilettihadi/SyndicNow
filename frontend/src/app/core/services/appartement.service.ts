@@ -3,14 +3,35 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {environment} from '@env/environment';
+import {Appartement} from '../models/appartement.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppartementService {
-  private apiUrl = `${environment.apiUrl}/api/appartements`;
+  private apiUrl = `${environment.apiUrl}/appartements`;
 
   constructor(private http: HttpClient) {
+  }
+
+  getAllAppartements(): Observable<Appartement[]> {
+    return this.http.get<Appartement[]>(this.apiUrl);
+  }
+
+  getAppartementById(id: number): Observable<Appartement> {
+    return this.http.get<Appartement>(`${this.apiUrl}/${id}`);
+  }
+
+  createAppartement(appartement: Partial<Appartement>): Observable<Appartement> {
+    return this.http.post<Appartement>(this.apiUrl, appartement);
+  }
+
+  updateAppartement(id: number, appartement: Partial<Appartement>): Observable<Appartement> {
+    return this.http.put<Appartement>(`${this.apiUrl}/${id}`, appartement);
+  }
+
+  deleteAppartement(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   getAppartementsProprietaire(proprietaireId: number): Observable<any> {

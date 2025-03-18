@@ -1,12 +1,31 @@
+import { Appartement } from './appartement.model';
+
+export interface Locataire {
+  id: number;
+  nom: string;
+  prenom: string;
+  appartement?: Appartement;
+}
+
 export interface Paiement {
   id: number;
-  date: string;
+  reference: string;
   montant: number;
-  type: string;
-  status: string;
-  methodePaiement: string;
+  datePaiement: Date;
   dateEcheance: string;
+  statut: string;
+  status?: string; // Pour la rétrocompatibilité
+  type?: string;
+  date?: string;
+  locataire: Locataire;
+  appartement?: Appartement;
+  methodePaiement: string;
+  description?: string;
+  proprietaireId?: number;
+  immeubleId?: number;
 }
+
+export interface IPaiement extends Paiement {} // Pour la rétrocompatibilité
 
 export interface PaiementStatistics {
   totalPaiements: number;

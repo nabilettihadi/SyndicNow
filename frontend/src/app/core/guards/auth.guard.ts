@@ -4,11 +4,12 @@ import {Store} from '@ngrx/store';
 import {map, Observable, take, tap} from 'rxjs';
 import {AuthState} from '../authentication/models/auth.model';
 import {AuthService} from '../services/auth.service';
+import { CanActivate } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard {
+export class AuthGuard implements CanActivate {
   constructor(
     private router: Router,
     private store: Store<{ auth: AuthState }>,
@@ -19,50 +20,16 @@ export class AuthGuard {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean | UrlTree> {
-    return this.store.select(state => state.auth.user).pipe(
-      take(1),
-      tap(user => {
-        console.log('AuthGuard - État utilisateur:', user);
-        console.log('Route tentée:', state.url);
-      }),
-      map(user => {
-        const currentPath = this.getFullPath(route);
-        console.log('Chemin complet:', currentPath);
+  ): boolean {
+    if (this.authService.isAuthenticated()) {
+      return true;
+    }
 
-        // Gestion des routes d'authentification (login/register)
-        if (currentPath.startsWith('auth')) {
-          if (user) {
-            console.log('Utilisateur déjà connecté, redirection vers dashboard');
-            return this.router.createUrlTree(['/dashboard']);
-          }
-          console.log('Accès autorisé aux pages d\'authentification');
-          return true;
-        }
-
-        // Gestion des routes protégées
-        if (!user) {
-          console.log('Utilisateur non connecté, redirection vers login');
-          return this.router.createUrlTree(['/auth/login']);
-        }
-
-        // Vérification des permissions basées sur le rôle
-        const requiredRole = route.data['role'];
-        if (requiredRole && user.role !== requiredRole) {
-          console.log('Rôle insuffisant, redirection vers dashboard');
-          return this.router.createUrlTree(['/dashboard']);
-        }
-
-        // Vérification des routes spécifiques au rôle
-        if (this.isRoleSpecificRoute(currentPath, user.role)) {
-          console.log('Route non autorisée pour ce rôle, redirection vers dashboard');
-          return this.router.createUrlTree(['/dashboard']);
-        }
-
-        console.log('Accès autorisé à la route');
-        return true;
-      })
-    );
+    // Rediriger vers la page de connexion si l'utilisateur n'est pas authentifié
+    this.router.navigate(['/login'], {
+      queryParams: { returnUrl: state.url }
+    });
+    return false;
   }
 
   private getFullPath(route: ActivatedRouteSnapshot): string {

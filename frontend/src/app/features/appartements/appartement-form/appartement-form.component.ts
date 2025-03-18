@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AppartementService } from '../../../core/services/appartement.service';
 import { Appartement } from '../../../core/models/appartement.model';
@@ -8,7 +8,7 @@ import { Appartement } from '../../../core/models/appartement.model';
 @Component({
   selector: 'app-appartement-form',
   standalone: true,
-  imports: [CommonModule, RouterLink, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './appartement-form.component.html',
   styleUrls: ['./appartement-form.component.css']
 })
@@ -54,7 +54,7 @@ export class AppartementFormComponent implements OnInit {
   loadAppartement(): void {
     if (this.appartementId) {
       this.appartementService.getAppartementById(this.appartementId).subscribe({
-        next: (appartement) => {
+        next: (appartement: Appartement) => {
           this.appartementForm.patchValue({
             numero: appartement.numero,
             etage: appartement.etage,
@@ -71,7 +71,7 @@ export class AppartementFormComponent implements OnInit {
             }
           });
         },
-        error: (error) => {
+        error: (error: Error) => {
           console.error('Erreur lors du chargement de l\'appartement:', error);
         }
       });
@@ -80,14 +80,14 @@ export class AppartementFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.appartementForm.valid) {
-      const appartementData = this.appartementForm.value;
+      const appartementData: Partial<Appartement> = this.appartementForm.value;
       
       if (this.isEditMode && this.appartementId) {
         this.appartementService.updateAppartement(this.appartementId, appartementData).subscribe({
           next: () => {
             this.router.navigate(['/appartements']);
           },
-          error: (error) => {
+          error: (error: Error) => {
             console.error('Erreur lors de la mise à jour de l\'appartement:', error);
           }
         });
@@ -96,7 +96,7 @@ export class AppartementFormComponent implements OnInit {
           next: () => {
             this.router.navigate(['/appartements']);
           },
-          error: (error) => {
+          error: (error: Error) => {
             console.error('Erreur lors de la création de l\'appartement:', error);
           }
         });

@@ -1,262 +1,93 @@
-<nav class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm transition-all duration-300"
-     [class.shadow-md]="isScrolled" [class.translate-y-0]="isNavbarVisible"
-     [class.-translate-y-full]="!isNavbarVisible">
+<nav class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16">
-      <!-- Logo et navigation principale -->
-      <div class="flex">
-        <!-- Logo -->
-        <div class="flex-shrink-0 flex items-center">
-          <a routerLink="/" class="flex items-center space-x-2">
-            <img src="assets/logo.svg" alt="SyndicNow" class="h-8 w-auto">
-            <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">
-              SyndicNow
-            </span>
+      <!-- Logo et titre -->
+      <div class="flex items-center">
+        <a routerLink="/" class="flex items-center">
+          <img src="assets/images/logo.png" alt="Logo" class="h-8 w-auto">
+          <span class="ml-2 text-xl font-bold text-primary-600">SyndicNow</span>
+        </a>
+      </div>
+
+      <!-- Navigation principale -->
+      <div class="hidden md:flex items-center space-x-4">
+        <ng-container *ngFor="let item of navItems$ | async">
+          <a [routerLink]="item.route" 
+             routerLinkActive="text-primary-600 border-b-2 border-primary-600"
+             class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors duration-200">
+            <i [class]="item.icon" class="mr-2"></i>
+            {{item.label}}
           </a>
-        </div>
-
-        <!-- Navigation Desktop -->
-        <div class="hidden sm:ml-6 sm:flex sm:space-x-4">
-          <ng-container *ngIf="isAuthenticated$ | async">
-            <!-- Lien Dashboard -->
-            <a routerLink="/dashboard"
-               routerLinkActive="border-indigo-500 text-indigo-600"
-               class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors duration-200">
-              <i class="fas fa-chart-line mr-2"></i>
-              Tableau de bord
-            </a>
-
-            <!-- Menu Admin -->
-            <ng-container *ngIf="hasRole('ADMIN') | async">
-              <a routerLink="/admin/syndics"
-                 routerLinkActive="border-indigo-500 text-indigo-600"
-                 class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors duration-200">
-                <i class="fas fa-users-cog mr-2"></i>
-                Syndics
-              </a>
-              <a routerLink="/admin/reports"
-                 routerLinkActive="border-indigo-500 text-indigo-600"
-                 class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors duration-200">
-                <i class="fas fa-chart-bar mr-2"></i>
-                Rapports
-              </a>
-            </ng-container>
-
-            <!-- Menu Syndic -->
-            <ng-container *ngIf="hasRole('SYNDIC') | async">
-              <a routerLink="/syndic/immeubles"
-                 routerLinkActive="border-indigo-500 text-indigo-600"
-                 class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors duration-200">
-                <i class="fas fa-building mr-2"></i>
-                Immeubles
-              </a>
-              <a routerLink="/syndic/charges"
-                 routerLinkActive="border-indigo-500 text-indigo-600"
-                 class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors duration-200">
-                <i class="fas fa-file-invoice-dollar mr-2"></i>
-                Charges
-              </a>
-            </ng-container>
-
-            <!-- Menu Propriétaire -->
-            <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
-              <a routerLink="/mes-appartements"
-                 routerLinkActive="border-indigo-500 text-indigo-600"
-                 class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors duration-200">
-                <i class="fas fa-home mr-2"></i>
-                Mes Appartements
-              </a>
-              <a routerLink="/mes-paiements"
-                 routerLinkActive="border-indigo-500 text-indigo-600"
-                 class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors duration-200">
-                <i class="fas fa-money-bill-wave mr-2"></i>
-                Mes Paiements
-              </a>
-              <a routerLink="/mes-documents"
-                 routerLinkActive="border-indigo-500 text-indigo-600"
-                 class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 transition-colors duration-200">
-                <i class="fas fa-folder mr-2"></i>
-                Mes Documents
-              </a>
-            </ng-container>
-          </ng-container>
-        </div>
+        </ng-container>
       </div>
 
       <!-- Menu utilisateur -->
       <div class="flex items-center">
-        <!-- Boutons Connexion/Inscription -->
-        <ng-container *ngIf="!(isAuthenticated$ | async)">
-          <a routerLink="/login"
-             class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors duration-200">
-            <i class="fas fa-sign-in-alt mr-2"></i>
-            Connexion
-          </a>
-          <a routerLink="/register"
-             class="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200">
-            <i class="fas fa-user-plus mr-2"></i>
-            Inscription
-          </a>
-        </ng-container>
+        <!-- Notifications -->
+        <button class="p-2 text-gray-600 hover:text-primary-600 relative">
+          <i class="fas fa-bell text-xl"></i>
+          <span *ngIf="hasNotifications" 
+                class="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+        </button>
 
-        <!-- Menu utilisateur connecté -->
-        <div *ngIf="isAuthenticated$ | async" class="ml-4 relative flex-shrink-0">
+        <!-- Profil utilisateur -->
+        <div class="ml-4 relative" #userMenuContainer>
           <button (click)="toggleUserMenu()"
-                  class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  [attr.aria-expanded]="isUserMenuOpen">
-            <span class="sr-only">Ouvrir le menu utilisateur</span>
-            <div
-              class="h-8 w-8 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 flex items-center justify-center text-white font-medium">
-              {{ (userName$ | async)?.charAt(0) }}
+                  class="flex items-center space-x-3 focus:outline-none">
+            <div class="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium relative">
+              {{ getUserInitials() }}
+              <span class="absolute bottom-0 right-0 h-3 w-3 bg-green-400 border-2 border-white rounded-full"></span>
             </div>
           </button>
 
-          <!-- Dropdown menu -->
-          <div *ngIf="isUserMenuOpen"
-               class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-               role="menu">
+          <!-- Menu déroulant -->
+          <div *ngIf="isUserMenuOpen" 
+               class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
             <div class="px-4 py-2 border-b border-gray-100">
-              <div class="text-sm font-medium text-gray-900">{{ userName$ | async }}</div>
-              <div class="text-xs text-gray-500">{{ userRole$ | async | titlecase }}</div>
+              <p class="text-sm font-medium text-gray-900">{{ (currentUser$ | async)?.prenom }} {{ (currentUser$ | async)?.nom }}</p>
+              <p class="text-xs text-gray-500">{{ (currentUser$ | async)?.email }}</p>
             </div>
-            <a routerLink="/profile"
-               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-               role="menuitem">
-              <i class="fas fa-user mr-2"></i>
-              Mon profil
+            <a routerLink="/profile" 
+               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <i class="fas fa-user-circle mr-2"></i> Mon profil
             </a>
-            <button (click)="logout()"
-                    class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
-                    role="menuitem">
-              <i class="fas fa-sign-out-alt mr-2"></i>
-              Déconnexion
-            </button>
+            <a routerLink="/settings" 
+               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <i class="fas fa-cog mr-2"></i> Paramètres
+            </a>
+            <div class="border-t border-gray-100">
+              <button (click)="logout()" 
+                      class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Bouton menu mobile -->
-        <div class="flex items-center sm:hidden ml-4">
+        <!-- Menu mobile -->
+        <div class="md:hidden ml-4">
           <button (click)="toggleMobileMenu()"
-                  class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-colors duration-200"
-                  [attr.aria-expanded]="isMobileMenuOpen">
-            <span class="sr-only">Ouvrir le menu principal</span>
-            <svg [class.hidden]="isMobileMenuOpen" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-            <svg [class.hidden]="!isMobileMenuOpen" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
+                  class="text-gray-600 hover:text-primary-600 focus:outline-none">
+            <i [class]="isMobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'" class="text-2xl"></i>
           </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Menu mobile -->
-  <div class="sm:hidden" [class.hidden]="!isMobileMenuOpen">
-    <div class="pt-2 pb-3 space-y-1">
-      <ng-container *ngIf="isAuthenticated$ | async">
-        <!-- Dashboard Mobile -->
-        <a routerLink="/dashboard"
-           routerLinkActive="bg-indigo-50 border-indigo-500 text-indigo-700"
-           class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200">
-          <i class="fas fa-chart-line mr-2"></i>
-          Tableau de bord
-        </a>
-
-        <!-- Menu Admin Mobile -->
-        <ng-container *ngIf="hasRole('ADMIN') | async">
-          <div class="border-t border-gray-200 pt-4">
-            <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Administration</div>
-            <a routerLink="/admin/syndics"
-               routerLinkActive="bg-indigo-50 border-indigo-500 text-indigo-700"
-               class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200">
-              <i class="fas fa-users-cog mr-2"></i>
-              Syndics
-            </a>
-            <a routerLink="/admin/reports"
-               routerLinkActive="bg-indigo-50 border-indigo-500 text-indigo-700"
-               class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200">
-              <i class="fas fa-chart-bar mr-2"></i>
-              Rapports
-            </a>
-          </div>
+    <!-- Menu mobile (affiché uniquement sur mobile) -->
+    <div *ngIf="isMobileMenuOpen" class="md:hidden">
+      <div class="pt-2 pb-3 space-y-1">
+        <ng-container *ngFor="let item of navItems$ | async">
+          <a [routerLink]="item.route"
+             routerLinkActive="bg-primary-50 text-primary-600"
+             class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary-600">
+            <i [class]="item.icon" class="mr-2"></i>
+            {{item.label}}
+          </a>
         </ng-container>
-
-        <!-- Menu Syndic Mobile -->
-        <ng-container *ngIf="hasRole('SYNDIC') | async">
-          <div class="border-t border-gray-200 pt-4">
-            <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Gestion</div>
-            <a routerLink="/syndic/immeubles"
-               routerLinkActive="bg-indigo-50 border-indigo-500 text-indigo-700"
-               class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200">
-              <i class="fas fa-building mr-2"></i>
-              Immeubles
-            </a>
-            <a routerLink="/syndic/charges"
-               routerLinkActive="bg-indigo-50 border-indigo-500 text-indigo-700"
-               class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200">
-              <i class="fas fa-file-invoice-dollar mr-2"></i>
-              Charges
-            </a>
-          </div>
-        </ng-container>
-
-        <!-- Menu Propriétaire Mobile -->
-        <ng-container *ngIf="hasRole('PROPRIETAIRE') | async">
-          <div class="border-t border-gray-200 pt-4">
-            <div class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Mon espace</div>
-            <a routerLink="/mes-appartements"
-               routerLinkActive="bg-indigo-50 border-indigo-500 text-indigo-700"
-               class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200">
-              <i class="fas fa-home mr-2"></i>
-              Mes Appartements
-            </a>
-            <a routerLink="/mes-paiements"
-               routerLinkActive="bg-indigo-50 border-indigo-500 text-indigo-700"
-               class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200">
-              <i class="fas fa-money-bill-wave mr-2"></i>
-              Mes Paiements
-            </a>
-            <a routerLink="/mes-documents"
-               routerLinkActive="bg-indigo-50 border-indigo-500 text-indigo-700"
-               class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200">
-              <i class="fas fa-folder mr-2"></i>
-              Mes Documents
-            </a>
-          </div>
-        </ng-container>
-
-        <!-- Profil Mobile -->
-        <div class="border-t border-gray-200 pt-4">
-          <div class="flex items-center px-4">
-            <div class="flex-shrink-0">
-              <div
-                class="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-600 to-blue-500 flex items-center justify-center text-white font-medium">
-                {{ (userName$ | async)?.charAt(0) }}
-              </div>
-            </div>
-            <div class="ml-3">
-              <div class="text-base font-medium text-gray-800">{{ userName$ | async }}</div>
-              <div class="text-sm font-medium text-gray-500">{{ userRole$ | async | titlecase }}</div>
-            </div>
-          </div>
-          <div class="mt-3 space-y-1">
-            <a routerLink="/profile"
-               class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100 transition-colors duration-200">
-              <i class="fas fa-user mr-2"></i>
-              Mon profil
-            </a>
-            <button (click)="logout()"
-                    class="block w-full text-left px-4 py-2 text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50 transition-colors duration-200">
-              <i class="fas fa-sign-out-alt mr-2"></i>
-              Déconnexion
-            </button>
-          </div>
-        </div>
-      </ng-container>
+      </div>
     </div>
   </div>
 </nav>
+<!-- Spacer pour éviter que le contenu soit caché derrière la navbar fixe -->
+<div class="h-16"></div>

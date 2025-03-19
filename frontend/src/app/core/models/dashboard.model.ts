@@ -1,6 +1,7 @@
-import {Immeuble, ImmeubleStatistics} from './immeuble.model';
+import {Immeuble, ImmeubleStats} from './immeuble.model';
 import {Paiement, PaiementStatistics} from './paiement.model';
-import {Proprietaire, ProprietaireStatistics} from './proprietaire.model';
+import {Syndic} from './syndic.model';
+import {Proprietaire, ProprietaireStats} from './proprietaire.model';
 
 export interface DashboardStats {
   // Propriétés de base
@@ -8,7 +9,7 @@ export interface DashboardStats {
   paiements?: Paiement[];
   paiementsStats?: PaiementStatistics;
   proprietaires?: Proprietaire[];
-  proprietairesStats?: ProprietaireStatistics;
+  proprietairesStats?: ProprietaireStats;
   paiementsRecents?: Paiement[];
   mesPaiements?: Paiement[];
   mesAppartements?: Proprietaire;
@@ -56,11 +57,27 @@ export interface DashboardStats {
 
   // Statistiques détaillées
   statistiques: {
-    totalImmeubles?: ImmeubleStatistics;
+    totalImmeubles?: ImmeubleStats;
     totalPaiements?: PaiementStatistics;
-    totalProprietaires?: ProprietaireStatistics;
-    totalAppartements?: ImmeubleStatistics;
+    totalProprietaires?: ProprietaireStats;
+    totalAppartements?: ImmeubleStats;
     paiementsEnAttente?: PaiementStatistics;
     prochainsDelais?: PaiementStatistics;
+  };
+
+  // Statistiques des incidents
+  incidents?: number;
+}
+
+export interface DashboardData {
+  syndics: Syndic[];
+  immeubles: Immeuble[];
+  proprietaires: Proprietaire[];
+  stats: {
+    totalSyndics: number;
+    totalImmeubles: number;
+    totalProprietaires: number;
+    immeubleStats: ImmeubleStats;
+    proprietaireStats: ProprietaireStats;
   };
 }

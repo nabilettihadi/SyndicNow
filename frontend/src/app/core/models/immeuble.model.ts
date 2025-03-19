@@ -2,22 +2,27 @@ export interface Immeuble {
   id: number;
   nom: string;
   adresse: string;
-  ville: string;
-  region: string;
   codePostal: string;
+  ville: string;
+  dateConstruction: Date;
   nombreEtages: number;
   nombreAppartements: number;
-  dateConstruction: Date;
-  anneeConstruction: number;
+  status: 'ACTIF' | 'EN_TRAVAUX' | 'INACTIF';
   syndicId: number;
-  description?: string;
-  dateCreation: Date;
-  dateModification: Date;
+  syndic?: {
+    id: number;
+    nom: string;
+  };
 }
 
-export interface ImmeubleStatistics {
-  totalImmeubles: number;
-  totalAppartements: number;
-  parRegion: { [key: string]: number };
-  tauxOccupation: number;
+export interface ImmeubleStats {
+  total: number;
+  parStatus: {
+    [key: string]: number;
+  };
+  parVille: {
+    [key: string]: number;
+  };
+  nombreAppartementsMoyen: number;
+  nombreEtagesMoyen: number;
 } 

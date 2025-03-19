@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { LocataireService } from '../../../core/services/locataire.service';
-import { AppartementService } from '../../../core/services/appartement.service';
-import { Locataire } from '../../../core/models/locataire.model';
-import { Appartement } from '../../../core/models/appartement.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AppartementService } from '@core/services/appartement.service';
+import { LocataireService } from '@core/services/locataire.service';
+import { Appartement } from '@core/models/appartement.model';
+import { Locataire } from '@core/models/locataire.model';
 
 @Component({
   selector: 'app-locataire-form',
@@ -16,9 +16,11 @@ import { Appartement } from '../../../core/models/appartement.model';
 })
 export class LocataireFormComponent implements OnInit {
   locataireForm: FormGroup;
-  isEditMode = false;
-  locataireId?: number;
   appartements: Appartement[] = [];
+  loading = false;
+  error: string | null = null;
+  isEditMode = false;
+  locataireId: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -28,19 +30,19 @@ export class LocataireFormComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.locataireForm = this.fb.group({
-      nom: ['', [Validators.required, Validators.minLength(2)]],
-      prenom: ['', [Validators.required, Validators.minLength(2)]],
+      nom: ['', Validators.required],
+      prenom: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', [Validators.required, Validators.pattern(/^\+?[0-9\s-]{9,}$/)]],
-      dateDebut: ['', Validators.required],
-      dateFin: [''],
-      appartementId: ['', Validators.required]
+      telephone: ['', Validators.required],
+      dateNaissance: ['', Validators.required],
+      dateEntree: ['', Validators.required],
+      dateSortie: [''],
+      status: ['ACTIF', Validators.required],
+      appartementId: [null, Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.loadAppartements();
-    
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
@@ -48,73 +50,70 @@ export class LocataireFormComponent implements OnInit {
         this.loadLocataire();
       }
     });
+
+    this.loadAppartements();
   }
 
-  loadAppartements(): void {
-    this.appartementService.getAllAppartements().subscribe({
-      next: (appartements) => {
-        this.appartements = appartements.filter(app => app.statut === 'LIBRE' || 
-          (this.isEditMode && app.locataireActuel?.id === this.locataireId));
+  private loadAppartements(): void {
+    this.appartementService.getAllAppartements().subscribe((appartements: Appartement[]) => {
+      this.appartements = appartements.filter((app: Appartement) => 
+        app.status === 'LIBRE' || 
+        (this.isEditMode && app.id === this.locataireId)
+      );
+    });
+  }
+
+  private loadLocataire(): void {
+    this.loading = true;
+    this.locataireService.getLocataireById(this.locataireId).subscribe({
+      next: (locataire: Locataire) => {
+        this.locataireForm.patchValue({
+          nom: locataire.nom,
+          prenom: locataire.prenom,
+          email: locataire.email,
+          telephone: locataire.telephone,
+          dateNaissance: this.formatDateForInput(locataire.dateNaissance),
+          dateEntree: this.formatDateForInput(locataire.dateEntree),
+          dateSortie: locataire.dateSortie ? this.formatDateForInput(locataire.dateSortie) : '',
+          status: locataire.status,
+          appartementId: locataire.appartementId
+        });
+        this.loading = false;
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des appartements:', error);
+      error: (error: Error) => {
+        this.error = 'Erreur lors du chargement du locataire';
+        this.loading = false;
       }
     });
   }
 
-  loadLocataire(): void {
-    if (this.locataireId) {
-      this.locataireService.getLocataireById(this.locataireId).subscribe({
-        next: (locataire: Locataire) => {
-          this.locataireForm.patchValue({
-            nom: locataire.nom,
-            prenom: locataire.prenom,
-            email: locataire.email,
-            telephone: locataire.telephone,
-            dateDebut: this.formatDateForInput(locataire.dateDebut),
-            dateFin: locataire.dateFin ? this.formatDateForInput(locataire.dateFin) : '',
-            appartementId: locataire.appartement?.id
-          });
+  onSubmit(): void {
+    if (this.locataireForm.valid) {
+      this.loading = true;
+      const locataireData = this.locataireForm.value;
+
+      const operation = this.isEditMode
+        ? this.locataireService.updateLocataire(this.locataireId, locataireData)
+        : this.locataireService.createLocataire(locataireData);
+
+      operation.subscribe({
+        next: () => {
+          this.router.navigate(['/locataires']);
         },
-        error: (error) => {
-          console.error('Erreur lors du chargement du locataire:', error);
+        error: (error: Error) => {
+          this.error = 'Erreur lors de la sauvegarde du locataire';
+          this.loading = false;
         }
       });
     }
   }
 
-  onSubmit(): void {
-    if (this.locataireForm.valid) {
-      const locataireData = this.locataireForm.value;
-      
-      if (this.isEditMode && this.locataireId) {
-        this.locataireService.updateLocataire(this.locataireId, locataireData).subscribe({
-          next: () => {
-            this.router.navigate(['/locataires']);
-          },
-          error: (error) => {
-            console.error('Erreur lors de la mise à jour du locataire:', error);
-          }
-        });
-      } else {
-        this.locataireService.createLocataire(locataireData).subscribe({
-          next: () => {
-            this.router.navigate(['/locataires']);
-          },
-          error: (error) => {
-            console.error('Erreur lors de la création du locataire:', error);
-          }
-        });
-      }
-    }
+  formatDateForInput(date: Date): string {
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
   }
 
   onCancel(): void {
     this.router.navigate(['/locataires']);
-  }
-
-  private formatDateForInput(date: string | Date): string {
-    const d = new Date(date);
-    return d.toISOString().split('T')[0];
   }
 } 

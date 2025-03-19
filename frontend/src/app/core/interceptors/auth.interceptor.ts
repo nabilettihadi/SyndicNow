@@ -17,7 +17,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const cloned = req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`)
     });
+
     console.log('Auth interceptor - Request headers:', cloned.headers.keys());
+
     return next(cloned).pipe(
       catchError(error => {
         console.error('Auth interceptor - Error:', error);
@@ -26,6 +28,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           authService.logout().subscribe(() => {
             router.navigate(['/auth/login']);
           });
+        } else if (error.status === 403) {
+          console.log('Auth interceptor - Forbidden, access denied');
+          return throwError(() => ({
+            ...error,
+            message: 'Accès refusé. Vous n\'avez pas les permissions nécessaires.'
+          }));
         }
         return throwError(() => error);
       })

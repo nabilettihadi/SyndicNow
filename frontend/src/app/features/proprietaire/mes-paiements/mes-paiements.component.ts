@@ -38,38 +38,34 @@ export class MesPaiementsComponent implements OnInit {
   ) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadPaiements();
   }
 
-  private loadPaiements() {
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser?.userId) {
-      this.error = 'Utilisateur non connecté';
-      return;
-    }
-
+  private loadPaiements(): void {
     this.loading = true;
-    this.error = null;
-
-    this.paiementService.getPaiementsByProprietaire(currentUser.userId)
-      .subscribe({
+    const currentUser = this.authService.getCurrentUser();
+    
+    if (currentUser?.userId) {
+      this.paiementService.getPaiementsByProprietaire(currentUser.userId).subscribe({
         next: (data) => {
           this.paiements = data.map(p => ({
             ...p,
-            proprietaireId: currentUser.userId,
-            immeubleId: (p as any).immeuble?.id || 0
-          })) as IPaiement[];
+            dateEcheance: new Date(p.datePaiement).toISOString(),
+            methodePaiement: 'VIREMENT',
+            immeubleId: p.immeuble?.id || 0,
+            date: new Date(p.datePaiement).toISOString()
+          })) as unknown as IPaiement[];
           this.filterPaiements();
           this.updateStatistics();
           this.loading = false;
         },
         error: (error) => {
-          console.error('Erreur lors du chargement des paiements:', error);
-          this.error = 'Impossible de charger vos paiements. Veuillez réessayer plus tard.';
+          this.error = 'Erreur lors du chargement des paiements';
           this.loading = false;
         }
       });
+    }
   }
 
   filterPaiements() {
@@ -125,16 +121,35 @@ export class MesPaiementsComponent implements OnInit {
       });
   }
 
-  getStatusStyle(status: string): { bgColor: string; textColor: string } {
+  formatDate(date: string): string {
+    return new Date(date).toLocaleDateString('fr-FR');
+  }
+
+  getStatusClass(status: string): string {
     switch (status) {
       case 'PAYE':
-        return {bgColor: 'bg-green-100', textColor: 'text-green-800'};
+        return 'bg-green-100 text-green-800';
       case 'EN_ATTENTE':
-        return {bgColor: 'bg-yellow-100', textColor: 'text-yellow-800'};
-      case 'EN_RETARD':
-        return {bgColor: 'bg-red-100', textColor: 'text-red-800'};
+        return 'bg-yellow-100 text-yellow-800';
+      case 'RETARDE':
+        return 'bg-red-100 text-red-800';
+      case 'ANNULE':
+        return 'bg-gray-100 text-gray-800';
       default:
-        return {bgColor: 'bg-gray-100', textColor: 'text-gray-800'};
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
+
+  getStatusStyle(status: string): string {
+    switch (status) {
+      case 'PAYE':
+        return 'bg-green-100 text-green-800';
+      case 'EN_ATTENTE':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'RETARDE':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   }
 
@@ -144,12 +159,17 @@ export class MesPaiementsComponent implements OnInit {
         return 'Payé';
       case 'EN_ATTENTE':
         return 'En attente';
-      case 'EN_RETARD':
-        return 'En retard';
-      case 'ANNULE':
-        return 'Annulé';
+      case 'RETARDE':
+        return 'Retardé';
       default:
         return status;
     }
+  }
+
+  formatMontant(montant: number): string {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'MAD'
+    }).format(montant);
   }
 }

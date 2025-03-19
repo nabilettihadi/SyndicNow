@@ -5,6 +5,7 @@ import {map, Observable, take, tap} from 'rxjs';
 import {AuthState} from '../authentication/models/auth.model';
 import {AuthService} from '../services/auth.service';
 import { CanActivate } from '@angular/router';
+import { inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -97,3 +98,19 @@ export class DashboardGuard {
     );
   }
 }
+
+export const authGuard = () => {
+  const router = inject(Router);
+  const authService = inject(AuthService);
+
+  return authService.isAuthenticated$.pipe(
+    take(1),
+    map(isAuthenticated => {
+      if (isAuthenticated) {
+        return true;
+      }
+      router.navigate(['/auth/login']);
+      return false;
+    })
+  );
+};

@@ -1,122 +1,105 @@
-<div class="min-h-screen flex flex-col">
-  <app-navbar></app-navbar>
-
-  <main class="flex-grow">
-    <!-- Hero Section -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div class="text-center">
-          <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-8 animate-fade-in">
-            Gestion Immobilière <span class="text-blue-200">Simplifiée</span>
-          </h1>
-          <p class="text-xl text-blue-100 mb-12 max-w-3xl mx-auto animate-slide-up">
-            Simplifiez vos tâches de gestion immobilière avec notre solution complète.
-            Gagnez du temps, réduisez le stress et améliorez l'efficacité.
-          </p>
-          <div class="space-x-4 animate-fade-in" *ngIf="!(isAuthenticated$ | async)">
-            <a routerLink="/auth/register"
-               class="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition duration-300 transform hover:scale-105">
-              Commencer Gratuitement
-            </a>
-            <a href="#features"
-               class="inline-block bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-600 transition duration-300 transform hover:scale-105">
-              En Savoir Plus
-            </a>
-          </div>
-          <div class="space-x-4 animate-fade-in" *ngIf="isAuthenticated$ | async">
-            <a routerLink="/dashboard"
-               class="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition duration-300 transform hover:scale-105">
-              Accéder au Tableau de Bord
-            </a>
-          </div>
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+  <!-- Section Hero -->
+  <section class="relative overflow-hidden">
+    <!-- Fond décoratif -->
+    <div class="absolute inset-0 bg-primary-50/50"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+      <div class="text-center">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+          Gérez votre copropriété en toute simplicité
+        </h1>
+        <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+          SyndicNow est la solution moderne pour simplifier la gestion de vos immeubles et améliorer la communication entre syndics et propriétaires.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+          <a routerLink="/auth/register" 
+             class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors duration-200">
+            <i class="fas fa-user-plus mr-2"></i>
+            Créer un compte
+          </a>
+          <a routerLink="/auth/login" 
+             class="inline-flex items-center justify-center px-6 py-3 border border-primary-600 text-base font-medium rounded-md text-primary-600 bg-white hover:bg-primary-50 transition-colors duration-200">
+            <i class="fas fa-sign-in-alt mr-2"></i>
+            Se connecter
+          </a>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- Stats Section -->
-    <div class="bg-white py-16" *ngIf="!(isAuthenticated$ | async)">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-          <div class="p-6 transform hover:scale-105 transition duration-300">
-            <p class="text-4xl font-bold text-blue-600 mb-2 counter">1000+</p>
-            <p class="text-gray-600">Propriétés Gérées</p>
+  <!-- Section Fonctionnalités -->
+  <section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Nos fonctionnalités principales</h2>
+        <p class="text-lg text-gray-600">Découvrez comment SyndicNow peut vous aider à gérer votre copropriété</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Gestion des immeubles -->
+        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200">
+          <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-building text-primary-600 text-2xl"></i>
           </div>
-          <div class="p-6 transform hover:scale-105 transition duration-300">
-            <p class="text-4xl font-bold text-blue-600 mb-2 counter">98%</p>
-            <p class="text-gray-600">Satisfaction Client</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Gestion des immeubles</h3>
+          <p class="text-gray-600">Gérez facilement vos immeubles, appartements et espaces communs en un seul endroit.</p>
+        </div>
+
+        <!-- Suivi des paiements -->
+        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200">
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-money-bill-wave text-green-600 text-2xl"></i>
           </div>
-          <div class="p-6 transform hover:scale-105 transition duration-300">
-            <p class="text-4xl font-bold text-blue-600 mb-2">24/7</p>
-            <p class="text-gray-600">Support Disponible</p>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Suivi des paiements</h3>
+          <p class="text-gray-600">Suivez les paiements des charges et générez automatiquement les factures.</p>
+        </div>
+
+        <!-- Communication -->
+        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200">
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+            <i class="fas fa-comments text-purple-600 text-2xl"></i>
           </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Communication facilitée</h3>
+          <p class="text-gray-600">Communiquez efficacement avec les propriétaires et les résidents.</p>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- Features Section -->
-    <div id="features" class="bg-gray-50 py-24" *ngIf="!(isAuthenticated$ | async)">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-          <h2 class="text-3xl font-bold text-gray-900 mb-4">Fonctionnalités Puissantes</h2>
-          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-            Tout ce dont vous avez besoin pour gérer efficacement vos propriétés
-          </p>
+  <!-- Section Statistiques -->
+  <section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div>
+          <div class="text-4xl font-bold text-primary-600 mb-2">500+</div>
+          <div class="text-gray-600">Immeubles gérés</div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div
-            class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:scale-105 feature-card">
-            <div class="text-blue-600 mb-4">
-              <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Gestion des Tâches</h3>
-            <p class="text-gray-600">Suivez les demandes de maintenance, la collecte des loyers et autres tâches
-              importantes.</p>
-          </div>
-
-          <div
-            class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:scale-105 feature-card">
-            <div class="text-blue-600 mb-4">
-              <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Rapports Financiers</h3>
-            <p class="text-gray-600">Générez des rapports financiers détaillés et suivez la performance de vos
-              propriétés.</p>
-          </div>
-
-          <div
-            class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition duration-300 transform hover:scale-105 feature-card">
-            <div class="text-blue-600 mb-4">
-              <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
-              </svg>
-            </div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-4">Centre de Communication</h3>
-            <p class="text-gray-600">Restez connecté avec les locataires et les propriétaires grâce à notre système de
-              messagerie.</p>
-          </div>
+        <div>
+          <div class="text-4xl font-bold text-primary-600 mb-2">10k+</div>
+          <div class="text-gray-600">Propriétaires satisfaits</div>
+        </div>
+        <div>
+          <div class="text-4xl font-bold text-primary-600 mb-2">98%</div>
+          <div class="text-gray-600">Taux de satisfaction</div>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- CTA Section -->
-    <div class="bg-blue-600 text-white py-16" *ngIf="!(isAuthenticated$ | async)">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl font-bold mb-8">Prêt à simplifier votre gestion immobilière ?</h2>
-        <a routerLink="/auth/register"
-           class="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition duration-300 transform hover:scale-105">
-          Commencer l'Essai Gratuit
-        </a>
-      </div>
+  <!-- Section CTA -->
+  <section class="py-16 bg-primary-600">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl font-bold text-white mb-4">
+        Prêt à simplifier la gestion de votre copropriété ?
+      </h2>
+      <p class="text-xl text-primary-100 mb-8">
+        Rejoignez les milliers de syndics et propriétaires qui font confiance à SyndicNow
+      </p>
+      <a routerLink="/auth/register" 
+         class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary-600 bg-white hover:bg-primary-50 transition-colors duration-200">
+        Commencer gratuitement
+      </a>
     </div>
-  </main>
-
-  <app-footer></app-footer>
+  </section>
 </div>

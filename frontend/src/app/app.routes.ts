@@ -1,5 +1,6 @@
 import {Routes} from '@angular/router';
 import {AuthGuard, DashboardGuard} from '@core/guards/auth.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 // Composants Locataires
 import { ListLocatairesComponent } from './features/locataires/list-locataires/list-locataires.component';
@@ -16,26 +17,17 @@ import { PaiementFormComponent } from './features/paiements/paiement-form/paieme
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
   },
   {
     path: 'auth',
-    canActivate: [AuthGuard],
-    children: [
-      {
-        path: 'login',
-        loadComponent: () => import('./features/auth/components/login/login.component').then(m => m.LoginComponent)
-      },
-      {
-        path: 'register',
-        loadComponent: () => import('./features/auth/components/register/register.component').then(m => m.RegisterComponent)
-      }
-    ]
+    loadChildren: () => import('@features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
   {
     path: 'dashboard',
-    canActivate: [DashboardGuard],
-    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
+    loadComponent: () => import('@features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [authGuard]
   },
   // Routes pour l'Admin
   {
@@ -105,37 +97,29 @@ export const routes: Routes = [
   },
   {
     path: 'incidents',
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./features/incidents/list-incidents/list-incidents.component')
-          .then(m => m.ListIncidentsComponent),
-        canActivate: [AuthGuard]
-      },
-      {
-        path: 'new',
-        loadComponent: () => import('./features/incidents/incident-form/incident-form.component')
-          .then(m => m.IncidentFormComponent),
-        canActivate: [AuthGuard]
-      },
-      {
-        path: ':id/edit',
-        loadComponent: () => import('./features/incidents/incident-form/incident-form.component')
-          .then(m => m.IncidentFormComponent),
-        canActivate: [AuthGuard]
-      }
-    ]
+    loadComponent: () => import('@features/incidents/list-incidents/list-incidents.component').then(m => m.ListIncidentsComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'incidents/new',
+    loadComponent: () => import('@features/incidents/incident-form/incident-form.component').then(m => m.IncidentFormComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'incidents/:id/edit',
+    loadComponent: () => import('@features/incidents/incident-form/incident-form.component').then(m => m.IncidentFormComponent),
+    canActivate: [authGuard]
   },
   // Routes Locataires
   { 
     path: 'locataires', 
-    component: ListLocatairesComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/locataires/list-locataires/list-locataires.component').then(m => m.ListLocatairesComponent),
+    canActivate: [authGuard]
   },
   { 
     path: 'locataires/new', 
-    component: LocataireFormComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/locataires/locataire-form/locataire-form.component').then(m => m.LocataireFormComponent),
+    canActivate: [authGuard]
   },
   { 
     path: 'locataires/:id', 
@@ -144,20 +128,20 @@ export const routes: Routes = [
   },
   { 
     path: 'locataires/:id/edit', 
-    component: LocataireFormComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/locataires/locataire-form/locataire-form.component').then(m => m.LocataireFormComponent),
+    canActivate: [authGuard]
   },
 
   // Routes Appartements
   { 
     path: 'appartements', 
-    component: ListAppartementsComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/appartements/list-appartements/list-appartements.component').then(m => m.ListAppartementsComponent),
+    canActivate: [authGuard]
   },
   { 
     path: 'appartements/new', 
-    component: AppartementFormComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/appartements/appartement-form/appartement-form.component').then(m => m.AppartementFormComponent),
+    canActivate: [authGuard]
   },
   { 
     path: 'appartements/:id', 
@@ -166,20 +150,20 @@ export const routes: Routes = [
   },
   { 
     path: 'appartements/:id/edit', 
-    component: AppartementFormComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/appartements/appartement-form/appartement-form.component').then(m => m.AppartementFormComponent),
+    canActivate: [authGuard]
   },
 
   // Routes Paiements
   { 
     path: 'paiements', 
-    component: ListPaiementsComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/paiements/list-paiements/list-paiements.component').then(m => m.ListPaiementsComponent),
+    canActivate: [authGuard]
   },
   { 
     path: 'paiements/new', 
-    component: PaiementFormComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/paiements/paiement-form/paiement-form.component').then(m => m.PaiementFormComponent),
+    canActivate: [authGuard]
   },
   { 
     path: 'paiements/:id', 
@@ -188,10 +172,10 @@ export const routes: Routes = [
   },
   { 
     path: 'paiements/:id/edit', 
-    component: PaiementFormComponent,
-    canActivate: [AuthGuard]
+    loadComponent: () => import('./features/paiements/paiement-form/paiement-form.component').then(m => m.PaiementFormComponent),
+    canActivate: [authGuard]
   },
 
   // Route pour les pages non trouvées
-  { path: '**', redirectTo: '/dashboard' }
+  { path: '**', redirectTo: 'dashboard' }
 ];

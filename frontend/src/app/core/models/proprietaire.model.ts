@@ -4,15 +4,15 @@ export interface Proprietaire {
   prenom: string;
   email: string;
   telephone: string;
-  cin: string;
-  dateInscription: Date;
-  appartements?: number[];
+  adresse: string;
+  ville: string;
+  dateCreation: Date;
+  appartements?: any[];
 }
 
-export interface ProprietaireStatistics {
+export interface ProprietaireStats {
   totalProprietaires: number;
-  nouveauxCeMois: number;
-  proprietairesActifs: number;
-  parImmeuble: { [key: string]: number };
-  tauxPaiementMoyen: number;
+  proprietaireParVille: { [key: string]: number };
+  proprietaireParImmeuble: { [key: string]: number };
+  nouveauxProprietairesParMois: { [key: string]: number };
 } 

@@ -8,21 +8,30 @@ export interface Locataire {
 }
 
 export interface Paiement {
+  locataire: any;
+  datePaiement: string | number | Date;
   id: number;
   reference: string;
   montant: number;
-  datePaiement: Date;
-  dateEcheance: string;
-  statut: string;
-  status?: string; // Pour la rétrocompatibilité
-  type?: string;
-  date?: string;
-  locataire: Locataire;
-  appartement?: Appartement;
-  methodePaiement: string;
-  description?: string;
-  proprietaireId?: number;
-  immeubleId?: number;
+  date: Date;
+  status: 'EN_ATTENTE' | 'PAYE' | 'RETARDE' | 'ANNULE';
+  type: 'LOYER' | 'CHARGES' | 'AUTRE';
+  proprietaireId: number;
+  immeubleId: number;
+  appartementId: number;
+  proprietaire?: {
+    id: number;
+    nom: string;
+    prenom: string;
+  };
+  immeuble?: {
+    id: number;
+    nom: string;
+  };
+  appartement?: {
+    id: number;
+    numero: string;
+  };
 }
 
 export interface IPaiement extends Paiement {} // Pour la rétrocompatibilité
@@ -35,4 +44,19 @@ export interface PaiementStatistics {
   montantTotal: number;
   montantMoisCourant: number;
   parMois: { [key: string]: number };
+}
+
+export interface PaiementStats {
+  total: number;
+  parStatus: {
+    [key: string]: number;
+  };
+  parType: {
+    [key: string]: number;
+  };
+  parImmeuble: {
+    [key: string]: number;
+  };
+  montantTotal: number;
+  montantMoyen: number;
 } 

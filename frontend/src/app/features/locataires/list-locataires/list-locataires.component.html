@@ -1,126 +1,61 @@
 <div class="container mx-auto px-4 py-8">
-  <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">Liste des Locataires</h1>
-    
-    <!-- Filtres -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <!-- Recherche -->
-      <div class="relative">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (input)="onSearch()"
-          placeholder="Rechercher un locataire..."
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-      </div>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Liste des Locataires</h1>
+    <button
+      routerLink="/locataires/new"
+      class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+    >
+      Nouveau Locataire
+    </button>
+  </div>
 
-      <!-- Filtre par appartement -->
-      <div>
-        <select
-          [(ngModel)]="selectedAppartement"
-          (change)="onAppartementChange()"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="">Tous les appartements</option>
-          <!-- Les options seront ajoutées dynamiquement -->
-        </select>
-      </div>
-
-      <!-- Filtre par statut -->
-      <div>
-        <select
-          [(ngModel)]="selectedStatut"
-          (change)="onStatutChange()"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="">Tous les statuts</option>
-          <option value="ACTIF">Actif</option>
-          <option value="INACTIF">Inactif</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- Bouton Nouveau -->
-    <div class="flex justify-end mb-6">
-      <button
-        routerLink="/locataires/new"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
-        Nouveau Locataire
-      </button>
-    </div>
-
-    <!-- Liste des locataires -->
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom & Prénom</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appartement</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Début</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Fin</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let locataire of filteredLocataires">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ locataire.nom }} {{ locataire.prenom }}
-                </div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">{{ locataire.email }}</div>
-                <div class="text-sm text-gray-500">{{ locataire.telephone }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ locataire.appartement?.numero || 'Non assigné' }}
-                </div>
-                <div class="text-sm text-gray-500">
-                  Étage {{ locataire.appartement?.etage || 'N/A' }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ formatDate(locataire.dateDebut) }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ locataire.dateFin ? formatDate(locataire.dateFin) : '-' }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span [class]="'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + getStatutClass(locataire)">
-                  {{ getStatutText(locataire) }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button
-                  [routerLink]="['/locataires', locataire.id]"
-                  class="text-blue-600 hover:text-blue-900 mr-4"
-                >
-                  Détails
-                </button>
-                <button
-                  [routerLink]="['/locataires', locataire.id, 'edit']"
-                  class="text-indigo-600 hover:text-indigo-900 mr-4"
-                >
-                  Modifier
-                </button>
-                <button
-                  *ngIf="!locataire.dateFin"
-                  (click)="terminerBail(locataire)"
-                  class="text-red-600 hover:text-red-900"
-                >
-                  Terminer le bail
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appartement</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'entrée</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr *ngFor="let locataire of locataires">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">{{ locataire.nom }} {{ locataire.prenom }}</div>
+            <div class="text-sm text-gray-500">{{ locataire.email }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ locataire.appartement?.numero || 'N/A' }}</div>
+            <div class="text-sm text-gray-500">{{ locataire.appartement?.immeuble?.nom || 'N/A' }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-900">{{ formatDate(locataire.dateEntree) }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span
+              [class]="locataire.status === 'ACTIF' ? 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800' : 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800'"
+            >
+              {{ locataire.status }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+            <button
+              (click)="updateLocataireStatus(locataire, locataire.status === 'ACTIF' ? 'INACTIF' : 'ACTIF')"
+              class="text-indigo-600 hover:text-indigo-900 mr-4"
+            >
+              {{ locataire.status === 'ACTIF' ? 'Désactiver' : 'Activer' }}
+            </button>
+            <button
+              [routerLink]="['/locataires', locataire.id, 'edit']"
+              class="text-blue-600 hover:text-blue-900"
+            >
+              Modifier
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div> 

@@ -1,14 +1,14 @@
 <div class="min-h-screen flex flex-col">
   <app-navbar></app-navbar>
   <div class="flex-grow">
-    <div class="container mt-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2>Gestion des Immeubles</h2>
-          <p class="text-muted">Gérez vos propriétés et leurs informations</p>
-        </div>
-        <button class="btn btn-primary" routerLink="nouveau">
-          <i class="fas fa-plus"></i> Nouvel Immeuble
+    <div class="container mx-auto px-4 py-8">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Liste des Immeubles</h1>
+        <button
+          routerLink="/immeubles/new"
+          class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+        >
+          Nouvel Immeuble
         </button>
       </div>
 
@@ -37,43 +37,39 @@
         {{ error }}
       </div>
 
-      <div *ngIf="!loading && !error" class="row g-4">
-        <div *ngFor="let immeuble of filteredImmeubles" class="col-md-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <h5 class="card-title">{{ immeuble.nom }}</h5>
-              <div class="card-text">
-                <div class="mb-2">
-                  <i class="fas fa-map-marker-alt text-primary"></i>
-                  <span class="ms-2">{{ immeuble.adresse }}</span>
-                </div>
-                <div class="mb-2">
-                  <i class="fas fa-city text-secondary"></i>
-                  <span class="ms-2">{{ immeuble.codePostal }} {{ immeuble.ville }}</span>
-                </div>
-                <div class="mb-2">
-                  <i class="fas fa-building text-info"></i>
-                  <span class="ms-2">{{ immeuble.nombreEtages }} étages</span>
-                </div>
-                <div class="mb-2">
-                  <i class="fas fa-door-open text-success"></i>
-                  <span class="ms-2">{{ immeuble.nombreAppartements }} appartements</span>
-                </div>
-                <div>
-                  <i class="fas fa-calendar-alt text-warning"></i>
-                  <span class="ms-2">Construit en {{ immeuble.anneeConstruction }}</span>
-                </div>
-              </div>
+      <div *ngIf="!loading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let immeuble of filteredImmeubles" class="bg-white rounded-lg shadow-md overflow-hidden">
+          <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">{{ immeuble.nom }}</h2>
+            <p class="text-gray-600 mb-4">{{ immeuble.adresse }}</p>
+            
+            <div class="flex items-center mb-4">
+              <span class="text-sm text-gray-500">Construit en {{ immeuble.dateConstruction | date:'yyyy' }}</span>
             </div>
-            <div class="card-footer bg-transparent border-0">
-              <div class="d-flex justify-content-between">
-                <button class="btn btn-outline-primary" [routerLink]="[immeuble.id, 'edit']">
-                  <i class="fas fa-edit"></i> Modifier
-                </button>
-                <button class="btn btn-outline-danger" (click)="deleteImmeuble(immeuble.id)">
-                  <i class="fas fa-trash"></i> Supprimer
-                </button>
-              </div>
+
+            <div class="flex items-center mb-4">
+              <span
+                [class]="immeuble.status === 'ACTIF' ? 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800' : 
+                       immeuble.status === 'EN_TRAVAUX' ? 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800' : 
+                       'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800'"
+              >
+                {{ immeuble.status }}
+              </span>
+            </div>
+
+            <div class="flex justify-end space-x-2">
+              <button
+                [routerLink]="['/immeubles', immeuble.id, 'edit']"
+                class="text-blue-600 hover:text-blue-900"
+              >
+                Modifier
+              </button>
+              <button
+                [routerLink]="['/immeubles', immeuble.id]"
+                class="text-indigo-600 hover:text-indigo-900"
+              >
+                Détails
+              </button>
             </div>
           </div>
         </div>

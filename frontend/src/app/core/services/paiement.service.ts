@@ -21,24 +21,28 @@ export class PaiementService {
     return this.http.get<Paiement>(`${this.apiUrl}/${id}`);
   }
 
-  createPaiement(paiementData: Partial<Paiement>): Observable<Paiement> {
-    return this.http.post<Paiement>(this.apiUrl, paiementData);
+  createPaiement(paiement: Partial<Paiement>): Observable<Paiement> {
+    return this.http.post<Paiement>(this.apiUrl, paiement);
   }
 
-  updatePaiement(id: number, paiementData: Partial<Paiement>): Observable<Paiement> {
-    return this.http.put<Paiement>(`${this.apiUrl}/${id}`, paiementData);
+  updatePaiement(id: number, paiement: Partial<Paiement>): Observable<Paiement> {
+    return this.http.put<Paiement>(`${this.apiUrl}/${id}`, paiement);
   }
 
   deletePaiement(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getPaiementsByAppartement(appartementId: number): Observable<Paiement[]> {
-    return this.http.get<Paiement[]>(`${this.apiUrl}/appartement/${appartementId}`);
-  }
-
   getPaiementsByProprietaire(proprietaireId: number): Observable<Paiement[]> {
     return this.http.get<Paiement[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`);
+  }
+
+  getPaiementsBySyndic(syndicId: number): Observable<Paiement[]> {
+    return this.http.get<Paiement[]>(`${this.apiUrl}/syndic/${syndicId}`);
+  }
+
+  getPaiementsByAppartement(appartementId: number): Observable<Paiement[]> {
+    return this.http.get<Paiement[]>(`${this.apiUrl}/appartement/${appartementId}`);
   }
 
   getPaiementStatistics(): Observable<PaiementStatistics> {

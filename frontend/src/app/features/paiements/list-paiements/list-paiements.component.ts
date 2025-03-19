@@ -1,50 +1,53 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { PaiementService } from '../../../core/services/paiement.service';
-import { Paiement } from '../../../core/models/paiement.model';
+import { PaiementService } from '@core/services/paiement.service';
+import { Paiement } from '@core/models/paiement.model';
+
+interface Immeuble {
+  id: number;
+  nom: string;
+}
+
+interface PaiementStats {
+  totalAmount: number;
+  monthlyAmount: number;
+  pendingCount: number;
+  lateCount: number;
+}
 
 @Component({
   selector: 'app-list-paiements',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './list-paiements.component.html',
   styleUrls: ['./list-paiements.component.css']
 })
 export class ListPaiementsComponent implements OnInit {
   paiements: Paiement[] = [];
+  immeubles: Immeuble[] = [];
   filteredPaiements: Paiement[] = [];
+  stats: PaiementStats = {
+    totalAmount: 0,
+    monthlyAmount: 0,
+    pendingCount: 0,
+    lateCount: 0
+  };
   searchTerm: string = '';
-  selectedLocataire: string = '';
-  selectedStatut: string = '';
-  selectedMois: string = '';
-  selectedAnnee: string = new Date().getFullYear().toString();
-
-  mois = [
-    { value: '01', label: 'Janvier' },
-    { value: '02', label: 'Février' },
-    { value: '03', label: 'Mars' },
-    { value: '04', label: 'Avril' },
-    { value: '05', label: 'Mai' },
-    { value: '06', label: 'Juin' },
-    { value: '07', label: 'Juillet' },
-    { value: '08', label: 'Août' },
-    { value: '09', label: 'Septembre' },
-    { value: '10', label: 'Octobre' },
-    { value: '11', label: 'Novembre' },
-    { value: '12', label: 'Décembre' }
-  ];
-
-  annees = Array.from(
-    { length: 5 },
-    (_, i) => (new Date().getFullYear() - 2 + i).toString()
-  );
+  filterImmeuble: string = '';
+  filterStatus: string = '';
+  filterDateDebut: string = '';
+  filterDateFin: string = '';
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalPages: number = 1;
 
   constructor(private paiementService: PaiementService) {}
 
   ngOnInit(): void {
     this.loadPaiements();
+    this.loadImmeubles();
+    this.calculateStats();
   }
 
   loadPaiements(): void {
@@ -59,52 +62,73 @@ export class ListPaiementsComponent implements OnInit {
     });
   }
 
+  loadImmeubles(): void {
+    // Simulation de données
+    this.immeubles = [
+      { id: 1, nom: 'Résidence Atlas' },
+      { id: 2, nom: 'Résidence Oasis' },
+      // Ajouter plus d'immeubles...
+    ];
+  }
+
+  calculateStats(): void {
+    this.stats = {
+      totalAmount: this.paiements.reduce((sum, p) => sum + p.montant, 0),
+      monthlyAmount: this.paiements
+        .filter(p => new Date(p.datePaiement).getMonth() === new Date().getMonth())
+        .reduce((sum, p) => sum + p.montant, 0),
+      pendingCount: this.paiements.filter(p => p.status === 'EN_ATTENTE').length,
+      lateCount: this.paiements.filter(p => p.status === 'RETARDE').length
+    };
+  }
+
   applyFilters(): void {
-    this.filteredPaiements = this.paiements.filter(paiement => {
-      const matchesSearch = !this.searchTerm || 
-        paiement.reference.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        paiement.locataire.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        paiement.locataire.prenom.toLowerCase().includes(this.searchTerm.toLowerCase());
-      
-      const matchesLocataire = !this.selectedLocataire || 
-        paiement.locataire.id.toString() === this.selectedLocataire;
+    let filtered = [...this.paiements];
 
-      const matchesStatut = !this.selectedStatut || 
-        paiement.statut === this.selectedStatut;
+    // Recherche
+    if (this.searchTerm) {
+      const search = this.searchTerm.toLowerCase();
+      filtered = filtered.filter(p => 
+        p.reference.toLowerCase().includes(search) ||
+        p.locataire.nom.toLowerCase().includes(search) ||
+        p.locataire.prenom.toLowerCase().includes(search) ||
+        p.immeubleId?.toString().toLowerCase().includes(search)
+      );
+    }
 
-      const date = new Date(paiement.datePaiement);
-      const matchesMois = !this.selectedMois || 
-        (date.getMonth() + 1).toString().padStart(2, '0') === this.selectedMois;
-      
-      const matchesAnnee = !this.selectedAnnee || 
-        date.getFullYear().toString() === this.selectedAnnee;
+    // Filtre par immeuble
+    if (this.filterImmeuble) {
+      filtered = filtered.filter(p => p.immeubleId?.toString() === this.filterImmeuble);
+    }
 
-      return matchesSearch && matchesLocataire && matchesStatut && matchesMois && matchesAnnee;
-    });
+    // Filtre par statut
+    if (this.filterStatus) {
+      filtered = filtered.filter(p => p.status === this.filterStatus);
+    }
+
+    // Filtre par date
+    if (this.filterDateDebut) {
+      const debut = new Date(this.filterDateDebut);
+      filtered = filtered.filter(p => new Date(p.datePaiement) >= debut);
+    }
+    if (this.filterDateFin) {
+      const fin = new Date(this.filterDateFin);
+      filtered = filtered.filter(p => new Date(p.datePaiement) <= fin);
+    }
+
+    // Pagination
+    this.totalPages = Math.ceil(filtered.length / this.itemsPerPage);
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    this.filteredPaiements = filtered.slice(start, start + this.itemsPerPage);
   }
 
-  onSearch(): void {
+  changePage(page: number): void {
+    this.currentPage = page;
     this.applyFilters();
   }
 
-  onLocataireChange(): void {
-    this.applyFilters();
-  }
-
-  onStatutChange(): void {
-    this.applyFilters();
-  }
-
-  onMoisChange(): void {
-    this.applyFilters();
-  }
-
-  onAnneeChange(): void {
-    this.applyFilters();
-  }
-
-  getStatutClass(statut: string): string {
-    switch (statut) {
+  getStatusClass(status: string): string {
+    switch (status) {
       case 'PAYE':
         return 'bg-green-100 text-green-800';
       case 'EN_ATTENTE':
@@ -114,6 +138,44 @@ export class ListPaiementsComponent implements OnInit {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  }
+
+  getStatusIconClass(status: string): string {
+    switch (status) {
+      case 'PAYE':
+        return 'bg-green-100';
+      case 'EN_ATTENTE':
+        return 'bg-yellow-100';
+      case 'EN_RETARD':
+        return 'bg-red-100';
+      default:
+        return 'bg-gray-100';
+    }
+  }
+
+  getStatusIcon(status: string): string {
+    switch (status) {
+      case 'PAYE':
+        return 'fas fa-check text-green-600';
+      case 'EN_ATTENTE':
+        return 'fas fa-clock text-yellow-600';
+      case 'EN_RETARD':
+        return 'fas fa-exclamation-circle text-red-600';
+      default:
+        return 'fas fa-question text-gray-600';
+    }
+  }
+
+  openAddPaiementModal(): void {
+    // Implémenter la logique d'ouverture du modal
+  }
+
+  exportPaiements(): void {
+    // Implémenter la logique d'export
+  }
+
+  viewPaiementDetails(paiement: Paiement): void {
+    // Implémenter la logique d'affichage des détails
   }
 
   formatDate(date: Date | string): string {

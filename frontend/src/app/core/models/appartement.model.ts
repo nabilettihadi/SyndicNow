@@ -3,9 +3,45 @@ export interface Appartement {
   numero: string;
   etage: number;
   surface: number;
+  nombrePieces: number;
   loyer: number;
-  statut: 'LIBRE' | 'OCCUPE' | 'EN_TRAVAUX';
-  description?: string;
+  charges: number;
+  status: 'OCCUPE' | 'LIBRE' | 'EN_TRAVAUX';
+  immeubleId: number;
+  proprietaireId?: number;
+  dateCreation: Date;
+}
+
+export interface AppartementStats {
+  totalAppartements: number;
+  appartementParStatus: { [key: string]: number };
+  appartementParImmeuble: { [key: string]: number };
+  loyerMoyen: number;
+  surfaceMoyenne: number;
+}
+
+export interface AppartementDetails {
+  id: number;
+  numero: string;
+  etage: number;
+  surface: number;
+  nombrePieces: number;
+  loyer: number;
+  charges: number;
+  status: 'OCCUPE' | 'LIBRE' | 'EN_TRAVAUX';
+  immeubleId: number;
+  proprietaireId?: number;
+  dateCreation: Date;
+  immeuble?: {
+    id: number;
+    nom: string;
+    adresse: string;
+  };
+  proprietaire?: {
+    id: number;
+    nom: string;
+    prenom: string;
+  };
   caracteristiques: {
     nbChambres: number;
     nbSallesDeBain: number;
@@ -13,9 +49,5 @@ export interface Appartement {
     parking: boolean;
     meuble: boolean;
   };
-  locataireActuel?: {
-    id: number;
-    nom: string;
-    prenom: string;
-  };
+  description?: string;
 } 

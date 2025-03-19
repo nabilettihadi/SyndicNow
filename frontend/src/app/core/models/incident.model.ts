@@ -1,19 +1,27 @@
 export interface Incident {
-  id?: number;
+  id: number;
   titre: string;
   description: string;
-  dateDeclaration: Date;
-  dateResolution?: Date;
-  statut: 'EN_COURS' | 'RESOLU' | 'EN_ATTENTE';
   priorite: 'HAUTE' | 'MOYENNE' | 'BASSE';
-  type: 'TECHNIQUE' | 'SECURITE' | 'AUTRE';
-  immeuble: {
+  statut: 'NOUVEAU' | 'EN_COURS' | 'RESOLU';
+  dateCreation: Date;
+  rapporteur: string;
+  immeubleId: number;
+  immeuble?: {
     id: number;
     nom: string;
   };
-  declarePar: {
-    id: number;
-    nom: string;
-    prenom: string;
+}
+
+export interface IncidentStats {
+  total: number;
+  parStatut: {
+    [key: string]: number;
+  };
+  parPriorite: {
+    [key: string]: number;
+  };
+  parImmeuble: {
+    [key: string]: number;
   };
 } 

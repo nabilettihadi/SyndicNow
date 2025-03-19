@@ -51,50 +51,40 @@
         <div *ngFor="let appartement of appartements"
              class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
           <div class="relative h-48">
-            <img [src]="appartement.image || 'assets/images/placeholder-apartment.jpg'"
+            <img src="assets/images/placeholder-apartment.jpg"
                  [alt]="'Appartement ' + appartement.numero"
                  class="w-full h-full object-cover">
             <div class="absolute top-4 right-4">
-              <span [ngClass]="{
-                'bg-green-100 text-green-800 border-green-200': appartement.statut === 'OCCUPE',
-                'bg-red-100 text-red-800 border-red-200': appartement.statut === 'LIBRE'
-              }" class="px-3 py-1 text-sm font-medium rounded-full border">
-                {{ appartement.statut }}
+              <span class="px-3 py-1 text-sm font-medium rounded-full border bg-gray-100 text-gray-800 border-gray-200">
+                {{ appartement.immeubleName }}
               </span>
             </div>
           </div>
 
           <div class="p-6">
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <h3 class="text-xl font-semibold text-gray-900">Appartement {{ appartement.numero }}</h3>
-                <p class="text-gray-600">{{ appartement.residence }}</p>
-              </div>
-              <span [ngClass]="{
-                'bg-green-50 text-green-700': appartement.etatPaiements === 'A_JOUR',
-                'bg-red-50 text-red-700': appartement.etatPaiements === 'EN_RETARD'
-              }" class="px-2.5 py-1 rounded-md text-sm font-medium">
-                {{ appartement.etatPaiements === 'A_JOUR' ? 'À jour' : 'En retard' }}
-              </span>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">
+              Appartement {{ appartement.numero }}
+            </h3>
+            <div class="space-y-2 text-gray-600">
+              <p>
+                <span class="font-medium">Étage:</span>
+                {{ appartement.etage === -1 ? 'Sous-sol' : 
+                   (appartement.etage === 0 ? 'RDC' : 'Étage ' + appartement.etage) }}
+              </p>
+              <p>
+                <span class="font-medium">Surface:</span>
+                {{ appartement.superficie }} m²
+              </p>
+              <p>
+                <span class="font-medium">Immeuble:</span>
+                {{ appartement.immeubleName }}
+              </p>
+              <p *ngIf="appartement.description" class="text-sm text-gray-500">
+                {{ appartement.description }}
+              </p>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-6">
-              <div class="bg-gray-50 p-3 rounded-lg">
-                <p class="text-sm text-gray-500">Surface</p>
-                <p class="text-lg font-medium text-gray-900">{{ appartement.surface }} m²</p>
-              </div>
-              <div class="bg-gray-50 p-3 rounded-lg">
-                <p class="text-sm text-gray-500">Étage</p>
-                <p
-                  class="text-lg font-medium text-gray-900">{{ appartement.etage }}{{ appartement.etage === 1 ? 'er' : 'ème' }}</p>
-              </div>
-              <div class="bg-gray-50 p-3 rounded-lg col-span-2">
-                <p class="text-sm text-gray-500">Charges mensuelles</p>
-                <p class="text-lg font-medium text-gray-900">{{ appartement.charges }} €</p>
-              </div>
-            </div>
-
-            <div class="flex gap-4">
+            <div class="mt-6 flex gap-4">
               <button [routerLink]="['/proprietaire/appartement', appartement.id]"
                       class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200">
                 Voir les détails

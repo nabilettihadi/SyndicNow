@@ -5,18 +5,18 @@
       <div class="md:flex md:items-center md:justify-between">
         <div class="flex-1 min-w-0">
           <h1 class="text-2xl font-bold text-gray-900">
-            Gestion des appartements
+            Gestion des propriétaires
           </h1>
           <p class="mt-1 text-sm text-gray-500">
-            Liste de tous les appartements
+            Liste de tous les propriétaires
           </p>
         </div>
         <div class="mt-4 flex md:mt-0 md:ml-4">
           <button type="button" 
-                  (click)="openAddAppartementModal()"
+                  (click)="openAddProprietaireModal()"
                   class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-            <i class="fas fa-plus -ml-1 mr-2"></i>
-            Nouvel appartement
+            <i class="fas fa-user-plus -ml-1 mr-2"></i>
+            Nouveau propriétaire
           </button>
         </div>
       </div>
@@ -26,7 +26,7 @@
         <div class="relative rounded-md shadow-sm">
           <input type="text"
                  [(ngModel)]="searchTerm"
-                 placeholder="Rechercher un appartement..."
+                 placeholder="Rechercher un propriétaire..."
                  class="block w-full rounded-md border-gray-300 pr-10 focus:border-primary-500 focus:ring-primary-500">
           <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             <i class="fas fa-search text-gray-400"></i>
@@ -41,85 +41,94 @@
           </option>
         </select>
 
-        <select [(ngModel)]="filterStatus"
+        <select [(ngModel)]="filterVille"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
-          <option value="">Tous les statuts</option>
-          <option value="OCCUPE">Occupé</option>
-          <option value="LIBRE">Libre</option>
-          <option value="EN_TRAVAUX">En travaux</option>
+          <option value="">Toutes les villes</option>
+          <option *ngFor="let ville of villes" [value]="ville">
+            {{ville}}
+          </option>
         </select>
 
         <select [(ngModel)]="sortBy"
                 class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
-          <option value="numero">Numéro</option>
-          <option value="etage">Étage</option>
-          <option value="surface">Surface</option>
-          <option value="loyer">Loyer</option>
+          <option value="nom">Nom</option>
+          <option value="ville">Ville</option>
+          <option value="appartements">Nombre d'appartements</option>
         </select>
       </div>
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Liste des appartements -->
+    <!-- Liste des propriétaires -->
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <div *ngFor="let appartement of filteredAppartements" 
+      <div *ngFor="let proprietaire of filteredProprietaires" 
            class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-200">
         <div class="p-6">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-medium text-gray-900">
-              Appartement {{appartement.numero}}
-            </h3>
-            <span [class]="getStatusClass(appartement.status)"
-                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-              {{appartement.status}}
-            </span>
+          <div class="flex items-center mb-4">
+            <div class="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-medium text-lg">
+              {{getInitials(proprietaire.nom)}}
+            </div>
+            <div class="ml-4">
+              <h3 class="text-lg font-medium text-gray-900">
+                {{proprietaire.nom}}
+              </h3>
+              <p class="text-sm text-gray-500">
+                {{proprietaire.email}}
+              </p>
+            </div>
           </div>
 
           <div class="space-y-3">
             <div class="flex items-center text-sm text-gray-500">
+              <i class="fas fa-phone mr-2 text-gray-400"></i>
+              {{proprietaire.telephone}}
+            </div>
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+              {{proprietaire.ville}}
+            </div>
+            <div class="flex items-center text-sm text-gray-500">
               <i class="fas fa-building mr-2 text-gray-400"></i>
-              {{appartement.immeuble?.nom || 'N/A'}}
+              {{proprietaire.appartements.length}} appartement(s)
             </div>
-            <div class="flex items-center text-sm text-gray-500">
-              <i class="fas fa-stairs mr-2 text-gray-400"></i>
-              Étage {{appartement.etage}}
-            </div>
-            <div class="flex items-center text-sm text-gray-500">
-              <i class="fas fa-ruler-combined mr-2 text-gray-400"></i>
-              {{appartement.surface}} m²
-            </div>
-            <div class="flex items-center text-sm text-gray-500">
-              <i class="fas fa-money-bill-wave mr-2 text-gray-400"></i>
-              {{appartement.loyer}} MAD/mois
+          </div>
+
+          <div class="mt-4">
+            <div class="text-sm text-gray-900 font-medium mb-2">Appartements :</div>
+            <div class="flex flex-wrap gap-2">
+              <span *ngFor="let appt of proprietaire.appartements"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
+                {{appt.immeuble}} - {{appt.numero}}
+              </span>
             </div>
           </div>
 
           <div class="mt-6 flex justify-end space-x-3">
             <button type="button"
-                    (click)="editAppartement(appartement)"
+                    (click)="viewProprietaireDetails(proprietaire)"
                     class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-              <i class="fas fa-edit mr-2"></i>
-              Modifier
+              <i class="fas fa-eye mr-2"></i>
+              Détails
             </button>
             <button type="button"
-                    (click)="deleteAppartement(appartement.id)"
-                    class="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-              <i class="fas fa-trash-alt mr-2"></i>
-              Supprimer
+                    (click)="editProprietaire(proprietaire)"
+                    class="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              <i class="fas fa-edit mr-2"></i>
+              Modifier
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Message si aucun appartement -->
-    <div *ngIf="filteredAppartements.length === 0" 
+    <!-- Message si aucun propriétaire -->
+    <div *ngIf="filteredProprietaires.length === 0" 
          class="text-center py-12">
-      <i class="fas fa-home text-gray-400 text-5xl mb-4"></i>
-      <h3 class="text-lg font-medium text-gray-900">Aucun appartement trouvé</h3>
+      <i class="fas fa-users text-gray-400 text-5xl mb-4"></i>
+      <h3 class="text-lg font-medium text-gray-900">Aucun propriétaire trouvé</h3>
       <p class="mt-1 text-gray-500">
-        Aucun appartement ne correspond à vos critères de recherche.
+        Aucun propriétaire ne correspond à vos critères de recherche.
       </p>
     </div>
 

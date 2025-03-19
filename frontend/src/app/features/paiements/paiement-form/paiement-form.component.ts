@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
-import { PaiementService } from '../../../core/services/paiement.service';
-import { LocataireService } from '../../../core/services/locataire.service';
-import { Paiement } from '../../../core/models/paiement.model';
-import { Locataire } from '../../../core/models/locataire.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PaiementService } from '@core/services/paiement.service';
+import { LocataireService } from '@core/services/locataire.service';
+import { Paiement } from '@core/models/paiement.model';
+import { Locataire } from '@core/models/locataire.model';
 
 @Component({
   selector: 'app-paiement-form',
@@ -16,9 +16,11 @@ import { Locataire } from '../../../core/models/locataire.model';
 })
 export class PaiementFormComponent implements OnInit {
   paiementForm: FormGroup;
-  isEditMode = false;
-  paiementId?: number;
   locataires: Locataire[] = [];
+  loading = false;
+  error: string | null = null;
+  isEditMode = false;
+  paiementId: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -28,104 +30,79 @@ export class PaiementFormComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     this.paiementForm = this.fb.group({
-      locataireId: ['', Validators.required],
       montant: ['', [Validators.required, Validators.min(0)]],
       datePaiement: ['', Validators.required],
-      methodePaiement: ['VIREMENT', Validators.required],
-      statut: ['EN_ATTENTE', Validators.required],
-      description: [''],
-      reference: ['', Validators.required]
+      type: ['', Validators.required],
+      locataireId: [null, Validators.required],
+      status: ['EN_ATTENTE', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.loadLocataires();
-    
     this.route.params.subscribe(params => {
       if (params['id']) {
         this.isEditMode = true;
         this.paiementId = +params['id'];
         this.loadPaiement();
-      } else {
-        // Générer une référence unique pour un nouveau paiement
-        this.generateReference();
       }
+    });
+
+    this.loadLocataires();
+  }
+
+  private loadLocataires(): void {
+    this.locataireService.getAllLocataires().subscribe((locataires: Locataire[]) => {
+      this.locataires = locataires.filter((l: Locataire) => l.status === 'ACTIF');
     });
   }
 
-  loadLocataires(): void {
-    this.locataireService.getAllLocataires().subscribe({
-      next: (locataires) => {
-        this.locataires = locataires.filter(l => !l.dateFin || new Date(l.dateFin) > new Date());
+  private loadPaiement(): void {
+    this.loading = true;
+    this.paiementService.getPaiementById(this.paiementId).subscribe({
+      next: (paiement: Paiement) => {
+        this.paiementForm.patchValue({
+          montant: paiement.montant,
+          datePaiement: this.formatDateForInput(new Date(paiement.datePaiement)),
+          type: paiement.type,
+          locataireId: paiement.locataire?.id,
+          status: paiement.status
+        });
+        this.loading = false;
       },
-      error: (error) => {
-        console.error('Erreur lors du chargement des locataires:', error);
+      error: (error: Error) => {
+        this.error = 'Erreur lors du chargement du paiement';
+        this.loading = false;
       }
     });
   }
 
-  loadPaiement(): void {
-    if (this.paiementId) {
-      this.paiementService.getPaiementById(this.paiementId).subscribe({
-        next: (paiement) => {
-          this.paiementForm.patchValue({
-            locataireId: paiement.locataire.id,
-            montant: paiement.montant,
-            datePaiement: this.formatDateForInput(paiement.datePaiement),
-            methodePaiement: paiement.methodePaiement,
-            statut: paiement.statut,
-            description: paiement.description,
-            reference: paiement.reference
-          });
+  onSubmit(): void {
+    if (this.paiementForm.valid) {
+      this.loading = true;
+      const paiementData = this.paiementForm.value;
+
+      const operation = this.isEditMode
+        ? this.paiementService.updatePaiement(this.paiementId, paiementData)
+        : this.paiementService.createPaiement(paiementData);
+
+      operation.subscribe({
+        next: () => {
+          this.router.navigate(['/paiements']);
         },
-        error: (error) => {
-          console.error('Erreur lors du chargement du paiement:', error);
+        error: (error: Error) => {
+          this.error = 'Erreur lors de la sauvegarde du paiement';
+          this.loading = false;
         }
       });
     }
   }
 
-  onSubmit(): void {
-    if (this.paiementForm.valid) {
-      const paiementData = this.paiementForm.value;
-      
-      if (this.isEditMode && this.paiementId) {
-        this.paiementService.updatePaiement(this.paiementId, paiementData).subscribe({
-          next: () => {
-            this.router.navigate(['/paiements']);
-          },
-          error: (error) => {
-            console.error('Erreur lors de la mise à jour du paiement:', error);
-          }
-        });
-      } else {
-        this.paiementService.createPaiement(paiementData).subscribe({
-          next: () => {
-            this.router.navigate(['/paiements']);
-          },
-          error: (error) => {
-            console.error('Erreur lors de la création du paiement:', error);
-          }
-        });
-      }
-    }
-  }
-
-  onCancel(): void {
-    this.router.navigate(['/paiements']);
-  }
-
-  private formatDateForInput(date: string | Date): string {
+  formatDateForInput(date: Date): string {
     const d = new Date(date);
     return d.toISOString().split('T')[0];
   }
 
-  private generateReference(): void {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    const reference = `PAY-${year}${month}-${random}`;
-    this.paiementForm.patchValue({ reference });
+  onCancel(): void {
+    this.router.navigate(['/paiements']);
   }
 } 

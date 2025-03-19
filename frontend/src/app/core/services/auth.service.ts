@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {LoginRequest, LoginResponse, RegisterRequest, RegisterResponse} from '../authentication/models/auth.model';
 import {environment} from '@env/environment';
 import {Store} from '@ngrx/store';
 import * as AuthActions from '../authentication/store/actions/auth.actions';
 import {Router} from '@angular/router';
+import { User } from '../models/user.model';
+import { NavItem } from '../models/nav-item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +20,78 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   public currentUserValue = this.currentUserSubject.value;
+  public isAuthenticated$ = this.currentUser$.pipe(
+    map(user => !!user && !!this.getToken())
+  );
+
+  private readonly navItems: NavItem[] = [
+    {
+      label: 'Tableau de bord',
+      route: '/dashboard',
+      icon: 'fas fa-chart-line',
+      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
+    },
+    {
+      label: 'Immeubles',
+      route: '/immeubles',
+      icon: 'fas fa-building',
+      roles: ['ADMIN', 'SYNDIC']
+    },
+    {
+      label: 'Appartements',
+      route: '/appartements',
+      icon: 'fas fa-home',
+      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
+    },
+    {
+      label: 'Locataires',
+      route: '/locataires',
+      icon: 'fas fa-users',
+      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
+    },
+    {
+      label: 'Paiements',
+      route: '/paiements',
+      icon: 'fas fa-money-bill',
+      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
+    },
+    {
+      label: 'Incidents',
+      route: '/incidents',
+      icon: 'fas fa-exclamation-triangle',
+      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
+    },
+    {
+      label: 'Documents',
+      route: '/documents',
+      icon: 'fas fa-file-alt',
+      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
+    },
+    {
+      label: 'Messages',
+      route: '/messages',
+      icon: 'fas fa-envelope',
+      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
+    },
+    {
+      label: 'Réunions',
+      route: '/reunions',
+      icon: 'fas fa-calendar-alt',
+      roles: ['ADMIN', 'SYNDIC']
+    },
+    {
+      label: 'Syndics',
+      route: '/syndics',
+      icon: 'fas fa-user-tie',
+      roles: ['ADMIN']
+    },
+    {
+      label: 'Rapports',
+      route: '/rapports',
+      icon: 'fas fa-file-pdf',
+      roles: ['ADMIN']
+    }
+  ];
 
   constructor(
     private http: HttpClient,
@@ -129,5 +203,20 @@ export class AuthService {
       errorMessage = error.message;
     }
     return throwError(() => new Error(errorMessage));
+  }
+
+  getAuthorizedNavItems(): Observable<NavItem[]> {
+    return new Observable(subscriber => {
+      this.currentUser$.subscribe(user => {
+        if (!user) {
+          subscriber.next([]);
+          return;
+        }
+        const authorizedItems = this.navItems.filter(item => 
+          item.roles.includes(user.role)
+        );
+        subscriber.next(authorizedItems);
+      });
+    });
   }
 } 

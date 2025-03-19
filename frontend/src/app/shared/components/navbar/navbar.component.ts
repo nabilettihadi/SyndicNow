@@ -7,6 +7,7 @@ import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import {AuthService} from '@core/services/auth.service';
 import {AuthState, LoginResponse, UserRole} from '@core/authentication/models/auth.model';
 import * as AuthActions from '../../../core/authentication/store/actions/auth.actions';
+import { NavItem } from '../../../core/models/nav-item.model';
 
 @Component({
   selector: 'app-navbar',
@@ -27,6 +28,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isNavbarVisible = true;
   private scrollThreshold = 50;
   private lastScrollPosition = 0;
+  isSidebarOpen = false;
+  navItems$: Observable<NavItem[]>;
+  hasNotifications = false;
 
   constructor(
     private router: Router,
@@ -43,6 +47,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.userRole$ = this.currentUser$.pipe(
       map(user => user ? user.role : null)
     );
+    this.navItems$ = this.authService.getAuthorizedNavItems();
   }
 
   @HostListener('window:resize')
@@ -151,8 +156,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     if (this.isMobileMenuOpen) {
       this.renderer.setStyle(document.body, 'overflow', 'hidden');
       // Réafficher la navbar si elle était cachée
-      this.renderer.setStyle(this.el.nativeElement.querySelector('.navbar'), 'transform', 'translateY(0)');
-      this.isNavbarVisible = true;
+      const navbarElement = this.el.nativeElement.querySelector('nav');
+      if (navbarElement) {
+        this.renderer.setStyle(navbarElement, 'transform', 'translateY(0)');
+        this.isNavbarVisible = true;
+      }
     } else {
       this.renderer.removeStyle(document.body, 'overflow');
     }
@@ -188,5 +196,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.closeMobileMenu();
       }
     }
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  getUserInitials(): string {
+    let initials = '';
+    this.currentUser$.subscribe(user => {
+      if (user) {
+        initials = `${user.nom.charAt(0)}${user.prenom.charAt(0)}`;
+      }
+    });
+    return initials;
   }
 }

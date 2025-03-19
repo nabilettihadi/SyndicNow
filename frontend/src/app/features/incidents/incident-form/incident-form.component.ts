@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { IncidentService } from '../../../core/services/incident.service';
 import { Incident } from '../../../core/models/incident.model';
+import { ImmeubleService } from '../../../core/services/immeuble.service';
+import { Immeuble } from '../../../core/models/immeuble.model';
 
 @Component({
   selector: 'app-incident-form',
@@ -14,21 +16,25 @@ import { Incident } from '../../../core/models/incident.model';
 })
 export class IncidentFormComponent implements OnInit {
   incidentForm: FormGroup;
+  immeubles: Immeuble[] = [];
+  loading = false;
+  error: string | null = null;
   isEditMode = false;
-  incidentId?: number;
+  incidentId: number = 0;
 
   constructor(
     private fb: FormBuilder,
     private incidentService: IncidentService,
+    private immeubleService: ImmeubleService,
     private router: Router,
     private route: ActivatedRoute
   ) {
     this.incidentForm = this.fb.group({
-      titre: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.minLength(10)]],
+      titre: ['', Validators.required],
+      description: ['', Validators.required],
       priorite: ['MOYENNE', Validators.required],
-      type: ['TECHNIQUE', Validators.required],
-      immeubleId: ['', Validators.required]
+      immeubleId: [null, Validators.required],
+      status: ['EN_COURS', Validators.required]
     });
   }
 
@@ -40,50 +46,54 @@ export class IncidentFormComponent implements OnInit {
         this.loadIncident();
       }
     });
+
+    this.loadImmeubles();
   }
 
-  loadIncident(): void {
-    if (this.incidentId) {
-      this.incidentService.getIncidentById(this.incidentId).subscribe({
-        next: (incident) => {
-          this.incidentForm.patchValue({
-            titre: incident.titre,
-            description: incident.description,
-            priorite: incident.priorite,
-            type: incident.type,
-            immeubleId: incident.immeuble.id
-          });
-        },
-        error: (error) => {
-          console.error('Erreur lors du chargement de l\'incident:', error);
-        }
-      });
-    }
+  private loadImmeubles(): void {
+    this.immeubleService.getAllImmeubles().subscribe((immeubles: Immeuble[]) => {
+      this.immeubles = immeubles;
+    });
+  }
+
+  private loadIncident(): void {
+    this.loading = true;
+    this.incidentService.getIncidentById(this.incidentId).subscribe({
+      next: (incident: Incident) => {
+        this.incidentForm.patchValue({
+          titre: incident.titre,
+          description: incident.description,
+          priorite: incident.priorite,
+          immeubleId: incident.immeuble?.id,
+          status: incident.statut
+        });
+        this.loading = false;
+      },
+      error: (error: Error) => {
+        this.error = 'Erreur lors du chargement de l\'incident';
+        this.loading = false;
+      }
+    });
   }
 
   onSubmit(): void {
     if (this.incidentForm.valid) {
+      this.loading = true;
       const incidentData = this.incidentForm.value;
-      
-      if (this.isEditMode && this.incidentId) {
-        this.incidentService.updateIncident(this.incidentId, incidentData).subscribe({
-          next: () => {
-            this.router.navigate(['/incidents']);
-          },
-          error: (error) => {
-            console.error('Erreur lors de la mise à jour de l\'incident:', error);
-          }
-        });
-      } else {
-        this.incidentService.createIncident(incidentData).subscribe({
-          next: () => {
-            this.router.navigate(['/incidents']);
-          },
-          error: (error) => {
-            console.error('Erreur lors de la création de l\'incident:', error);
-          }
-        });
-      }
+
+      const operation = this.isEditMode
+        ? this.incidentService.updateIncident(this.incidentId, incidentData)
+        : this.incidentService.createIncident(incidentData);
+
+      operation.subscribe({
+        next: () => {
+          this.router.navigate(['/incidents']);
+        },
+        error: (error: Error) => {
+          this.error = 'Erreur lors de la sauvegarde de l\'incident';
+          this.loading = false;
+        }
+      });
     }
   }
 

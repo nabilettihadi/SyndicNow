@@ -6,8 +6,30 @@ export interface Locataire {
   prenom: string;
   email: string;
   telephone: string;
-  dateDebut: Date;
-  dateFin?: Date;
-  appartement?: Appartement;
-  statut?: 'ACTIF' | 'INACTIF';
+  dateNaissance: Date;
+  dateEntree: Date;
+  dateSortie?: Date;
+  status: 'ACTIF' | 'INACTIF';
+  appartementId: number;
+  appartement?: {
+    id: number;
+    numero: string;
+    immeuble: {
+      id: number;
+      nom: string;
+    };
+  };
+}
+
+export interface LocataireStats {
+  total: number;
+  parStatus: {
+    [key: string]: number;
+  };
+  parImmeuble: {
+    [key: string]: number;
+  };
+  nouveauxLocatairesParMois: {
+    [key: string]: number;
+  };
 } 

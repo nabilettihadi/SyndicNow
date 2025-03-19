@@ -3,7 +3,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {environment} from '@env/environment';
-import {Appartement} from '../models/appartement.model';
+import {Appartement, AppartementDetails, AppartementStats} from '../models/appartement.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,12 @@ export class AppartementService {
 
   getAllAppartements(): Observable<Appartement[]> {
     return this.http.get<Appartement[]>(this.apiUrl);
+  }
+
+  getAllAppartementsDetails(): Observable<AppartementDetails[]> {
+    return this.http.get<AppartementDetails[]>(`${this.apiUrl}/details`).pipe(
+      catchError(this.handleError)
+    );
   }
 
   getAppartementById(id: number): Observable<Appartement> {
@@ -34,14 +40,34 @@ export class AppartementService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  getAppartementsProprietaire(proprietaireId: number): Observable<any> {
-    return this.http.get(`${this.apiUrl}/proprietaire/${proprietaireId}`).pipe(
+  getAppartementStats(): Observable<AppartementStats> {
+    return this.http.get<AppartementStats>(`${this.apiUrl}/stats`);
+  }
+
+  getAppartementsByImmeuble(immeubleId: number): Observable<Appartement[]> {
+    return this.http.get<Appartement[]>(`${this.apiUrl}/immeuble/${immeubleId}`);
+  }
+
+  getAppartementsByProprietaire(proprietaireId: number): Observable<Appartement[]> {
+    return this.http.get<Appartement[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`);
+  }
+
+  getAppartementsByStatus(status: string): Observable<Appartement[]> {
+    return this.http.get<Appartement[]>(`${this.apiUrl}/status/${status}`);
+  }
+
+  assignerProprietaire(id: number, proprietaireId: number): Observable<Appartement> {
+    return this.http.post<Appartement>(`${this.apiUrl}/${id}/proprietaire/${proprietaireId}`, {});
+  }
+
+  getAppartementsProprietaire(proprietaireId: number): Observable<AppartementDetails[]> {
+    return this.http.get<AppartementDetails[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  getAppartementDetails(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+  getAppartementDetails(id: number): Observable<AppartementDetails> {
+    return this.http.get<AppartementDetails>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
   }

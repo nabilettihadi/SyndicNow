@@ -1,22 +1,18 @@
 export interface Syndic {
-  id?: number;
+  id: number;
   nom: string;
-  prenom: string;
   email: string;
   telephone: string;
-  dateDebut: Date;
-  dateFin?: Date;
-  statut: 'ACTIF' | 'INACTIF';
-  specialite?: string;
-  immeubles: {
-    id: number;
-    nom: string;
-    adresse: string;
-  }[];
-  documents?: {
-    id: number;
-    nom: string;
-    type: string;
-    url: string;
-  }[];
+  ville: string;
+  status: 'ACTIF' | 'INACTIF';
+  dateCreation: Date;
+  immeubles: any[];
+}
+
+export interface SyndicStats {
+  totalSyndics: number;
+  syndicActifs: number;
+  syndicInactifs: number;
+  syndicParVille: { [key: string]: number };
+  nouveauxSyndicsParMois: { [key: string]: number };
 } 

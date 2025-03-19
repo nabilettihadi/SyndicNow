@@ -39,4 +39,8 @@ export class IncidentService {
   updateIncidentStatus(id: number, statut: string): Observable<Incident> {
     return this.http.patch<Incident>(`${this.apiUrl}/${id}/statut`, { statut });
   }
+
+  getIncidentsByProprietaire(proprietaireId: number): Observable<Incident[]> {
+    return this.http.get<Incident[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`);
+  }
 } 

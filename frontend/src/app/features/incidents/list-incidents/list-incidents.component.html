@@ -1,130 +1,184 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="mb-6">
-    <h1 class="text-3xl font-bold text-gray-900 mb-4">Liste des Incidents</h1>
-    
-    <!-- Filtres -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <!-- Recherche -->
-      <div class="relative">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (input)="onSearch()"
-          placeholder="Rechercher un incident..."
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+<div class="min-h-screen bg-gray-100 py-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- En-tête -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Gestion des incidents</h1>
+          <p class="mt-2 text-sm text-gray-600">Liste des incidents signalés</p>
+        </div>
+        <button
+          (click)="openAddIncidentModal()"
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-      </div>
-
-      <!-- Filtre par statut -->
-      <div>
-        <select
-          [(ngModel)]="selectedStatus"
-          (change)="onStatusChange()"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="">Tous les statuts</option>
-          <option value="EN_COURS">En cours</option>
-          <option value="RESOLU">Résolu</option>
-          <option value="EN_ATTENTE">En attente</option>
-        </select>
-      </div>
-
-      <!-- Filtre par priorité -->
-      <div>
-        <select
-          [(ngModel)]="selectedPriority"
-          (change)="onPriorityChange()"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="">Toutes les priorités</option>
-          <option value="HAUTE">Haute</option>
-          <option value="MOYENNE">Moyenne</option>
-          <option value="BASSE">Basse</option>
-        </select>
-      </div>
-
-      <!-- Filtre par type -->
-      <div>
-        <select
-          [(ngModel)]="selectedType"
-          (change)="onTypeChange()"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="">Tous les types</option>
-          <option value="TECHNIQUE">Technique</option>
-          <option value="SECURITE">Sécurité</option>
-          <option value="AUTRE">Autre</option>
-        </select>
+          <i class="fas fa-plus mr-2"></i>
+          Nouvel incident
+        </button>
       </div>
     </div>
 
-    <!-- Bouton Nouveau -->
-    <div class="flex justify-end mb-6">
-      <button
-        routerLink="/incidents/new"
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
-        Nouvel Incident
-      </button>
+    <!-- Filtres -->
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <!-- Recherche -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Recherche
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearch()"
+            placeholder="Rechercher un incident..."
+            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          >
+        </div>
+
+        <!-- Filtre par immeuble -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Immeuble
+          </label>
+          <select
+            [(ngModel)]="filterImmeuble"
+            (ngModelChange)="applyFilters()"
+            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          >
+            <option value="">Tous les immeubles</option>
+            <option *ngFor="let immeuble of immeubles" [value]="immeuble.id">
+              {{immeuble.nom}}
+            </option>
+          </select>
+        </div>
+
+        <!-- Filtre par priorité -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Priorité
+          </label>
+          <select
+            [(ngModel)]="filterPriority"
+            (ngModelChange)="applyFilters()"
+            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          >
+            <option value="">Toutes les priorités</option>
+            <option value="HAUTE">Haute</option>
+            <option value="MOYENNE">Moyenne</option>
+            <option value="BASSE">Basse</option>
+          </select>
+        </div>
+
+        <!-- Filtre par statut -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Statut
+          </label>
+          <select
+            [(ngModel)]="filterStatus"
+            (ngModelChange)="applyFilters()"
+            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          >
+            <option value="">Tous les statuts</option>
+            <option value="NOUVEAU">Nouveau</option>
+            <option value="EN_COURS">En cours</option>
+            <option value="RESOLU">Résolu</option>
+          </select>
+        </div>
+      </div>
     </div>
 
     <!-- Liste des incidents -->
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Immeuble</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priorité</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr *ngFor="let incident of filteredIncidents">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ incident.titre }}</div>
-                <div class="text-sm text-gray-500">{{ incident.description }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ incident.immeuble.nom }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ incident.dateDeclaration | date:'dd/MM/yyyy' }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span [class]="'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + getStatusClass(incident.statut)">
-                  {{ incident.statut }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span [class]="'px-2 inline-flex text-xs leading-5 font-semibold rounded-full ' + getPriorityClass(incident.priorite)">
-                  {{ incident.priorite }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ incident.type }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <button
-                  [routerLink]="['/incidents', incident.id]"
-                  class="text-blue-600 hover:text-blue-900 mr-4"
-                >
-                  Détails
-                </button>
-                <button
-                  [routerLink]="['/incidents', incident.id, 'edit']"
-                  class="text-indigo-600 hover:text-indigo-900"
-                >
-                  Modifier
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="bg-white shadow rounded-lg">
+      <ul class="divide-y divide-gray-200">
+        <li *ngFor="let incident of filteredIncidents" class="p-6">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+              <!-- Priorité -->
+              <span [class]="getPriorityClass(incident.priorite)"
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                {{incident.priorite}}
+              </span>
+              <!-- Statut -->
+              <span [class]="getStatusClass(incident.statut)"
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                {{incident.statut}}
+              </span>
+            </div>
+          </div>
+          <div class="mt-4">
+            <h3 class="text-lg font-medium text-gray-900">
+              {{incident.titre}}
+            </h3>
+            <div class="mt-2 text-sm text-gray-500">
+              <p>{{incident.description}}</p>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4 text-sm text-gray-500">
+              <div>
+                <i class="far fa-calendar mr-1"></i>
+                {{incident.dateCreation | date}}
+              </div>
+              <div>
+                <i class="far fa-user mr-1"></i>
+                {{incident.rapporteur}}
+              </div>
+              <div>
+                <i class="far fa-building mr-1"></i>
+                {{getImmeubleName(incident.immeubleId)}}
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <!-- Bouton voir détails -->
+              <button
+                (click)="viewIncidentDetails(incident)"
+                class="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <i class="fas fa-eye mr-2"></i>
+                Voir détails
+              </button>
+              <!-- Bouton mise à jour statut -->
+              <button
+                (click)="updateIncidentStatus(incident)"
+                [class]="incident.statut === 'NOUVEAU' ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'"
+                class="inline-flex items-center px-3 py-1 border border-transparent shadow-sm text-sm font-medium rounded-md text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+              >
+                <i [class]="incident.statut === 'NOUVEAU' ? 'fas fa-play mr-2' : 'fas fa-check mr-2'"></i>
+                {{incident.statut === 'NOUVEAU' ? 'Prendre en charge' : 'Marquer comme résolu'}}
+              </button>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Message si aucun incident -->
+      <div *ngIf="filteredIncidents.length === 0" class="p-6 text-center text-gray-500">
+        Aucun incident trouvé
+      </div>
+
+      <!-- Pagination -->
+      <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+        <div class="flex items-center justify-between">
+          <button
+            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            [disabled]="currentPage === 1"
+            (click)="changePage(currentPage - 1)"
+          >
+            <i class="fas fa-chevron-left mr-2"></i>
+            Précédent
+          </button>
+          <span class="text-sm text-gray-700">
+            Page {{currentPage}} sur {{totalPages}}
+          </span>
+          <button
+            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            [disabled]="currentPage === totalPages"
+            (click)="changePage(currentPage + 1)"
+          >
+            Suivant
+            <i class="fas fa-chevron-right ml-2"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>

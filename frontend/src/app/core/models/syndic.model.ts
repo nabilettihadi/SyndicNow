@@ -4,7 +4,7 @@ export interface Syndic {
   email: string;
   telephone: string;
   ville: string;
-  status: 'ACTIF' | 'INACTIF';
+  status: 'ACTIF' | 'INACTIF' | 'EN_ATTENTE';
   dateCreation: Date;
   immeubles: any[];
 }

@@ -52,6 +52,10 @@ export class AppartementService {
     return this.http.get<Appartement[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`);
   }
 
+  getAppartementsBySyndic(syndicId: number): Observable<Appartement[]> {
+    return this.http.get<Appartement[]>(`${this.apiUrl}/syndic/${syndicId}`);
+  }
+
   getAppartementsByStatus(status: string): Observable<Appartement[]> {
     return this.http.get<Appartement[]>(`${this.apiUrl}/status/${status}`);
   }

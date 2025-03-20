@@ -6,6 +6,7 @@ import {AuthState} from '../authentication/models/auth.model';
 import {AuthService} from '../services/auth.service';
 import { CanActivate } from '@angular/router';
 import { inject } from '@angular/core';
+import { UserRole } from '@core/models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -82,20 +83,23 @@ export class DashboardGuard {
       return false;
     }
 
-    const requiredRole = route.data['role'];
-    if (!requiredRole) {
-      return true;
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) {
+      this.router.navigate(['/auth/login']);
+      return false;
     }
 
-    return this.store.select('auth').pipe(
-      map(state => {
-        if (state.user?.role === requiredRole) {
-          return true;
-        }
-        this.router.navigate(['/dashboard']);
-        return false;
-      })
-    );
+    // Rediriger en fonction du rôle
+    const role = currentUser.role;
+    if (role === UserRole.ADMIN) {
+      return this.router.createUrlTree(['/admin']);
+    } else if (role === UserRole.SYNDIC) {
+      return this.router.createUrlTree(['/syndic']);
+    } else if (role === UserRole.PROPRIETAIRE) {
+      return this.router.createUrlTree(['/proprietaire']);
+    } else {
+      return this.router.createUrlTree(['/']);
+    }
   }
 }
 

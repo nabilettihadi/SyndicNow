@@ -1,93 +1,100 @@
-<nav class="fixed top-0 left-0 right-0 bg-white shadow-md z-50">
+<!-- Navbar container avec une hauteur fixe et un z-index élevé -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 to-indigo-700 shadow-lg transition-all duration-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16">
-      <!-- Logo et titre -->
+      <!-- Logo et navigation principale -->
       <div class="flex items-center">
-        <a routerLink="/" class="flex items-center">
-          <img src="assets/images/logo.png" alt="Logo" class="h-8 w-auto">
-          <span class="ml-2 text-xl font-bold text-primary-600">SyndicNow</span>
-        </a>
+        <div class="flex-shrink-0 flex items-center">
+          <img class="h-8 w-auto" src="assets/images/logo.png" alt="Logo">
+        </div>
+        
+        <!-- Navigation items - Desktop -->
+        <div class="hidden md:ml-6 md:flex md:space-x-4">
+          <ng-container *ngFor="let item of getVisibleNavItems()">
+            <a [routerLink]="item.route"
+               routerLinkActive="bg-white/20 text-white"
+               class="px-3 py-2 rounded-md text-sm font-medium text-white/90 hover:bg-white/10 hover:text-white
+                      transition-colors duration-200 flex items-center space-x-2">
+              <i [class]="item.icon"></i>
+              <span>{{ item.label }}</span>
+            </a>
+          </ng-container>
+        </div>
       </div>
 
-      <!-- Navigation principale -->
-      <div class="hidden md:flex items-center space-x-4">
-        <ng-container *ngFor="let item of navItems$ | async">
-          <a [routerLink]="item.route" 
-             routerLinkActive="text-primary-600 border-b-2 border-primary-600"
-             class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors duration-200">
-            <i [class]="item.icon" class="mr-2"></i>
-            {{item.label}}
-          </a>
-        </ng-container>
-      </div>
-
-      <!-- Menu utilisateur -->
-      <div class="flex items-center">
+      <!-- Boutons droits -->
+      <div class="flex items-center space-x-2">
         <!-- Notifications -->
-        <button class="p-2 text-gray-600 hover:text-primary-600 relative">
-          <i class="fas fa-bell text-xl"></i>
-          <span *ngIf="hasNotifications" 
-                class="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+        <button class="p-2 rounded-full text-white/90 hover:bg-white/10 hover:text-white
+                       transition-colors duration-200 relative">
+          <i class="fas fa-bell"></i>
+          <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 transform translate-x-1/2 -translate-y-1/2"></span>
         </button>
 
-        <!-- Profil utilisateur -->
-        <div class="ml-4 relative" #userMenuContainer>
+        <!-- User menu -->
+        <div class="ml-3 relative">
           <button (click)="toggleUserMenu()"
-                  class="flex items-center space-x-3 focus:outline-none">
-            <div class="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium relative">
+                  class="flex items-center space-x-3 p-2 rounded-full hover:bg-white/10 transition-colors duration-200">
+            <div class="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center text-white font-medium border-2 border-white/20">
               {{ getUserInitials() }}
-              <span class="absolute bottom-0 right-0 h-3 w-3 bg-green-400 border-2 border-white rounded-full"></span>
             </div>
+            <span class="hidden md:block text-sm font-medium text-white">
+              {{ (userName$ | async) || 'Utilisateur' }}
+            </span>
           </button>
 
-          <!-- Menu déroulant -->
-          <div *ngIf="isUserMenuOpen" 
-               class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-            <div class="px-4 py-2 border-b border-gray-100">
-              <p class="text-sm font-medium text-gray-900">{{ (currentUser$ | async)?.prenom }} {{ (currentUser$ | async)?.nom }}</p>
-              <p class="text-xs text-gray-500">{{ (currentUser$ | async)?.email }}</p>
-            </div>
-            <a routerLink="/profile" 
-               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-              <i class="fas fa-user-circle mr-2"></i> Mon profil
-            </a>
-            <a routerLink="/settings" 
-               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-              <i class="fas fa-cog mr-2"></i> Paramètres
-            </a>
-            <div class="border-t border-gray-100">
+          <!-- User dropdown menu -->
+          <div *ngIf="isUserMenuOpen"
+               class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+            <div class="py-1">
+              <div class="px-4 py-2 text-sm bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+                <div class="font-medium">{{ userName$ | async }}</div>
+                <div class="text-white/80">{{ getRoleLabel((currentUser$ | async)?.role || '') }}</div>
+              </div>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">
+                <i class="fas fa-user mr-2"></i>Mon profil
+              </a>
+              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">
+                <i class="fas fa-cog mr-2"></i>Paramètres
+              </a>
               <button (click)="logout()" 
-                      class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-                <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
+                      class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 group">
+                <i class="fas fa-sign-out-alt mr-2 group-hover:text-red-700"></i>Déconnexion
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Menu mobile -->
-        <div class="md:hidden ml-4">
-          <button (click)="toggleMobileMenu()"
-                  class="text-gray-600 hover:text-primary-600 focus:outline-none">
-            <i [class]="isMobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'" class="text-2xl"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Menu mobile (affiché uniquement sur mobile) -->
-    <div *ngIf="isMobileMenuOpen" class="md:hidden">
-      <div class="pt-2 pb-3 space-y-1">
-        <ng-container *ngFor="let item of navItems$ | async">
-          <a [routerLink]="item.route"
-             routerLinkActive="bg-primary-50 text-primary-600"
-             class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary-600">
-            <i [class]="item.icon" class="mr-2"></i>
-            {{item.label}}
-          </a>
-        </ng-container>
+        <!-- Mobile menu button -->
+        <button (click)="toggleMobileMenu()"
+                class="md:hidden ml-2 p-2 rounded-md text-white/90 hover:bg-white/10 hover:text-white
+                       transition-colors duration-200">
+          <i [class]="isMobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'"></i>
+        </button>
       </div>
     </div>
   </div>
+
+  <!-- Mobile menu -->
+  <div *ngIf="isMobileMenuOpen" class="md:hidden bg-gradient-to-r from-blue-700 to-indigo-800">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      <ng-container *ngFor="let item of getVisibleNavItems()">
+        <a [routerLink]="item.route"
+           routerLinkActive="bg-white/20 text-white"
+           class="px-3 py-2 rounded-md text-base font-medium text-white/90 hover:bg-white/10 hover:text-white
+                  transition-colors duration-200 flex items-center space-x-2">
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      </ng-container>
+    </div>
+  </div>
 </nav>
-<!-- Spacer pour éviter que le contenu soit caché derrière la navbar fixe -->
+
+<!-- Spacer pour éviter que le contenu passe sous la navbar -->
 <div class="h-16"></div>
+
+<!-- Contenu principal -->
+<main class="pt-4">
+  <ng-content></ng-content>
+</main>

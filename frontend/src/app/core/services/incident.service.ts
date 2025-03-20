@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Incident } from '../models/incident.model';
+import { Incident, IncidentWithStatus, addStatusAlias } from '../models/incident.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,35 +12,55 @@ export class IncidentService {
 
   constructor(private http: HttpClient) {}
 
-  getAllIncidents(): Observable<Incident[]> {
-    return this.http.get<Incident[]>(this.apiUrl);
+  getAllIncidents(): Observable<IncidentWithStatus[]> {
+    return this.http.get<Incident[]>(this.apiUrl).pipe(
+      map(incidents => incidents.map(incident => addStatusAlias(incident)))
+    );
   }
 
-  getIncidentById(id: number): Observable<Incident> {
-    return this.http.get<Incident>(`${this.apiUrl}/${id}`);
+  getIncidentById(id: number): Observable<IncidentWithStatus> {
+    return this.http.get<Incident>(`${this.apiUrl}/${id}`).pipe(
+      map(incident => addStatusAlias(incident))
+    );
   }
 
-  getIncidentsByImmeuble(immeubleId: number): Observable<Incident[]> {
-    return this.http.get<Incident[]>(`${this.apiUrl}/immeuble/${immeubleId}`);
+  getIncidentsByImmeuble(immeubleId: number): Observable<IncidentWithStatus[]> {
+    return this.http.get<Incident[]>(`${this.apiUrl}/immeuble/${immeubleId}`).pipe(
+      map(incidents => incidents.map(incident => addStatusAlias(incident)))
+    );
   }
 
-  createIncident(incident: Incident): Observable<Incident> {
-    return this.http.post<Incident>(this.apiUrl, incident);
+  getIncidentsBySyndic(syndicId: number): Observable<IncidentWithStatus[]> {
+    return this.http.get<Incident[]>(`${this.apiUrl}/syndic/${syndicId}`).pipe(
+      map(incidents => incidents.map(incident => addStatusAlias(incident)))
+    );
   }
 
-  updateIncident(id: number, incident: Incident): Observable<Incident> {
-    return this.http.put<Incident>(`${this.apiUrl}/${id}`, incident);
+  createIncident(incident: Incident): Observable<IncidentWithStatus> {
+    return this.http.post<Incident>(this.apiUrl, incident).pipe(
+      map(incident => addStatusAlias(incident))
+    );
+  }
+
+  updateIncident(id: number, incident: Incident): Observable<IncidentWithStatus> {
+    return this.http.put<Incident>(`${this.apiUrl}/${id}`, incident).pipe(
+      map(incident => addStatusAlias(incident))
+    );
   }
 
   deleteIncident(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  updateIncidentStatus(id: number, statut: string): Observable<Incident> {
-    return this.http.patch<Incident>(`${this.apiUrl}/${id}/statut`, { statut });
+  updateIncidentStatus(id: number, statut: string): Observable<IncidentWithStatus> {
+    return this.http.patch<Incident>(`${this.apiUrl}/${id}/statut`, { statut }).pipe(
+      map(incident => addStatusAlias(incident))
+    );
   }
 
-  getIncidentsByProprietaire(proprietaireId: number): Observable<Incident[]> {
-    return this.http.get<Incident[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`);
+  getIncidentsByProprietaire(proprietaireId: number): Observable<IncidentWithStatus[]> {
+    return this.http.get<Incident[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`).pipe(
+      map(incidents => incidents.map(incident => addStatusAlias(incident)))
+    );
   }
 } 

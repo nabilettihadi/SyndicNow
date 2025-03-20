@@ -1,0 +1,173 @@
+<div class="min-h-screen bg-gray-50">
+  <app-navbar></app-navbar>
+  
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Tableau de bord Propriétaire</h1>
+    
+    <!-- Chargement et erreur -->
+    <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+    </div>
+    
+    <div *ngIf="hasError" class="bg-red-50 p-4 rounded-md text-red-700 mb-6">
+      {{ errorMessage }}
+    </div>
+    
+    <!-- Contenu principal -->
+    <div *ngIf="!isLoading && !hasError">
+      <!-- Statistiques générales -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="text-gray-500 text-sm">Total des appartements</div>
+          <div class="text-3xl font-bold">{{ totalAppartements }}</div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="text-gray-500 text-sm">Appartements occupés</div>
+          <div class="text-3xl font-bold text-green-600">{{ occupiedAppartements }}</div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="text-gray-500 text-sm">Appartements libres</div>
+          <div class="text-3xl font-bold text-blue-600">{{ freeAppartements }}</div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <div class="text-gray-500 text-sm">Revenus totaux</div>
+          <div class="text-3xl font-bold text-purple-600">{{ totalRevenue | currency:'MAD ' }}</div>
+        </div>
+      </div>
+      
+      <!-- Recherche et filtres -->
+      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-xl font-semibold mb-4">Mes appartements</h2>
+        
+        <div class="flex mb-4">
+          <div class="relative flex-grow">
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              (keyup)="applyFilter()"
+              placeholder="Rechercher un appartement..."
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <span class="absolute right-3 top-2 text-gray-400">
+              <i class="fas fa-search"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Tableau des appartements -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numéro</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étage</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Superficie</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr *ngFor="let appartement of filteredAppartements">
+                <td class="py-3 px-4 whitespace-nowrap">{{ appartement.numero }}</td>
+                <td class="py-3 px-4 whitespace-nowrap">{{ appartement.etage }}</td>
+                <td class="py-3 px-4 whitespace-nowrap">{{ appartement.superficie }} m²</td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs rounded-full" [ngClass]="getStatusClass(appartement.status)">
+                    {{ appartement.status }}
+                  </span>
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <a [routerLink]="['/proprietaire/mes-appartements', appartement.id]" class="text-blue-600 hover:text-blue-800 mr-3">
+                    <i class="fas fa-eye"></i>
+                  </a>
+                </td>
+              </tr>
+              <tr *ngIf="filteredAppartements.length === 0">
+                <td colspan="5" class="py-4 px-4 text-center text-gray-500">
+                  Aucun appartement trouvé
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Paiements récents -->
+      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-xl font-semibold mb-4">Paiements récents</h2>
+        
+        <div *ngIf="paiements.length === 0" class="text-gray-500 text-center py-4">
+          Aucun paiement récent
+        </div>
+        
+        <div *ngIf="paiements.length > 0" class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méthode</th>
+                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr *ngFor="let paiement of paiements.slice(0, 5)">
+                <td class="py-3 px-4 whitespace-nowrap">{{ paiement.date | date:'dd/MM/yyyy' }}</td>
+                <td class="py-3 px-4 whitespace-nowrap">{{ paiement.montant | currency:'MAD ' }}</td>
+                <td class="py-3 px-4 whitespace-nowrap">{{ paiement.methode }}</td>
+                <td class="py-3 px-4 whitespace-nowrap">
+                  <span class="px-2 py-1 text-xs rounded-full"
+                    [ngClass]="paiement.status === 'PAYE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+                    {{ paiement.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="mt-4">
+            <a routerLink="/proprietaire/mes-paiements" class="text-blue-600 hover:text-blue-800">
+              Voir tous les paiements <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Incidents récents -->
+      <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold mb-4">Incidents récents</h2>
+        
+        <div *ngIf="incidents.length === 0" class="text-gray-500 text-center py-4">
+          Aucun incident récent
+        </div>
+        
+        <div *ngIf="incidents.length > 0">
+          <div *ngFor="let incident of incidents.slice(0, 3)" class="mb-4 p-4 border rounded-lg">
+            <div class="flex justify-between items-start">
+              <div>
+                <h3 class="font-semibold">{{ incident.titre }}</h3>
+                <p class="text-gray-600 text-sm">{{ incident.date | date:'dd/MM/yyyy' }}</p>
+              </div>
+              <span class="px-2 py-1 text-xs rounded-full"
+                [ngClass]="incident.status === 'RESOLU' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                {{ incident.status }}
+              </span>
+            </div>
+            <p class="text-gray-700 mt-2">{{ incident.description }}</p>
+          </div>
+          
+          <div class="mt-4">
+            <a href="#" class="text-blue-600 hover:text-blue-800">
+              Voir tous les incidents <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <app-footer></app-footer>
+</div> 

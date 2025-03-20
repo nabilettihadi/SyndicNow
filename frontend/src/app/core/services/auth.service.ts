@@ -44,12 +44,6 @@ export class AuthService {
       roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
     },
     {
-      label: 'Locataires',
-      route: '/locataires',
-      icon: 'fas fa-users',
-      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
-    },
-    {
       label: 'Paiements',
       route: '/paiements',
       icon: 'fas fa-money-bill',

@@ -3,6 +3,7 @@ export interface Appartement {
   numero: string;
   etage: number;
   surface: number;
+  superficie: number;
   nombrePieces: number;
   loyer: number;
   charges: number;
@@ -10,6 +11,12 @@ export interface Appartement {
   immeubleId: number;
   proprietaireId?: number;
   dateCreation: Date;
+  immeuble?: {
+    id: number;
+    nom: string;
+    adresse: string;
+    ville: string;
+  };
 }
 
 export interface AppartementStats {

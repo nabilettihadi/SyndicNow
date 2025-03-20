@@ -7,14 +7,14 @@ import {debounceTime, distinctUntilChanged, map} from 'rxjs/operators';
 import {AuthService} from '@core/services/auth.service';
 import {AuthState, LoginResponse, UserRole} from '@core/authentication/models/auth.model';
 import * as AuthActions from '../../../core/authentication/store/actions/auth.actions';
-import { NavItem } from '../../../core/models/nav-item.model';
+import { User } from '@core/models/user.model';
+import { NavItem } from '@core/models/nav-item.model';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  templateUrl: './navbar.component.html'
 })
 export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated$: Observable<boolean>;
@@ -31,6 +31,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isSidebarOpen = false;
   navItems$: Observable<NavItem[]>;
   hasNotifications = false;
+  currentUser: LoginResponse | null = null;
+  isMenuOpen = false;
 
   constructor(
     private router: Router,
@@ -116,6 +118,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
           this.isScrolled = window.scrollY > 0;
         })
     );
+
+    this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.currentUser = user;
+      } else {
+        this.currentUser = null;
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -123,8 +133,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   logout(): void {
-    this.store.dispatch(AuthActions.logout());
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe();
     this.closeUserMenu();
     this.closeMobileMenu();
   }
@@ -211,4 +220,135 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
     return initials;
   }
+
+  getVisibleNavItems(): NavItem[] {
+    if (!this.currentUser) return [];
+    return this.navItems.filter(item => item.roles.includes(this.currentUser!.role));
+  }
+
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  getRoleLabel(role: string): string {
+    switch (role) {
+      case 'ADMIN':
+        return 'Administrateur';
+      case 'SYNDIC':
+        return 'Syndic';
+      case 'PROPRIETAIRE':
+        return 'Propriétaire';
+      default:
+        return role;
+    }
+  }
+
+  getInitials(name: string): string {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase();
+  }
+
+  private readonly navItems: NavItem[] = [
+    {
+      label: 'Tableau de bord',
+      route: '/admin',
+      icon: 'fas fa-chart-line',
+      roles: ['ADMIN']
+    },
+    {
+      label: 'Tableau de bord',
+      route: '/syndic',
+      icon: 'fas fa-chart-line',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Tableau de bord',
+      route: '/proprietaire',
+      icon: 'fas fa-chart-line',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Immeubles',
+      route: '/syndic/immeubles',
+      icon: 'fas fa-building',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Appartements',
+      route: '/syndic/appartements',
+      icon: 'fas fa-home',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Mes Appartements',
+      route: '/proprietaire/mes-appartements',
+      icon: 'fas fa-home',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Paiements',
+      route: '/syndic/paiements',
+      icon: 'fas fa-money-bill',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Mes Paiements',
+      route: '/proprietaire/mes-paiements',
+      icon: 'fas fa-money-bill',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Incidents',
+      route: '/syndic/incidents',
+      icon: 'fas fa-exclamation-triangle',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Mes Incidents',
+      route: '/proprietaire/mes-incidents',
+      icon: 'fas fa-exclamation-triangle',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Documents',
+      route: '/syndic/documents',
+      icon: 'fas fa-file-alt',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Mes Documents',
+      route: '/proprietaire/mes-documents',
+      icon: 'fas fa-file-alt',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Messages',
+      route: '/syndic/messages',
+      icon: 'fas fa-envelope',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Mes Messages',
+      route: '/proprietaire/mes-messages',
+      icon: 'fas fa-envelope',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Réunions',
+      route: '/syndic/reunions',
+      icon: 'fas fa-calendar-alt',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Syndics',
+      route: '/admin/syndics',
+      icon: 'fas fa-user-tie',
+      roles: ['ADMIN']
+    },
+    {
+      label: 'Rapports',
+      route: '/admin/rapports',
+      icon: 'fas fa-file-pdf',
+      roles: ['ADMIN']
+    }
+  ];
 }

@@ -1,0 +1,240 @@
+<!-- En-tête de la page -->
+<div class="min-h-screen bg-gray-50">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="md:flex md:items-center md:justify-between">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-2xl font-bold text-gray-900">
+            Gestion des Syndics
+          </h1>
+          <p class="mt-1 text-sm text-gray-500">
+            Gérez les syndics et leurs immeubles
+          </p>
+        </div>
+        <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+          <button type="button" 
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <i class="fas fa-download -ml-1 mr-2"></i>
+            Exporter
+          </button>
+          <button type="button" 
+                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <i class="fas fa-plus -ml-1 mr-2"></i>
+            Nouveau Syndic
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <!-- Total Syndics -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="rounded-md p-3 bg-blue-50">
+                <i class="fas fa-users text-blue-600 text-xl"></i>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Total Syndics
+                </dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900">
+                    {{stats.totalSyndics}}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Syndics Actifs -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="rounded-md p-3 bg-green-50">
+                <i class="fas fa-check-circle text-green-600 text-xl"></i>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Syndics Actifs
+                </dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900">
+                    {{stats.activeSyndics}}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Syndics en Attente -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="rounded-md p-3 bg-yellow-50">
+                <i class="fas fa-clock text-yellow-600 text-xl"></i>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Syndics en Attente
+                </dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900">
+                    {{stats.pendingSyndics}}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Immeubles -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div class="rounded-md p-3 bg-purple-50">
+                <i class="fas fa-building text-purple-600 text-xl"></i>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Total Immeubles
+                </dt>
+                <dd class="flex items-baseline">
+                  <div class="text-2xl font-semibold text-gray-900">
+                    {{stats.totalBuildings}}
+                  </div>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtres et recherche -->
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="relative rounded-md shadow-sm">
+        <input type="text"
+               [(ngModel)]="searchTerm"
+               (ngModelChange)="onSearch()"
+               placeholder="Rechercher un syndic..."
+               class="block w-full rounded-md border-gray-300 pr-10 focus:border-primary-500 focus:ring-primary-500">
+        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+      </div>
+
+      <select [(ngModel)]="filterStatus"
+              (ngModelChange)="onStatusChange()"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500">
+        <option value="">Tous les statuts</option>
+        <option value="ACTIF">Actif</option>
+        <option value="EN_ATTENTE">En attente</option>
+        <option value="INACTIF">Inactif</option>
+      </select>
+    </div>
+
+    <!-- Liste des syndics -->
+    <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-md">
+      <ul role="list" class="divide-y divide-gray-200">
+        <li *ngFor="let syndic of filteredSyndics">
+          <div class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div [class]="getStatusIconClass(syndic.status)"
+                     class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center">
+                  <i [class]="getStatusIcon(syndic.status)"></i>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    {{syndic.nom}}
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    {{syndic.email}}
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <div class="mr-6 text-right">
+                  <div class="text-sm font-medium text-gray-900">
+                    {{syndic.immeubles.length || 0}} immeubles
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    {{syndic.ville}}
+                  </div>
+                </div>
+                <span [class]="getStatusClass(syndic.status)"
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                  {{syndic.status}}
+                </span>
+              </div>
+            </div>
+            <div class="mt-2 sm:flex sm:justify-between">
+              <div class="sm:flex">
+                <div class="flex items-center text-sm text-gray-500">
+                  <i class="fas fa-phone mr-1.5 text-gray-400"></i>
+                  {{syndic.telephone}}
+                </div>
+                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
+                  <i class="fas fa-calendar mr-1.5 text-gray-400"></i>
+                  Créé le {{formatDate(syndic.dateCreation)}}
+                </div>
+              </div>
+              <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                <button type="button" 
+                        class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                  <i class="fas fa-edit mr-2"></i>
+                  Modifier
+                </button>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Message si aucun syndic -->
+    <div *ngIf="filteredSyndics.length === 0" 
+         class="text-center py-12">
+      <i class="fas fa-users text-gray-400 text-5xl mb-4"></i>
+      <h3 class="text-lg font-medium text-gray-900">Aucun syndic trouvé</h3>
+      <p class="mt-1 text-gray-500">
+        Aucun syndic ne correspond à vos critères de recherche.
+      </p>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalPages > 1" class="mt-4 flex justify-center">
+      <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        <button *ngFor="let page of [].constructor(totalPages); let i = index"
+                (click)="changePage(i + 1)"
+                [class.bg-primary-50]="currentPage === i + 1"
+                [class.border-primary-500]="currentPage === i + 1"
+                [class.text-primary-600]="currentPage === i + 1"
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+          {{i + 1}}
+        </button>
+      </nav>
+    </div>
+  </main>
+</div> 

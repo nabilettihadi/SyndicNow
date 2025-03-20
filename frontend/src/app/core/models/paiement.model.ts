@@ -1,19 +1,12 @@
 import { Appartement } from './appartement.model';
 
-export interface Locataire {
-  id: number;
-  nom: string;
-  prenom: string;
-  appartement?: Appartement;
-}
-
 export interface Paiement {
-  locataire: any;
   datePaiement: string | number | Date;
   id: number;
   reference: string;
   montant: number;
   date: Date;
+  methode: string;
   status: 'EN_ATTENTE' | 'PAYE' | 'RETARDE' | 'ANNULE';
   type: 'LOYER' | 'CHARGES' | 'AUTRE';
   proprietaireId: number;

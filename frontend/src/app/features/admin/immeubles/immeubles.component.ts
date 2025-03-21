@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-admin',
+  selector: 'app-immeubles',
   standalone: true,
   imports: [CommonModule, RouterOutlet],
   template: `
@@ -20,4 +20,4 @@ import { RouterOutlet } from '@angular/router';
     }
   `]
 })
-export class AdminComponent {} 
+export class ImmeublesComponent {} 

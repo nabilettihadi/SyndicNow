@@ -11,7 +11,6 @@ import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.mapper.PaiementMapper;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
 import ma.Nabil.SyndicNow.repository.PaiementRepository;
-import ma.Nabil.SyndicNow.service.NotificationService;
 import ma.Nabil.SyndicNow.service.PaiementService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 public class PaiementServiceImpl implements PaiementService {
     private final PaiementRepository paiementRepository;
     private final AppartementRepository appartementRepository;
-    private final NotificationService notificationService;
     private final PaiementMapper paiementMapper;
 
     @Override
@@ -43,11 +41,6 @@ public class PaiementServiceImpl implements PaiementService {
         Paiement paiement = paiementMapper.toPaiement(request);
         paiement.setAppartement(appartement);
         paiement = paiementRepository.save(paiement);
-
-        if (appartement.getProprietaire() != null) {
-            String message = String.format("Nouveau paiement créé pour l'appartement %s - Montant: %.2f DH - Date d'échéance: %s - Type: %s - Référence: %s", paiement.getAppartement().getNumero(), paiement.getMontant(), paiement.getDateEcheance(), paiement.getType(), paiement.getReference());
-            notificationService.sendEmailNotification(appartement.getProprietaire().getEmail(), "Nouveau paiement", message);
-        }
 
         return paiementMapper.toPaiementResponse(paiement);
     }

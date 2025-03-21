@@ -18,6 +18,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
+import com.stripe.param.checkout.SessionCreateParams;
+import org.springframework.beans.factory.annotation.Value;
+import ma.Nabil.SyndicNow.dto.payment.StripePaymentRequest;
+import ma.Nabil.SyndicNow.dto.payment.StripePaymentResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +37,12 @@ import java.util.Map;
 public class PaiementController {
 
     private final PaiementService paiementService;
+    
+    @Value("${stripe.api.key}")
+    private String stripeApiKey;
+    
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     @GetMapping("/statistics")
     @Operation(summary = "Get payment statistics", description = "Retrieves payment statistics")
@@ -200,5 +213,55 @@ public class PaiementController {
         log.debug("Fetching payments for proprietaire with ID: {}", proprietaireId);
         List<PaiementResponse> response = paiementService.getPaiementsByProprietaire(proprietaireId);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/create-checkout-session")
+    public ResponseEntity<StripePaymentResponse> createCheckoutSession(@RequestBody StripePaymentRequest paymentRequest) {
+        try {
+            Stripe.apiKey = stripeApiKey;
+            
+            SessionCreateParams params = SessionCreateParams.builder()
+                .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl(frontendUrl + "/paiements/success?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl(frontendUrl + "/paiements/cancel")
+                .addLineItem(
+                    SessionCreateParams.LineItem.builder()
+                        .setPriceData(
+                            SessionCreateParams.LineItem.PriceData.builder()
+                                .setCurrency("mad")
+                                .setUnitAmount(paymentRequest.getAmount() * 100L) // Stripe utilise les centimes
+                                .setProductData(
+                                    SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                        .setName(paymentRequest.getDescription())
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .setQuantity(1L)
+                        .build()
+                )
+                .build();
+            
+            Session session = Session.create(params);
+            
+            return ResponseEntity.ok(new StripePaymentResponse(session.getId(), session.getUrl()));
+        } catch (StripeException e) {
+            log.error("Erreur lors de la création de la session Stripe", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new StripePaymentResponse(null, null));
+        }
+    }
+    
+    @PostMapping("/webhook")
+    public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+        try {
+            // Logique de vérification de signature et de traitement des événements Stripe
+            log.info("Webhook Stripe reçu");
+            return ResponseEntity.ok("Webhook reçu");
+        } catch (Exception e) {
+            log.error("Erreur lors du traitement du webhook Stripe", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erreur lors du traitement");
+        }
     }
 }

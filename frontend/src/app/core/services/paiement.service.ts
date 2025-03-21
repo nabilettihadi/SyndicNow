@@ -4,6 +4,18 @@ import {Observable} from 'rxjs';
 import {environment} from '@env/environment';
 import {Paiement, PaiementStatistics} from '../models/paiement.model';
 
+export interface StripePaymentRequest {
+  paiementId: number;
+  amount: number;
+  description: string;
+  customerEmail: string;
+}
+
+export interface StripePaymentResponse {
+  sessionId: string;
+  checkoutUrl: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -59,5 +71,21 @@ export class PaiementService {
 
   downloadRecu(paiementId: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${paiementId}/recu`, {responseType: 'blob'});
+  }
+
+  createStripeCheckoutSession(paymentRequest: StripePaymentRequest): Observable<StripePaymentResponse> {
+    return this.http.post<StripePaymentResponse>(`${this.apiUrl}/create-checkout-session`, paymentRequest);
+  }
+
+  verifyPaymentStatus(sessionId: string): Observable<{ status: string, paiementId: number }> {
+    return this.http.get<{ status: string, paiementId: number }>(`${this.apiUrl}/verify-payment/${sessionId}`);
+  }
+
+  getAllPaiementsByStatus(status: string): Observable<Paiement[]> {
+    return this.http.get<Paiement[]>(`${this.apiUrl}/status/${status}`);
+  }
+
+  getPaymentStatistics(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/statistics`);
   }
 }

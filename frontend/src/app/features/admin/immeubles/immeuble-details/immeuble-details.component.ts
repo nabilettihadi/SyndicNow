@@ -21,21 +21,21 @@ import { Appartement } from '@core/models/appartement.model';
             </button>
             <h1
               class="text-2xl font-bold">{{ immeuble?.nom || 'Détails de l\'immeuble'}}</h1>
-            <span *ngIf="immeuble?.status" [ngClass]="getStatusClass(immeuble.status)"
+            <span *ngIf="immeuble?.status" [ngClass]="getStatusClass(immeuble?.status || '')"
                   class="ml-2 px-3 py-1 text-xs rounded-full">
-              {{ immeuble.status }}
+              {{ immeuble?.status }}
             </span>
           </div>
           <p class="text-gray-600 mt-1">{{ immeuble?.adresse }}, {{ immeuble?.ville }}</p>
         </div>
 
         <div class="flex gap-3">
-          <button *ngIf="immeuble?.id" [routerLink]="['/admin/immeubles', immeuble.id, 'modifier']"
+          <button *ngIf="immeuble?.id" [routerLink]="['/admin/immeubles', immeuble?.id, 'modifier']"
                   class="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-lg flex items-center gap-2">
             <i class="fas fa-edit"></i>
             <span>Modifier</span>
           </button>
-          <button *ngIf="immeuble?.id" [routerLink]="['/admin/immeubles', immeuble.id, 'appartements']"
+          <button *ngIf="immeuble?.id" [routerLink]="['/admin/immeubles', immeuble?.id, 'appartements']"
                   class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center gap-2">
             <i class="fas fa-home"></i>
             <span>Gérer les appartements</span>
@@ -57,7 +57,7 @@ import { Appartement } from '@core/models/appartement.model';
           <div>{{ error }}</div>
         </div>
         <div class="mt-4">
-          <button (click)="loadImmeuble()" class="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded">
+          <button (click)="loadImmeuble(immeuble?.id || 0)" class="bg-red-600 hover:bg-red-700 text-white py-1 px-4 rounded">
             Réessayer
           </button>
         </div>
@@ -84,7 +84,7 @@ import { Appartement } from '@core/models/appartement.model';
                 </div>
                 <div>
                   <h3 class="text-gray-500 text-sm">Année de construction</h3>
-                  <p class="font-medium">{{ immeuble.anneeConstruction || 'Non spécifiée' }}</p>
+                  <p class="font-medium">{{ immeuble.dateConstruction ? (immeuble.dateConstruction | date:'yyyy') : 'Non spécifiée' }}</p>
                 </div>
                 <div>
                   <h3 class="text-gray-500 text-sm">Nombre d'appartements</h3>
@@ -100,11 +100,11 @@ import { Appartement } from '@core/models/appartement.model';
                 </div>
                 <div>
                   <h3 class="text-gray-500 text-sm">Date de création</h3>
-                  <p class="font-medium">{{ immeuble.dateCreation | date:'dd/MM/yyyy' }}</p>
+                  <p class="font-medium">Non disponible</p>
                 </div>
                 <div>
                   <h3 class="text-gray-500 text-sm">Dernière mise à jour</h3>
-                  <p class="font-medium">{{ immeuble.dateMiseAJour | date:'dd/MM/yyyy' }}</p>
+                  <p class="font-medium">Non disponible</p>
                 </div>
               </div>
             </div>
@@ -202,10 +202,10 @@ import { Appartement } from '@core/models/appartement.model';
                       </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div *ngIf="appartement.proprietaire" class="text-sm text-gray-900">
-                      {{ appartement.proprietaire.nom }}
+                    <div *ngIf="appartement.proprietaireId" class="text-sm text-gray-900">
+                      Propriétaire #{{ appartement.proprietaireId }}
                     </div>
-                    <div *ngIf="!appartement.proprietaire" class="text-sm text-red-500">
+                    <div *ngIf="!appartement.proprietaireId" class="text-sm text-red-500">
                       Non assigné
                     </div>
                   </td>
@@ -250,35 +250,29 @@ import { Appartement } from '@core/models/appartement.model';
                     <i class="fas fa-user-tie text-purple-600 text-xl"></i>
                   </div>
                   <div class="ml-4">
-                    <div class="text-lg font-semibold">{{ immeuble.syndic.nom }}</div>
-                    <div class="text-sm text-gray-500">{{ immeuble.syndic.email }}</div>
+                    <h3 class="font-medium">{{ immeuble.syndic.nom }}</h3>
+                    <div class="text-sm text-gray-500">Coordonnées non disponibles</div>
                   </div>
                 </div>
-                <div>
-                  <div class="text-sm text-gray-500">Téléphone</div>
-                  <div>{{ immeuble.syndic.telephone || 'Non spécifié' }}</div>
+
+                <div class="border-t border-gray-200 pt-4">
+                  <h4 class="text-sm text-gray-500 mb-2">Téléphone</h4>
+                  <div>Non spécifié</div>
                 </div>
-                <div>
-                  <div class="text-sm text-gray-500">Ville</div>
-                  <div>{{ immeuble.syndic.ville || 'Non spécifiée' }}</div>
-                </div>
-                <div>
-                  <button [routerLink]="['/admin/syndics', immeuble.syndic.id]"
-                          class="mt-2 bg-purple-600 hover:bg-purple-700 text-white py-1 px-4 rounded-lg text-sm">
-                    Voir le profil complet
-                  </button>
+
+                <div class="border-t border-gray-200 pt-4">
+                  <h4 class="text-sm text-gray-500 mb-2">Localisation</h4>
+                  <div>Non spécifiée</div>
                 </div>
               </div>
 
               <div *ngIf="!immeuble.syndic" class="text-center p-4">
-                <div class="bg-gray-100 p-6 rounded-full inline-block mb-4">
-                  <i class="fas fa-user-tie text-gray-400 text-3xl"></i>
+                <div class="bg-gray-100 p-3 rounded-full inline-block mb-2">
+                  <i class="fas fa-user-slash text-gray-500 text-xl"></i>
                 </div>
-                <p class="text-gray-500 mb-4">Aucun syndic assigné à cet immeuble</p>
+                <p class="text-gray-600">Aucun syndic assigné</p>
                 <button
-                  *ngIf="immeuble.id"
-                  [routerLink]="['/admin/immeubles', immeuble.id, 'modifier']"
-                  class="bg-purple-600 hover:bg-purple-700 text-white py-1 px-4 rounded-lg text-sm"
+                  class="mt-4 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded"
                 >
                   Assigner un syndic
                 </button>
@@ -375,31 +369,33 @@ export class ImmeubleDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadImmeuble(+id);
-    } else {
-      this.error = 'ID de l\'immeuble non spécifié';
-      this.isLoading = false;
-    }
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      if (id) {
+        this.loadImmeuble(id);
+      } else {
+        this.error = "Identifiant d'immeuble invalide";
+        this.isLoading = false;
+      }
+    });
   }
 
   loadImmeuble(id: number): void {
     this.isLoading = true;
     this.error = null;
 
-    this.immeubleService.getImmeubleById(id).subscribe({
-      next: (immeuble: Immeuble) => {
+    this.immeubleService.getImmeubleById(id).subscribe(
+      (immeuble: Immeuble) => {
         this.immeuble = immeuble;
         this.isLoading = false;
         this.loadAppartements();
       },
-      error: (error) => {
+      (error: any) => {
         console.error('Erreur lors du chargement de l\'immeuble:', error);
-        this.error = 'Impossible de charger les détails de l\'immeuble. Veuillez réessayer.';
+        this.error = 'Impossible de charger les détails de l\'immeuble';
         this.isLoading = false;
       }
-    });
+    );
   }
 
   loadAppartements(): void {
@@ -408,52 +404,51 @@ export class ImmeubleDetailsComponent implements OnInit {
     this.isLoadingAppartements = true;
     this.appartementsError = null;
 
-    this.appartementService.getAppartementsByImmeuble(this.immeuble.id).subscribe({
-      next: (data: Appartement[]) => {
-        this.appartements = Array.isArray(data) ? data : [];
+    this.appartementService.getAppartementsByImmeuble(this.immeuble.id).subscribe(
+      (appartements: Appartement[]) => {
+        this.appartements = appartements;
         this.isLoadingAppartements = false;
       },
-      error: (error) => {
+      (error: any) => {
         console.error('Erreur lors du chargement des appartements:', error);
-        this.appartementsError = 'Impossible de charger les appartements. Veuillez réessayer.';
+        this.appartementsError = 'Impossible de charger les appartements';
         this.isLoadingAppartements = false;
       }
-    });
+    );
   }
 
-  // Méthodes pour les statistiques
   getTotalAppartements(): number {
     return this.appartements.length;
   }
 
   getOccupiedAppartements(): number {
-    return this.appartements.filter(a => a.status === 'OCCUPE').length;
+    return this.appartements.filter(app => app.status === 'OCCUPE').length;
   }
 
   getFreeAppartements(): number {
-    return this.appartements.filter(a => a.status === 'LIBRE').length;
+    return this.appartements.filter(app => app.status === 'LIBRE').length;
   }
 
   getMaintenanceAppartements(): number {
-    return this.appartements.filter(a => a.status === 'EN_TRAVAUX').length;
+    return this.appartements.filter(app => app.status === 'EN_TRAVAUX').length;
   }
 
   getOccupancyRate(): number {
     if (this.appartements.length === 0) return 0;
-    return Math.round((this.getOccupiedAppartements() / this.appartements.length) * 100);
+    return (this.getOccupiedAppartements() / this.appartements.length) * 100;
   }
 
   getAvailabilityRate(): number {
     if (this.appartements.length === 0) return 0;
-    return Math.round((this.getFreeAppartements() / this.appartements.length) * 100);
+    return (this.getFreeAppartements() / this.appartements.length) * 100;
   }
 
   getMaintenanceRate(): number {
     if (this.appartements.length === 0) return 0;
-    return Math.round((this.getMaintenanceAppartements() / this.appartements.length) * 100);
+    return (this.getMaintenanceAppartements() / this.appartements.length) * 100;
   }
 
-  // Classes pour les badges de statut
+  // Méthodes utilitaires
   getStatusClass(status: string): string {
     switch (status) {
       case 'ACTIF':
@@ -469,12 +464,12 @@ export class ImmeubleDetailsComponent implements OnInit {
 
   getAppartementStatusClass(status: string): string {
     switch (status) {
-      case 'LOUE':
+      case 'OCCUPE':
         return 'bg-green-100 text-green-800';
-      case 'DISPONIBLE':
+      case 'LIBRE':
+        return 'bg-blue-100 text-blue-800';
+      case 'EN_TRAVAUX':
         return 'bg-yellow-100 text-yellow-800';
-      case 'EN_MAINTENANCE':
-        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }

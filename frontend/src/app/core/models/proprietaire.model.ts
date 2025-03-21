@@ -4,10 +4,11 @@ export interface Proprietaire {
   prenom: string;
   email: string;
   telephone: string;
-  adresse: string;
-  ville: string;
+  adresse?: string;
+  ville?: string;
   dateCreation: Date;
   appartements?: any[];
+  status: 'ACTIF' | 'INACTIF';
 }
 
 export interface ProprietaireStats {

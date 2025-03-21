@@ -42,6 +42,17 @@ export class SyndicDashboardComponent implements OnInit {
   searchTerm: string = '';
   filteredBuildings: Immeuble[] = [];
 
+  // États de chargement
+  loadingBuildings = false;
+  loadingPayments = false;
+  loadingIncidents = false;
+
+  // Données pour les statistiques
+  paiementStatusData: {name: string, value: number}[] = [];
+  incidentPriorityData: {name: string, value: number}[] = [];
+  revenueByMonthData: {name: string, value: number}[] = [];
+  occupationData: {name: string, value: number}[] = [];
+
   constructor(
     private syndicService: SyndicService,
     private immeubleService: ImmeubleService,
@@ -61,16 +72,23 @@ export class SyndicDashboardComponent implements OnInit {
   }
 
   private loadData(): void {
-    this.isLoading = true;
-    this.hasError = false;
+    this.loadingBuildings = true;
+    this.loadingPayments = true;
+    this.loadingIncidents = true;
+    this.errorMessage = '';
     
     forkJoin({
       immeubles: this.loadBuildings(),
       paiements: this.loadPayments(),
       incidents: this.loadIncidents()
     }).subscribe({
-      next: () => {
+      next: (results) => {
+        this.immeubles = results.immeubles;
+        this.filteredBuildings = [...results.immeubles];
+        this.paiements = results.paiements;
+        this.incidents = results.incidents;
         this.calculateStatistics();
+        this.prepareChartData();
         this.isLoading = false;
       },
       error: (error) => {
@@ -132,6 +150,109 @@ export class SyndicDashboardComponent implements OnInit {
     this.totalRevenue = this.paiements
       .filter(paiement => paiement.status === 'PAYE')
       .reduce((total, paiement) => total + paiement.montant, 0);
+  }
+
+  prepareChartData(): void {
+    // Données pour le graphique des statuts de paiement
+    const paymentStatusCounts = this.countByProperty(this.paiements, 'status');
+    this.paiementStatusData = Object.keys(paymentStatusCounts).map(status => {
+      return {
+        name: this.formatStatus(status),
+        value: paymentStatusCounts[status]
+      };
+    });
+
+    // Données pour le graphique des priorités d'incidents
+    const incidentPriorityCounts = this.countByProperty(this.incidents, 'priority');
+    this.incidentPriorityData = Object.keys(incidentPriorityCounts).map(priority => {
+      return {
+        name: this.formatPriority(priority),
+        value: incidentPriorityCounts[priority]
+      };
+    });
+
+    // Données pour le graphique des revenus par mois
+    this.revenueByMonthData = this.calculateRevenueByMonth();
+
+    // Données pour le graphique d'occupation
+    this.occupationData = this.calculateOccupationRate();
+  }
+
+  private countByProperty(array: any[], property: string): Record<string, number> {
+    return array.reduce((acc, item) => {
+      const key = item[property];
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+  }
+
+  private formatStatus(status: string): string {
+    const statusMap: Record<string, string> = {
+      'PAYE': 'Payé',
+      'EN_ATTENTE': 'En attente',
+      'ANNULÉ': 'Annulé',
+      'RETARD': 'En retard'
+    };
+    return statusMap[status] || status;
+  }
+
+  private formatPriority(priority: string): string {
+    const priorityMap: Record<string, string> = {
+      'HAUTE': 'Haute',
+      'MOYENNE': 'Moyenne',
+      'BASSE': 'Basse'
+    };
+    return priorityMap[priority] || priority;
+  }
+
+  private calculateRevenueByMonth(): any[] {
+    const monthlyRevenue: Record<string, number> = {};
+    const months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+    
+    // Initialiser tous les mois à 0
+    months.forEach((month, index) => {
+      monthlyRevenue[month] = 0;
+    });
+    
+    // Calculer les revenus par mois
+    this.paiements
+      .filter(p => p.status === 'PAYE' && p.datePaiement)
+      .forEach(payment => {
+        const date = new Date(payment.datePaiement);
+        const month = months[date.getMonth()];
+        monthlyRevenue[month] += payment.montant;
+      });
+      
+    return Object.keys(monthlyRevenue).map(month => {
+      return {
+        name: month,
+        value: monthlyRevenue[month]
+      };
+    });
+  }
+
+  private calculateOccupationRate(): any[] {
+    const occupationData = [
+      { name: 'Occupés', value: 0 },
+      { name: 'Vacants', value: 0 }
+    ];
+    
+    // Calculer les taux d'occupation pour tous les immeubles
+    let totalApartments = 0;
+    let occupiedApartments = 0;
+    
+    this.immeubles.forEach(building => {
+      // Utilisez nombreAppartements et appartmentsOccupes s'ils existent
+      if (building.nombreAppartements) {
+        totalApartments += building.nombreAppartements;
+        occupiedApartments += building.appartmentsOccupes || 0;
+      }
+    });
+    
+    occupationData[0].value = occupiedApartments;
+    occupationData[1].value = totalApartments - occupiedApartments;
+    
+    return occupationData;
   }
 
   applyFilter(): void {

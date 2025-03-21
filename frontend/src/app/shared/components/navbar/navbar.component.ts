@@ -30,7 +30,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private lastScrollPosition = 0;
   isSidebarOpen = false;
   navItems$: Observable<NavItem[]>;
-  hasNotifications = false;
   currentUser: LoginResponse | null = null;
   isMenuOpen = false;
 
@@ -256,18 +255,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       roles: ['ADMIN']
     },
     {
-      label: 'Utilisateurs',
-      route: '/admin/users',
-      icon: 'fas fa-users',
-      roles: ['ADMIN']
-    },
-    {
-      label: 'Immeubles',
-      route: '/admin/buildings',
-      icon: 'fas fa-building',
-      roles: ['ADMIN']
-    },
-    {
       label: 'Syndics',
       route: '/admin/syndics',
       icon: 'fas fa-user-tie',
@@ -276,7 +263,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     {
       label: 'Propriétaires',
       route: '/admin/proprietaires',
-      icon: 'fas fa-user',
+      icon: 'fas fa-users',
+      roles: ['ADMIN']
+    },
+    {
+      label: 'Immeubles',
+      route: '/admin/immeubles',
+      icon: 'fas fa-building',
+      roles: ['ADMIN']
+    },
+    {
+      label: 'Rapports',
+      route: '/admin/rapports',
+      icon: 'fas fa-chart-bar',
       roles: ['ADMIN']
     },
     // Syndic navigation items

@@ -7,6 +7,7 @@ export interface Immeuble {
   dateConstruction: Date;
   nombreEtages: number;
   nombreAppartements: number;
+  appartmentsOccupes?: number;
   status: 'ACTIF' | 'EN_TRAVAUX' | 'INACTIF';
   syndicId: number;
   syndic?: {

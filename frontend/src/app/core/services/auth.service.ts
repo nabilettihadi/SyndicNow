@@ -67,12 +67,6 @@ export class AuthService {
       roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
     },
     {
-      label: 'Réunions',
-      route: '/reunions',
-      icon: 'fas fa-calendar-alt',
-      roles: ['ADMIN', 'SYNDIC']
-    },
-    {
       label: 'Syndics',
       route: '/syndics',
       icon: 'fas fa-user-tie',

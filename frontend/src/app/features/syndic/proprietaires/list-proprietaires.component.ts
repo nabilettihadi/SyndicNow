@@ -68,7 +68,7 @@ export class ListProprietairesComponent implements OnInit {
         proprietaire.prenom.toLowerCase().includes(searchLower) ||
         proprietaire.email.toLowerCase().includes(searchLower) ||
         proprietaire.telephone.toLowerCase().includes(searchLower) ||
-        proprietaire.adresse.toLowerCase().includes(searchLower)
+        (proprietaire.adresse ? proprietaire.adresse.toLowerCase().includes(searchLower) : false)
       );
     }
     

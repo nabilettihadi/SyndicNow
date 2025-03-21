@@ -148,6 +148,15 @@
           </div>
         </div>
       </div>
+
+      <!-- Alerte d'erreur de paiement -->
+      <div *ngIf="paymentError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-4 relative">
+        <span class="block sm:inline">{{ paymentError }}</span>
+        <button class="absolute top-0 bottom-0 right-0 px-4 py-3" (click)="paymentError = null">
+          <span class="sr-only">Fermer</span>
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
     </div>
   </main>
 

@@ -37,6 +37,16 @@ export const routes: Routes = [
         loadChildren: () => import('./features/admin/syndics/syndics.routes').then(m => m.SYNDICS_ROUTES)
       },
       {
+        path: 'proprietaires',
+        loadComponent: () => import('./features/admin/proprietaires/proprietaires.component').then(m => m.ProprietairesComponent),
+        loadChildren: () => import('./features/admin/proprietaires/proprietaires.routes').then(m => m.PROPRIETAIRES_ROUTES)
+      },
+      {
+        path: 'immeubles',
+        loadComponent: () => import('./features/admin/immeubles/immeubles.component').then(m => m.ImmeublesComponent),
+        loadChildren: () => import('./features/admin/immeubles/immeubles.routes').then(m => m.IMMEUBLES_ROUTES)
+      },
+      {
         path: 'rapports',
         loadComponent: () => import('./features/admin/reports/reports.component').then(m => m.ReportsComponent)
       }

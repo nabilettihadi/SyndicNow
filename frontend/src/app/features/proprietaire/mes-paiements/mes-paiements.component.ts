@@ -3,16 +3,17 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {NavbarComponent} from '@shared/components/navbar/navbar.component';
 import {FooterComponent} from '@shared/components/footer/footer.component';
-import {PaiementService} from '@core/services/paiement.service';
+import {PaiementService, StripePaymentRequest} from '@core/services/paiement.service';
 import {AuthService} from '@core/services/auth.service';
 import {IPaiement, PaiementStats} from '@core/models/paiement.model';
+import { loadStripe } from '@stripe/stripe-js';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-mes-paiements',
   standalone: true,
   imports: [CommonModule, NavbarComponent, FooterComponent, FormsModule],
-  templateUrl: './mes-paiements.component.html',
-  styleUrls: ['./mes-paiements.component.css']
+  templateUrl: './mes-paiements.component.html'
 })
 export class MesPaiementsComponent implements OnInit {
   paiements: IPaiement[] = [];
@@ -32,6 +33,8 @@ export class MesPaiementsComponent implements OnInit {
   currentYear: number = new Date().getFullYear();
   loading = false;
   error: string | null = null;
+  isProcessingPayment: boolean = false;
+  paymentError: string | null = null;
 
   // Ajout de la méthode pour accéder à Object.entries dans le template
   protected readonly Object = Object;
@@ -181,5 +184,38 @@ export class MesPaiementsComponent implements OnInit {
       style: 'currency',
       currency: 'MAD'
     }).format(montant);
+  }
+
+  async payWithStripe(paiement: IPaiement): Promise<void> {
+    this.isProcessingPayment = true;
+    this.paymentError = null;
+    
+    try {
+      const stripe = await loadStripe(environment.stripePublicKey);
+      
+      if (!stripe) {
+        throw new Error('Stripe n\'a pas pu être chargé');
+      }
+      
+      const paymentRequest: StripePaymentRequest = {
+        paiementId: paiement.id,
+        amount: paiement.montant,
+        description: `Paiement ${paiement.type} - ${paiement.reference}`,
+        customerEmail: this.authService.getCurrentUser()?.email || ''
+      };
+      
+      const response = await this.paiementService.createStripeCheckoutSession(paymentRequest).toPromise();
+      
+      if (response?.sessionId) {
+        await stripe.redirectToCheckout({ sessionId: response.sessionId });
+      } else {
+        throw new Error('Impossible de créer la session de paiement');
+      }
+    } catch (error) {
+      console.error('Erreur lors du paiement:', error);
+      this.paymentError = error instanceof Error ? error.message : 'Une erreur est survenue lors du paiement';
+    } finally {
+      this.isProcessingPayment = false;
+    }
   }
 }

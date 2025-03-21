@@ -4,6 +4,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,12 @@ import ma.Nabil.SyndicNow.enums.Role;
 @SuperBuilder
 @NoArgsConstructor
 public class Admin extends User {
+    
+    @Column(name = "numero_agrement")
+    private String numeroAgrement;
+    
+    @Column(name = "contact_urgence")
+    private String contactUrgence;
     
     @PrePersist
     public void onCreateAdmin() {

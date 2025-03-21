@@ -6,7 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import ma.Nabil.SyndicNow.enums.PreferenceCommunication;
 import ma.Nabil.SyndicNow.enums.Role;
+import ma.Nabil.SyndicNow.enums.TypeProprietaire;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.ArrayList;
@@ -25,6 +27,14 @@ public class Proprietaire extends User {
     @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Appartement> appartements = new ArrayList<>();
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "preferences_communication")
+    private PreferenceCommunication preferencesCommunication;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type_proprietaire")
+    private TypeProprietaire typeProprietaire;
 
     @PrePersist
     public void onCreateProprietaire() {

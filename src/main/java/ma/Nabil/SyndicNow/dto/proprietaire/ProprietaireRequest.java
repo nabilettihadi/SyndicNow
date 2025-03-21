@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.Nabil.SyndicNow.enums.PreferenceCommunication;
+import ma.Nabil.SyndicNow.enums.TypeProprietaire;
 
 @Data
 @Builder
@@ -28,6 +30,9 @@ public class ProprietaireRequest {
     private String telephone;
 
     private String adresse;
+    private String cin;
+    private PreferenceCommunication preferencesCommunication;
+    private TypeProprietaire typeProprietaire;
     private Long immeubleId;
     private Long appartementId;
 } 

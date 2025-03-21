@@ -12,13 +12,14 @@ import { IncidentService } from '@core/services/incident.service';
 import { Immeuble } from '@core/models/immeuble.model';
 import { Paiement } from '@core/models/paiement.model';
 import { Incident, IncidentWithStatus } from '@core/models/incident.model';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-syndic-dashboard',
   standalone: true,
   imports: [CommonModule, NavbarComponent, FooterComponent, RouterModule, FormsModule],
   templateUrl: './syndic-dashboard.component.html',
-  styles: []
+  styleUrls: ['./syndic-dashboard.component.css']
 })
 export class SyndicDashboardComponent implements OnInit {
   syndicId: number = 1; // À remplacer par l'ID du syndic actuel
@@ -45,12 +46,23 @@ export class SyndicDashboardComponent implements OnInit {
     private syndicService: SyndicService,
     private immeubleService: ImmeubleService,
     private paiementService: PaiementService,
-    private incidentService: IncidentService
+    private incidentService: IncidentService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     // Récupérer l'ID syndic depuis le service d'authentification
-    // this.syndicId = this.authService.currentUserValue?.id;
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.userId) {
+      this.syndicId = currentUser.userId;
+    }
+    
+    this.loadData();
+  }
+
+  private loadData(): void {
+    this.isLoading = true;
+    this.hasError = false;
     
     forkJoin({
       immeubles: this.loadBuildings(),
@@ -70,12 +82,12 @@ export class SyndicDashboardComponent implements OnInit {
     });
   }
 
-  loadBuildings(): Observable<Immeuble[]> {
+  private loadBuildings(): Observable<Immeuble[]> {
     return this.immeubleService.getImmeublesBySyndic(this.syndicId).pipe(
-      map((data: Immeuble[]) => {
-        this.immeubles = data;
-        this.filteredBuildings = [...this.immeubles];
-        return data;
+      map(immeubles => {
+        this.immeubles = immeubles;
+        this.filteredBuildings = [...immeubles];
+        return immeubles;
       }),
       catchError(error => {
         console.error('Erreur lors du chargement des immeubles:', error);
@@ -84,11 +96,11 @@ export class SyndicDashboardComponent implements OnInit {
     );
   }
 
-  loadPayments(): Observable<Paiement[]> {
+  private loadPayments(): Observable<Paiement[]> {
     return this.paiementService.getPaiementsBySyndic(this.syndicId).pipe(
-      map((data: Paiement[]) => {
-        this.paiements = data;
-        return data;
+      map(paiements => {
+        this.paiements = paiements;
+        return paiements;
       }),
       catchError(error => {
         console.error('Erreur lors du chargement des paiements:', error);
@@ -97,11 +109,11 @@ export class SyndicDashboardComponent implements OnInit {
     );
   }
 
-  loadIncidents(): Observable<IncidentWithStatus[]> {
+  private loadIncidents(): Observable<IncidentWithStatus[]> {
     return this.incidentService.getIncidentsBySyndic(this.syndicId).pipe(
-      map((data: IncidentWithStatus[]) => {
-        this.incidents = data;
-        return data;
+      map(incidents => {
+        this.incidents = incidents;
+        return incidents;
       }),
       catchError(error => {
         console.error('Erreur lors du chargement des incidents:', error);
@@ -110,13 +122,16 @@ export class SyndicDashboardComponent implements OnInit {
     );
   }
 
-  calculateStatistics(): void {
+  private calculateStatistics(): void {
+    // Calculer les statistiques des immeubles
     this.totalBuildings = this.immeubles.length;
-    this.activeBuildings = this.immeubles.filter(imm => imm.status === 'ACTIF').length;
-    this.pendingPayments = this.paiements.filter(p => p.status === 'EN_ATTENTE').length;
+    this.activeBuildings = this.immeubles.filter(immeuble => immeuble.status === 'ACTIF').length;
+
+    // Calculer les statistiques des paiements
+    this.pendingPayments = this.paiements.filter(paiement => paiement.status === 'EN_ATTENTE').length;
     this.totalRevenue = this.paiements
-      .filter(p => p.status === 'PAYE')
-      .reduce((total, p) => total + p.montant, 0);
+      .filter(paiement => paiement.status === 'PAYE')
+      .reduce((total, paiement) => total + paiement.montant, 0);
   }
 
   applyFilter(): void {

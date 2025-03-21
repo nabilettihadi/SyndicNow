@@ -1,170 +1,370 @@
 <div class="min-h-screen bg-gray-50">
   <app-navbar></app-navbar>
   
-  <main class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-6">Tableau de bord Propriétaire</h1>
+  <main class="container mx-auto px-4 py-6">
+    <!-- En-tête avec info utilisateur -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 mb-8 text-white">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold">Tableau de bord Propriétaire</h1>
+          <p class="text-white/80 mt-2">Vue d'ensemble de vos propriétés et activités récentes</p>
+        </div>
+        <div class="mt-4 md:mt-0 bg-white/10 px-4 py-2 rounded-lg backdrop-blur-sm">
+          <div class="flex items-center">
+            <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center mr-3">
+              <i class="fas fa-user text-white"></i>
+            </div>
+            <div>
+              <div class="font-medium">ID Propriétaire: #{{ userId }}</div>
+              <div class="text-sm text-white/80">Dernière connexion: {{ lastLoginDate | date:'dd MMM, HH:mm' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <!-- Chargement et erreur -->
     <div *ngIf="isLoading" class="flex justify-center items-center h-64">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700"></div>
+      <div class="flex flex-col items-center">
+        <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-t-4 border-blue-600"></div>
+        <p class="mt-4 text-gray-600">Chargement des données...</p>
+      </div>
     </div>
     
-    <div *ngIf="hasError" class="bg-red-50 p-4 rounded-md text-red-700 mb-6">
-      {{ errorMessage }}
+    <div *ngIf="hasError" class="bg-red-50 p-6 rounded-xl shadow border border-red-200 text-red-700 mb-8">
+      <div class="flex items-center">
+        <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
+        <div>
+          <h3 class="font-bold text-lg">Erreur</h3>
+          <p>{{ errorMessage }}</p>
+        </div>
+      </div>
     </div>
     
     <!-- Contenu principal -->
     <div *ngIf="!isLoading && !hasError">
       <!-- Statistiques générales -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <div class="text-gray-500 text-sm">Total des appartements</div>
-          <div class="text-3xl font-bold">{{ totalAppartements }}</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 transition-all duration-200 hover:shadow-lg">
+          <div class="px-6 py-5">
+            <div class="text-sm text-gray-500 mb-1">Total des appartements</div>
+            <div class="flex items-center justify-between">
+              <div class="text-3xl font-bold text-gray-800">{{ totalAppartements }}</div>
+              <div class="p-2 rounded-full bg-blue-50 text-blue-600">
+                <i class="fas fa-building"></i>
+              </div>
+            </div>
+          </div>
+          <div class="h-1 w-full bg-blue-600"></div>
         </div>
         
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <div class="text-gray-500 text-sm">Appartements occupés</div>
-          <div class="text-3xl font-bold text-green-600">{{ occupiedAppartements }}</div>
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 transition-all duration-200 hover:shadow-lg">
+          <div class="px-6 py-5">
+            <div class="text-sm text-gray-500 mb-1">Appartements occupés</div>
+            <div class="flex items-center justify-between">
+              <div class="text-3xl font-bold text-gray-800">{{ occupiedAppartements }}</div>
+              <div class="p-2 rounded-full bg-green-50 text-green-600">
+                <i class="fas fa-home"></i>
+              </div>
+            </div>
+          </div>
+          <div class="h-1 w-full bg-green-600"></div>
         </div>
         
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <div class="text-gray-500 text-sm">Appartements libres</div>
-          <div class="text-3xl font-bold text-blue-600">{{ freeAppartements }}</div>
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 transition-all duration-200 hover:shadow-lg">
+          <div class="px-6 py-5">
+            <div class="text-sm text-gray-500 mb-1">Appartements libres</div>
+            <div class="flex items-center justify-between">
+              <div class="text-3xl font-bold text-gray-800">{{ freeAppartements }}</div>
+              <div class="p-2 rounded-full bg-indigo-50 text-indigo-600">
+                <i class="fas fa-key"></i>
+              </div>
+            </div>
+          </div>
+          <div class="h-1 w-full bg-indigo-600"></div>
         </div>
         
-        <div class="bg-white p-6 rounded-lg shadow-md">
-          <div class="text-gray-500 text-sm">Revenus totaux</div>
-          <div class="text-3xl font-bold text-purple-600">{{ totalRevenue | currency:'MAD ' }}</div>
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 transition-all duration-200 hover:shadow-lg">
+          <div class="px-6 py-5">
+            <div class="text-sm text-gray-500 mb-1">Revenus totaux</div>
+            <div class="flex items-center justify-between">
+              <div class="text-3xl font-bold text-gray-800">{{ totalRevenue | currency:'MAD ' }}</div>
+              <div class="p-2 rounded-full bg-purple-50 text-purple-600">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+            </div>
+          </div>
+          <div class="h-1 w-full bg-purple-600"></div>
         </div>
       </div>
       
-      <!-- Recherche et filtres -->
-      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 class="text-xl font-semibold mb-4">Mes appartements</h2>
+      <!-- Derniers messages et notifications -->
+      <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold text-gray-800">Messages non lus</h2>
+          <a routerLink="/proprietaire/mes-messages" class="text-blue-600 hover:text-blue-800 text-sm">
+            Tous les messages <i class="fas fa-arrow-right ml-1"></i>
+          </a>
+        </div>
         
-        <div class="flex mb-4">
-          <div class="relative flex-grow">
-            <input
-              type="text"
-              [(ngModel)]="searchTerm"
-              (keyup)="applyFilter()"
-              placeholder="Rechercher un appartement..."
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span class="absolute right-3 top-2 text-gray-400">
-              <i class="fas fa-search"></i>
-            </span>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Message 1 -->
+          <div class="p-4 rounded-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+            <div class="absolute top-0 right-0 h-4 w-4 bg-blue-500 rounded-full transform translate-x-1 -translate-y-1"></div>
+            <div class="flex items-start">
+              <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                <i class="fas fa-user-tie text-blue-700"></i>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-medium text-gray-900">Syndic Principal</h3>
+                  <span class="text-xs text-gray-500">28/03/2023</span>
+                </div>
+                <div class="font-medium text-sm text-gray-800 mt-1">Assemblée générale extraordinaire</div>
+                <p class="text-sm text-gray-600 mt-1 line-clamp-2">Chers propriétaires, une assemblée générale extraordinaire aura lieu le 15 avril 2023 à 18h dans la salle commune...</p>
+                <a routerLink="/proprietaire/mes-messages" class="text-blue-600 hover:text-blue-800 text-xs mt-2 inline-block">
+                  Lire <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Message 2 -->
+          <div class="p-4 rounded-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+            <div class="flex items-start">
+              <div class="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                <i class="fas fa-wrench text-purple-700"></i>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-medium text-gray-900">Service Technique</h3>
+                  <span class="text-xs text-gray-500">25/03/2023</span>
+                </div>
+                <div class="font-medium text-sm text-gray-800 mt-1">Intervention plomberie programmée</div>
+                <p class="text-sm text-gray-600 mt-1 line-clamp-2">Suite à votre signalement de fuite dans la salle de bain, nous avons programmé l'intervention d'un plombier...</p>
+                <a routerLink="/proprietaire/mes-messages" class="text-blue-600 hover:text-blue-800 text-xs mt-2 inline-block">
+                  Lire <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Message 3 -->
+          <div class="hidden lg:block p-4 rounded-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
+            <div class="flex items-start">
+              <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                <i class="fas fa-door-open text-green-700"></i>
+              </div>
+              <div class="flex-1">
+                <div class="flex justify-between items-start">
+                  <h3 class="font-medium text-gray-900">Gardien</h3>
+                  <span class="text-xs text-gray-500">18/03/2023</span>
+                </div>
+                <div class="font-medium text-sm text-gray-800 mt-1">Colis reçu</div>
+                <p class="text-sm text-gray-600 mt-1 line-clamp-2">Un colis à votre nom a été déposé à la loge. Vous pouvez venir le récupérer entre 9h et 19h.</p>
+                <a routerLink="/proprietaire/mes-messages" class="text-blue-600 hover:text-blue-800 text-xs mt-2 inline-block">
+                  Lire <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- État des paiements et appartements -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Distribution des appartements -->
+        <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-1">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800">État des appartements</h2>
+          <div class="flex justify-center mb-4">
+            <div class="relative w-64 h-64">
+              <div class="absolute inset-0 flex items-center justify-center flex-col">
+                <span class="text-3xl font-bold text-gray-800">{{ totalAppartements }}</span>
+                <span class="text-sm text-gray-500">Total</span>
+              </div>
+              <!-- Remplacer par un vrai graphique dans une implémentation réelle -->
+              <div class="w-full h-full rounded-full border-8 border-transparent"
+                   [ngStyle]="{'background': 'conic-gradient(#4F46E5 0% ' + (occupiedAppartements/totalAppartements*100) + '%, #60A5FA ' + (occupiedAppartements/totalAppartements*100) + '% ' + ((occupiedAppartements+freeAppartements)/totalAppartements*100) + '%, #F59E0B ' + ((occupiedAppartements+freeAppartements)/totalAppartements*100) + '% 100%)'}">
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-center">
+            <div class="grid grid-cols-3 gap-2 w-full">
+              <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-indigo-600 mr-2"></div>
+                <span class="text-sm text-gray-600">Occupés</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-blue-400 mr-2"></div>
+                <span class="text-sm text-gray-600">Libres</span>
+              </div>
+              <div class="flex items-center">
+                <div class="w-3 h-3 rounded-full bg-amber-500 mr-2"></div>
+                <span class="text-sm text-gray-600">En travaux</span>
+              </div>
+            </div>
           </div>
         </div>
         
-        <!-- Tableau des appartements -->
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numéro</th>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étage</th>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Superficie</th>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr *ngFor="let appartement of filteredAppartements">
-                <td class="py-3 px-4 whitespace-nowrap">{{ appartement.numero }}</td>
-                <td class="py-3 px-4 whitespace-nowrap">{{ appartement.etage }}</td>
-                <td class="py-3 px-4 whitespace-nowrap">{{ appartement.superficie }} m²</td>
-                <td class="py-3 px-4 whitespace-nowrap">
-                  <span class="px-2 py-1 text-xs rounded-full" [ngClass]="getStatusClass(appartement.status)">
-                    {{ appartement.status }}
-                  </span>
-                </td>
-                <td class="py-3 px-4 whitespace-nowrap">
-                  <a [routerLink]="['/proprietaire/mes-appartements', appartement.id]" class="text-blue-600 hover:text-blue-800 mr-3">
-                    <i class="fas fa-eye"></i>
-                  </a>
-                </td>
-              </tr>
-              <tr *ngIf="filteredAppartements.length === 0">
-                <td colspan="5" class="py-4 px-4 text-center text-gray-500">
-                  Aucun appartement trouvé
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      
-      <!-- Paiements récents -->
-      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 class="text-xl font-semibold mb-4">Paiements récents</h2>
-        
-        <div *ngIf="paiements.length === 0" class="text-gray-500 text-center py-4">
-          Aucun paiement récent
-        </div>
-        
-        <div *ngIf="paiements.length > 0" class="overflow-x-auto">
-          <table class="min-w-full bg-white">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méthode</th>
-                <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr *ngFor="let paiement of paiements.slice(0, 5)">
-                <td class="py-3 px-4 whitespace-nowrap">{{ paiement.date | date:'dd/MM/yyyy' }}</td>
-                <td class="py-3 px-4 whitespace-nowrap">{{ paiement.montant | currency:'MAD ' }}</td>
-                <td class="py-3 px-4 whitespace-nowrap">{{ paiement.methode }}</td>
-                <td class="py-3 px-4 whitespace-nowrap">
-                  <span class="px-2 py-1 text-xs rounded-full"
-                    [ngClass]="paiement.status === 'PAYE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
-                    {{ paiement.status }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          
-          <div class="mt-4">
-            <a routerLink="/proprietaire/mes-paiements" class="text-blue-600 hover:text-blue-800">
-              Voir tous les paiements <i class="fas fa-arrow-right ml-1"></i>
+        <!-- Paiements récents -->
+        <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Paiements récents</h2>
+            <a routerLink="/proprietaire/mes-paiements" class="text-blue-600 hover:text-blue-800 text-sm">
+              Voir tous <i class="fas fa-arrow-right ml-1"></i>
             </a>
           </div>
+          
+          <div *ngIf="paiements.length === 0" class="flex flex-col items-center justify-center p-6 text-gray-500">
+            <i class="fas fa-file-invoice-dollar text-4xl mb-3 text-gray-300"></i>
+            <p>Aucun paiement récent à afficher</p>
+          </div>
+          
+          <div *ngIf="paiements.length > 0" class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méthode</th>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr *ngFor="let paiement of paiements.slice(0, 5)" class="hover:bg-gray-50 transition-colors duration-150">
+                  <td class="py-3 px-4 whitespace-nowrap">{{ paiement.date | date:'dd/MM/yyyy' }}</td>
+                  <td class="py-3 px-4 whitespace-nowrap font-medium">{{ paiement.montant | currency:'MAD ' }}</td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <span class="flex items-center">
+                      <i [class]="getPaymentMethodIcon(paiement.methode)" class="mr-2 text-gray-500"></i>
+                      {{ paiement.methode }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded-full"
+                      [ngClass]="paiement.status === 'PAYE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
+                      {{ paiement.status }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       
-      <!-- Incidents récents -->
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4">Incidents récents</h2>
-        
-        <div *ngIf="incidents.length === 0" class="text-gray-500 text-center py-4">
-          Aucun incident récent
-        </div>
-        
-        <div *ngIf="incidents.length > 0">
-          <div *ngFor="let incident of incidents.slice(0, 3)" class="mb-4 p-4 border rounded-lg">
-            <div class="flex justify-between items-start">
-              <div>
-                <h3 class="font-semibold">{{ incident.titre }}</h3>
-                <p class="text-gray-600 text-sm">{{ incident.date | date:'dd/MM/yyyy' }}</p>
-              </div>
-              <span class="px-2 py-1 text-xs rounded-full"
-                [ngClass]="incident.status === 'RESOLU' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                {{ incident.status }}
+      <!-- Mes appartements et incidents récents -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Mes appartements -->
+        <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Mes appartements</h2>
+            <a routerLink="/proprietaire/mes-appartements" class="text-blue-600 hover:text-blue-800 text-sm">
+              Voir tous <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+          
+          <div class="mb-4">
+            <div class="relative">
+              <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                (keyup)="applyFilter()"
+                placeholder="Rechercher un appartement..."
+                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span class="absolute right-3 top-2 text-gray-400">
+                <i class="fas fa-search"></i>
               </span>
             </div>
-            <p class="text-gray-700 mt-2">{{ incident.description }}</p>
           </div>
           
-          <div class="mt-4">
-            <a href="#" class="text-blue-600 hover:text-blue-800">
-              Voir tous les incidents <i class="fas fa-arrow-right ml-1"></i>
-            </a>
+          <!-- Tableau des appartements -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Numéro</th>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Étage</th>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Superficie</th>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                  <th class="py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr *ngFor="let appartement of filteredAppartements.slice(0, 5)" class="hover:bg-gray-50 transition-colors duration-150">
+                  <td class="py-3 px-4 whitespace-nowrap">{{ appartement.numero }}</td>
+                  <td class="py-3 px-4 whitespace-nowrap">{{ appartement.etage }}</td>
+                  <td class="py-3 px-4 whitespace-nowrap">{{ appartement.superficie }} m²</td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs rounded-full" [ngClass]="getStatusClass(appartement.status)">
+                      {{ appartement.status }}
+                    </span>
+                  </td>
+                  <td class="py-3 px-4 whitespace-nowrap">
+                    <a [routerLink]="['/proprietaire/mes-appartements', appartement.id]" class="text-blue-600 hover:text-blue-800 mr-3">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                  </td>
+                </tr>
+                <tr *ngIf="filteredAppartements.length === 0">
+                  <td colspan="5" class="py-4 px-4 text-center text-gray-500">
+                    Aucun appartement trouvé
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
+        
+        <!-- Incidents récents -->
+        <div class="bg-white rounded-xl shadow-md p-6 lg:col-span-1">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold text-gray-800">Incidents récents</h2>
+            <a routerLink="/proprietaire/mes-incidents" class="text-blue-600 hover:text-blue-800 text-sm">
+              Voir tous <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+          
+          <div *ngIf="incidents.length === 0" class="flex flex-col items-center justify-center p-6 text-gray-500">
+            <i class="fas fa-clipboard-check text-4xl mb-3 text-gray-300"></i>
+            <p>Aucun incident récent</p>
+          </div>
+          
+          <div *ngIf="incidents.length > 0">
+            <div *ngFor="let incident of incidents.slice(0, 3); let i = index" 
+                 class="mb-3 p-4 border rounded-lg hover:shadow-md transition-all duration-200"
+                 [ngClass]="{'border-red-200 bg-red-50': incident.status === 'EN_COURS', 'border-green-200 bg-green-50': incident.status === 'RESOLU'}">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-semibold">{{ incident.titre }}</h3>
+                  <p class="text-gray-600 text-sm">{{ incident.date | date:'dd/MM/yyyy' }}</p>
+                </div>
+                <span class="px-2 py-1 text-xs rounded-full"
+                  [ngClass]="incident.status === 'RESOLU' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
+                  {{ incident.status }}
+                </span>
+              </div>
+              <p class="text-gray-700 mt-2 text-sm line-clamp-2">{{ incident.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Boutons d'action rapide -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a routerLink="/proprietaire/declarer-incident" class="bg-white hover:bg-blue-50 border border-gray-200 rounded-xl p-4 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-200">
+          <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+          <span>Déclarer un incident</span>
+        </a>
+        <a routerLink="/proprietaire/faire-paiement" class="bg-white hover:bg-blue-50 border border-gray-200 rounded-xl p-4 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-200">
+          <i class="fas fa-money-bill-wave text-green-500 mr-2"></i>
+          <span>Effectuer un paiement</span>
+        </a>
+        <a routerLink="/proprietaire/mes-documents" class="bg-white hover:bg-blue-50 border border-gray-200 rounded-xl p-4 flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-200">
+          <i class="fas fa-file-alt text-blue-500 mr-2"></i>
+          <span>Consulter mes documents</span>
+        </a>
       </div>
     </div>
   </main>

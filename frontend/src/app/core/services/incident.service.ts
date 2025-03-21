@@ -1,16 +1,17 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Incident, IncidentWithStatus, addStatusAlias } from '../models/incident.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {map, Observable} from 'rxjs';
+import {environment} from '@env/environment';
+import {addStatusAlias, Incident, IncidentWithStatus} from '@core/models/incident.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class IncidentService {
-  private apiUrl = `${environment.apiUrl}/incidents`;
+  private apiUrl = `${environment.apiUrl}/api/v1/incidents`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAllIncidents(): Observable<IncidentWithStatus[]> {
     return this.http.get<Incident[]>(this.apiUrl).pipe(
@@ -53,7 +54,7 @@ export class IncidentService {
   }
 
   updateIncidentStatus(id: number, statut: string): Observable<IncidentWithStatus> {
-    return this.http.patch<Incident>(`${this.apiUrl}/${id}/statut`, { statut }).pipe(
+    return this.http.patch<Incident>(`${this.apiUrl}/${id}/statut`, {statut}).pipe(
       map(incident => addStatusAlias(incident))
     );
   }
@@ -63,4 +64,4 @@ export class IncidentService {
       map(incidents => incidents.map(incident => addStatusAlias(incident)))
     );
   }
-} 
+}

@@ -1,21 +1,35 @@
 import { Routes } from '@angular/router';
+import { ProprietaireDashboardComponent } from './dashboard/proprietaire-dashboard.component';
+import { MesAppartementsComponent } from './mes-appartements/mes-appartements.component';
+import { MesDocumentsComponent } from './mes-documents/mes-documents.component';
+import { MesPaiementsComponent } from './mes-paiements/mes-paiements.component';
+import { MesIncidentsComponent } from './mes-incidents/mes-incidents.component';
+import { MesMessagesComponent } from './mes-messages/mes-messages.component';
 
 export const PROPRIETAIRE_ROUTES: Routes = [
   {
     path: '',
-    loadComponent: () => import('./dashboard/proprietaire-dashboard.component').then(m => m.ProprietaireDashboardComponent)
+    component: ProprietaireDashboardComponent
   },
   {
     path: 'mes-appartements',
-    loadComponent: () => import('./mes-appartements/mes-appartements.component').then(m => m.MesAppartementsComponent)
-  },
-  {
-    path: 'mes-paiements',
-    loadComponent: () => import('./mes-paiements/mes-paiements.component').then(m => m.MesPaiementsComponent)
+    component: MesAppartementsComponent
   },
   {
     path: 'mes-documents',
-    loadComponent: () => import('./mes-documents/mes-documents.component').then(m => m.MesDocumentsComponent)
+    component: MesDocumentsComponent
+  },
+  {
+    path: 'mes-paiements',
+    component: MesPaiementsComponent
+  },
+  {
+    path: 'mes-incidents',
+    component: MesIncidentsComponent
+  },
+  {
+    path: 'mes-messages',
+    component: MesMessagesComponent
   },
   // Rediriger toutes les autres routes vers le dashboard
   {

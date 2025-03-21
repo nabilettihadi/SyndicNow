@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/immeubles")
+@RequestMapping("/api/v1/immeubles")
 @RequiredArgsConstructor
 @Validated
 @Slf4j

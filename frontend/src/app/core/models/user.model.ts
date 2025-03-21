@@ -14,8 +14,3 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export interface LoginResponse {
-  user: User;
-  token: string;
-} 

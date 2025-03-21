@@ -26,13 +26,25 @@ export interface AppartementDetails {
   selector: 'app-mes-appartements',
   standalone: true,
   imports: [CommonModule, NavbarComponent, FooterComponent, RouterModule],
-  templateUrl: './mes-appartements.component.html',
-  styleUrls: ['./mes-appartements.component.css']
+  templateUrl: './mes-appartements.component.html'
 })
 export class MesAppartementsComponent implements OnInit {
   appartements: AppartementDetails[] = [];
   loading = false;
   error: string | null = null;
+
+  // Statistiques calculées
+  get totalAppartements(): number {
+    return this.appartements.length;
+  }
+
+  get appartementsOccupes(): number {
+    return this.appartements.filter(a => a.status === 'OCCUPE').length;
+  }
+
+  get appartementsLibres(): number {
+    return this.appartements.filter(a => a.status === 'LIBRE').length;
+  }
 
   constructor(
     private appartementService: AppartementService,
@@ -61,8 +73,8 @@ export class MesAppartementsComponent implements OnInit {
     });
   }
 
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('fr-FR');
+  formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('fr-FR');
   }
 
   getStatusClass(status: string): string {
@@ -76,5 +88,11 @@ export class MesAppartementsComponent implements OnInit {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  }
+
+  getEtageLabel(etage: number): string {
+    if (etage === -1) return 'Sous-sol';
+    if (etage === 0) return 'RDC';
+    return `Étage ${etage}`;
   }
 }

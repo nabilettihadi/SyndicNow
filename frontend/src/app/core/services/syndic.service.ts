@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '@env/environment';
-import { Syndic, SyndicStats } from '@core/models/syndic.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '@env/environment';
+import {Syndic, SyndicStats} from '@core/models/syndic.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,8 @@ import { Syndic, SyndicStats } from '@core/models/syndic.model';
 export class SyndicService {
   private apiUrl = `${environment.apiUrl}/syndics`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   // Récupérer tous les syndics
   getAllSyndics(): Observable<Syndic[]> {
@@ -67,7 +68,7 @@ export class SyndicService {
   }
 
   terminerMandat(id: number, dateFin: Date): Observable<Syndic> {
-    return this.http.patch<Syndic>(`${this.apiUrl}/${id}/fin-mandat`, { dateFin });
+    return this.http.patch<Syndic>(`${this.apiUrl}/${id}/fin-mandat`, {dateFin});
   }
 
   ajouterDocument(id: number, file: File): Observable<Syndic> {
@@ -79,4 +80,4 @@ export class SyndicService {
   supprimerDocument(id: number, documentId: number): Observable<Syndic> {
     return this.http.delete<Syndic>(`${this.apiUrl}/${id}/documents/${documentId}`);
   }
-} 
+}

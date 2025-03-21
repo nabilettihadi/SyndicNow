@@ -5,25 +5,38 @@ import {NavbarComponent} from '@shared/components/navbar/navbar.component';
 import {FooterComponent} from '@shared/components/footer/footer.component';
 import {DocumentService} from '@core/services/document.service';
 import {AuthService} from '@core/services/auth.service';
-import {DocumentType, IDocument} from './models/document.model';
+import {Document} from '@core/models/document.model';
 
 @Component({
   selector: 'app-mes-documents',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, FooterComponent, FormsModule],
-  templateUrl: './mes-documents.component.html',
-  styleUrls: ['./mes-documents.component.css']
+  imports: [CommonModule, FormsModule, NavbarComponent, FooterComponent],
+  templateUrl: './mes-documents.component.html'
 })
 export class MesDocumentsComponent implements OnInit {
-  documents: IDocument[] = [];
-  filteredDocuments: IDocument[] = [];
-  documentTypes: DocumentType[] = ['CONTRAT', 'FACTURE', 'QUITTANCE', 'AUTRE'];
-  selectedType: DocumentType | '' = '';
+  documents: Document[] = [];
+  filteredDocuments: Document[] = [];
+  documentTypes: string[] = ['CONTRAT', 'FACTURE', 'QUITTANCE', 'AUTRE'];
+  selectedType: string | '' = '';
   selectedPeriod: string = '';
-  uploadType: DocumentType = 'CONTRAT';
+  uploadType: string = 'CONTRAT';
   selectedFile: File | null = null;
   loading = false;
   error: string | null = null;
+  showUploadModal = false;
+
+  // Statistiques calculées
+  get totalDocuments(): number {
+    return this.documents.length;
+  }
+
+  get totalContrats(): number {
+    return this.documents.filter(d => d.type === 'CONTRAT').length;
+  }
+
+  get totalFactures(): number {
+    return this.documents.filter(d => d.type === 'FACTURE').length;
+  }
 
   constructor(
     private documentService: DocumentService,
@@ -64,9 +77,21 @@ export class MesDocumentsComponent implements OnInit {
     this.filteredDocuments = this.documents.filter(doc => {
       const typeMatch = !this.selectedType || doc.type === this.selectedType;
       const periodMatch = !this.selectedPeriod ||
-        new Date(doc.date).toISOString().substring(0, 7) === this.selectedPeriod;
+        new Date(doc.dateCreation).toISOString().substring(0, 7) === this.selectedPeriod;
       return typeMatch && periodMatch;
     });
+  }
+
+  openUploadModal() {
+    this.showUploadModal = true;
+    this.selectedFile = null;
+    this.uploadType = 'CONTRAT';
+  }
+
+  closeUploadModal() {
+    this.showUploadModal = false;
+    this.selectedFile = null;
+    this.uploadType = 'CONTRAT';
   }
 
   onFileSelected(event: Event) {
@@ -91,11 +116,11 @@ export class MesDocumentsComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.documentService.uploadDocument(currentUser.userId, this.selectedFile, this.uploadType)
+    this.documentService.uploadDocumentForProprietaire(currentUser.userId, this.selectedFile, this.uploadType)
       .subscribe({
         next: () => {
           this.loadDocuments();
-          this.selectedFile = null;
+          this.closeUploadModal();
           this.loading = false;
         },
         error: (error) => {
@@ -106,7 +131,8 @@ export class MesDocumentsComponent implements OnInit {
       });
   }
 
-  downloadDocument(doc: IDocument) {
+  downloadDocument(doc: Document) {
+    if (!doc.id) return;
     this.loading = true;
     this.error = null;
 
@@ -131,7 +157,8 @@ export class MesDocumentsComponent implements OnInit {
       });
   }
 
-  previewDocument(doc: IDocument) {
+  previewDocument(doc: Document) {
+    if (!doc.id) return;
     this.loading = true;
     this.error = null;
 
@@ -151,7 +178,7 @@ export class MesDocumentsComponent implements OnInit {
       });
   }
 
-  getDocumentTypeStyles(type: DocumentType): { bgColor: string; textColor: string } {
+  getDocumentTypeStyles(type: string): { bgColor: string; textColor: string } {
     switch (type) {
       case 'CONTRAT':
         return {bgColor: 'bg-green-100', textColor: 'text-green-600'};

@@ -8,7 +8,7 @@ import {Immeuble, ImmeubleStats} from '@core/models/immeuble.model';
   providedIn: 'root'
 })
 export class ImmeubleService {
-  private apiUrl = `${environment.apiUrl}/immeubles`;
+  private apiUrl = `${environment.apiUrl}/api/v1/immeubles`;
 
   constructor(private http: HttpClient) {
   }

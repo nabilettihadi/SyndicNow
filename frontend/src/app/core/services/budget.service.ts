@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { Budget } from '../models/budget.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '@env/environment';
+import {Budget} from '../models/budget.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,8 @@ import { Budget } from '../models/budget.model';
 export class BudgetService {
   private apiUrl = `${environment.apiUrl}/api/v1/budgets`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAllBudgets(): Observable<Budget[]> {
     return this.http.get<Budget[]>(this.apiUrl);
@@ -67,4 +68,4 @@ export class BudgetService {
   cloturerBudget(id: number): Observable<Budget> {
     return this.http.patch<Budget>(`${this.apiUrl}/${id}/cloturer`, {});
   }
-} 
+}

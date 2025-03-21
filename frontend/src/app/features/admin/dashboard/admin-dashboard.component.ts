@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { SyndicService } from '@core/services/syndic.service';
-import { ImmeubleService } from '@core/services/immeuble.service';
-import { ProprietaireService } from '@core/services/proprietaire.service';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {SyndicService} from '@core/services/syndic.service';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {ProprietaireService} from '@core/services/proprietaire.service';
 
 export interface DashboardStats {
   totalSyndics: number;
@@ -33,8 +33,8 @@ export interface DashboardStats {
       <!-- Sections inférieures -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Immeubles par ville -->
-        <app-immeubles-par-ville 
-          [immeublesParVille]="immeublesParVille" 
+        <app-immeubles-par-ville
+          [immeublesParVille]="immeublesParVille"
           [totalImmeubles]="stats.totalImmeubles"
           [isLoading]="isLoading">
         </app-immeubles-par-ville>
@@ -85,7 +85,8 @@ export class AdminDashboardComponent implements OnInit {
     private syndicService: SyndicService,
     private immeubleService: ImmeubleService,
     private proprietaireService: ProprietaireService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -104,7 +105,7 @@ export class AdminDashboardComponent implements OnInit {
       next: (data) => {
         const syndics = Array.isArray(data) ? data : [];
         this.stats.totalSyndics = syndics.length;
-        this.recentSyndics = syndics.slice(0, 5); // Les 5 derniers syndics
+        this.recentSyndics = syndics.slice(0, 5);
         this.isLoading = false;
       },
       error: (error) => {
@@ -154,8 +155,8 @@ export class AdminDashboardComponent implements OnInit {
     });
 
     this.immeublesParVille = Array.from(villeCounts.entries())
-      .map(([ville, count]) => ({ ville, count }))
+      .map(([ville, count]) => ({ville, count}))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5); // Les 5 villes avec le plus d'immeubles
+      .slice(0, 5);
   }
-} 
+}

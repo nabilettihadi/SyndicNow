@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ma.Nabil.SyndicNow.entity.Incident.IncidentCategory;
-import ma.Nabil.SyndicNow.entity.Incident.IncidentPriority;
+import ma.Nabil.SyndicNow.enums.IncidentCategory;
+import ma.Nabil.SyndicNow.enums.IncidentPriority;
 
 @Data
 @Builder
@@ -17,7 +17,6 @@ public class IncidentRequest {
     @NotBlank(message = "Le titre est obligatoire")
     private String title;
 
-    @NotBlank(message = "La description est obligatoire")
     private String description;
 
     @NotNull(message = "La priorité est obligatoire")

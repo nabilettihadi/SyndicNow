@@ -1,5 +1,3 @@
-import { Appartement } from './appartement.model';
-
 export interface Paiement {
   datePaiement: string | number | Date;
   id: number;
@@ -27,7 +25,8 @@ export interface Paiement {
   };
 }
 
-export interface IPaiement extends Paiement {} // Pour la rétrocompatibilité
+export interface IPaiement extends Paiement {
+} // Pour la rétrocompatibilité
 
 export interface PaiementStatistics {
   totalPaiements: number;
@@ -52,4 +51,4 @@ export interface PaiementStats {
   };
   montantTotal: number;
   montantMoyen: number;
-} 
+}

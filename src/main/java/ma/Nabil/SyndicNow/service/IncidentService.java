@@ -2,8 +2,8 @@ package ma.Nabil.SyndicNow.service;
 
 import ma.Nabil.SyndicNow.dto.incident.IncidentRequest;
 import ma.Nabil.SyndicNow.dto.incident.IncidentResponse;
-import ma.Nabil.SyndicNow.entity.Incident.IncidentPriority;
-import ma.Nabil.SyndicNow.entity.Incident.IncidentStatus;
+import ma.Nabil.SyndicNow.enums.IncidentPriority;
+import ma.Nabil.SyndicNow.enums.IncidentStatus;
 
 import java.util.List;
 

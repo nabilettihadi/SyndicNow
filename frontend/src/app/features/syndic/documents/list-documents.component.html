@@ -1,0 +1,276 @@
+<div class="syndic-page">
+  <app-navbar></app-navbar>
+  
+  <header class="syndic-header">
+    <div class="syndic-container">
+      <h1 class="text-4xl font-bold mb-4">Gestion des Documents</h1>
+      <p class="text-lg text-blue-100">Gérez et organisez tous les documents relatifs à vos immeubles</p>
+    </div>
+  </header>
+
+  <div class="syndic-container">
+    <!-- Chargement -->
+    <div *ngIf="isLoading" class="syndic-loading">
+      <div class="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center gap-4">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-900 border-t-transparent"></div>
+        <p class="text-blue-900 font-medium">Chargement des documents...</p>
+      </div>
+    </div>
+
+    <!-- Erreur -->
+    <div *ngIf="hasError" class="syndic-error">
+      <i class="fas fa-exclamation-circle text-xl"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <!-- Contenu principal -->
+    <div *ngIf="!isLoading && !hasError">
+      <div class="syndic-card">
+        <div class="syndic-card-header">
+          <h2 class="syndic-card-title">Liste des Documents</h2>
+          <button (click)="openUploadModal()" class="syndic-button syndic-button-primary">
+            <i class="fas fa-upload"></i>
+            Ajouter un document
+          </button>
+        </div>
+
+        <!-- Recherche et filtres -->
+        <div class="flex flex-wrap gap-4 mb-8">
+          <div class="relative flex-grow">
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              (keyup)="applyFilter()"
+              placeholder="Rechercher un document..."
+              class="syndic-input"
+            />
+            <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+          </div>
+          
+          <select 
+            [(ngModel)]="typeFilter" 
+            (change)="applyFilter()"
+            class="syndic-input w-auto"
+          >
+            <option value="ALL">Tous les types</option>
+            <option value="CONTRAT">Contrats</option>
+            <option value="FACTURE">Factures</option>
+            <option value="REGLEMENT">Règlements</option>
+            <option value="AUTRE">Autres</option>
+          </select>
+        </div>
+
+        <!-- Liste des documents -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white rounded-lg overflow-hidden">
+            <thead class="bg-gray-100 text-gray-700">
+              <tr>
+                <th class="py-3 px-4 text-left">Document</th>
+                <th class="py-3 px-4 text-left">Type</th>
+                <th class="py-3 px-4 text-left">Taille</th>
+                <th class="py-3 px-4 text-left">Date</th>
+                <th class="py-3 px-4 text-left">Immeuble</th>
+                <th class="py-3 px-4 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr *ngFor="let document of filteredDocuments" class="hover:bg-gray-50">
+                <td class="py-3 px-4">
+                  <div class="flex items-center">
+                    <i [class]="getDocumentIcon(document.format)" class="text-2xl mr-3"></i>
+                    <div>
+                      <p class="font-medium text-blue-900">{{ document.nom }}</p>
+                      <p class="text-sm text-gray-500 line-clamp-1">{{ document.description }}</p>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-4">
+                  <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getDocumentTypeClass(document.type)">
+                    {{ document.type }}
+                  </span>
+                </td>
+                <td class="py-3 px-4">{{ formatFileSize(document.taille) }}</td>
+                <td class="py-3 px-4">{{ document.dateCreation | date:'dd/MM/yyyy' }}</td>
+                <td class="py-3 px-4">{{ document.immeuble?.nom || 'N/A' }}</td>
+                <td class="py-3 px-4">
+                  <div class="flex justify-center gap-2">
+                    <button (click)="viewDocumentDetails(document)" class="p-1 text-blue-600 hover:text-blue-800" title="Voir les détails">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button (click)="downloadDocument(document)" class="p-1 text-green-600 hover:text-green-800" title="Télécharger">
+                      <i class="fas fa-download"></i>
+                    </button>
+                    <button (click)="deleteDocument(document)" class="p-1 text-red-600 hover:text-red-800" title="Supprimer">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              
+              <!-- Message si aucun document -->
+              <tr *ngIf="filteredDocuments.length === 0">
+                <td colspan="6" class="py-8 text-center">
+                  <i class="fas fa-file-alt text-4xl text-blue-200 mb-4"></i>
+                  <p class="text-gray-500 text-lg">Aucun document trouvé</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de visualisation des détails -->
+  <div *ngIf="selectedDocument" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+          <h3 class="text-xl font-bold text-blue-900">Détails du document</h3>
+          <button (click)="closeDocumentDetails()" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="flex items-center">
+            <i [class]="getDocumentIcon(selectedDocument.format)" class="text-3xl mr-4"></i>
+            <div>
+              <h4 class="text-lg font-semibold">{{ selectedDocument.nom }}</h4>
+              <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getDocumentTypeClass(selectedDocument.type)">
+                {{ selectedDocument.type }}
+              </span>
+            </div>
+          </div>
+          
+          <p class="text-gray-700">{{ selectedDocument.description }}</p>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-sm">
+              <p class="text-gray-500">Format</p>
+              <p class="font-medium">{{ selectedDocument.format }}</p>
+            </div>
+            <div class="text-sm">
+              <p class="text-gray-500">Taille</p>
+              <p class="font-medium">{{ formatFileSize(selectedDocument.taille) }}</p>
+            </div>
+            <div class="text-sm">
+              <p class="text-gray-500">Date de création</p>
+              <p class="font-medium">{{ selectedDocument.dateCreation | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+            <div *ngIf="selectedDocument.dateModification" class="text-sm">
+              <p class="text-gray-500">Dernière modification</p>
+              <p class="font-medium">{{ selectedDocument.dateModification | date:'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+          </div>
+          
+          <div *ngIf="selectedDocument.immeuble" class="text-sm">
+            <p class="text-gray-500">Immeuble</p>
+            <p class="font-medium">{{ selectedDocument.immeuble.nom }}</p>
+          </div>
+          
+          <div *ngIf="selectedDocument.appartement" class="text-sm">
+            <p class="text-gray-500">Appartement</p>
+            <p class="font-medium">{{ selectedDocument.appartement.numero }}</p>
+          </div>
+          
+          <div *ngIf="selectedDocument.creePar" class="text-sm">
+            <p class="text-gray-500">Créé par</p>
+            <p class="font-medium">{{ selectedDocument.creePar.nom }} {{ selectedDocument.creePar.prenom }}</p>
+          </div>
+          
+          <div *ngIf="selectedDocument.tags && selectedDocument.tags.length > 0" class="text-sm">
+            <p class="text-gray-500">Tags</p>
+            <div class="flex flex-wrap gap-2 mt-1">
+              <span *ngFor="let tag of selectedDocument.tags"
+                    class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-6 flex justify-end gap-3">
+          <button (click)="closeDocumentDetails()" class="syndic-button syndic-button-secondary">
+            Fermer
+          </button>
+          <button (click)="downloadDocument(selectedDocument)" class="syndic-button syndic-button-primary">
+            <i class="fas fa-download mr-2"></i>
+            Télécharger
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal d'upload -->
+  <div *ngIf="isUploadModalOpen" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+          <h3 class="text-xl font-bold text-blue-900">Ajouter un document</h3>
+          <button (click)="closeUploadModal()" class="text-gray-500 hover:text-gray-700">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        
+        <div *ngIf="uploadProgress === 0" class="space-y-4">
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Fichier</label>
+            <input type="file" (change)="onFileSelected($event)" class="w-full p-2 border border-gray-300 rounded-md">
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Nom</label>
+            <input type="text" class="syndic-input" placeholder="Nom du document">
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea class="syndic-input" rows="3" placeholder="Description du document"></textarea>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Type</label>
+            <select class="syndic-input">
+              <option value="CONTRAT">Contrat</option>
+              <option value="FACTURE">Facture</option>
+              <option value="REGLEMENT">Règlement</option>
+              <option value="AUTRE">Autre</option>
+            </select>
+          </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Immeuble (optionnel)</label>
+            <select class="syndic-input">
+              <option value="">Non spécifié</option>
+              <!-- Options d'immeubles ici -->
+            </select>
+          </div>
+        </div>
+        
+        <div *ngIf="uploadProgress > 0" class="py-6">
+          <div class="text-center mb-4">
+            <p class="font-medium mb-1">Téléchargement en cours...</p>
+            <p class="text-sm text-gray-500">{{ uploadProgress }}%</p>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2.5">
+            <div class="bg-blue-600 h-2.5 rounded-full" [style.width.%]="uploadProgress"></div>
+          </div>
+        </div>
+        
+        <div class="mt-6 flex justify-end gap-3">
+          <button (click)="closeUploadModal()" class="syndic-button syndic-button-secondary">
+            Annuler
+          </button>
+          <button *ngIf="uploadProgress === 0 && uploadFile" (click)="uploadDocument({})" class="syndic-button syndic-button-primary">
+            <i class="fas fa-upload mr-2"></i>
+            Télécharger
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</div> 

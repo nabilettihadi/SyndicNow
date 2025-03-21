@@ -17,7 +17,22 @@ export const SYNDIC_ROUTES: Routes = [
     path: 'paiements',
     loadComponent: () => import('./paiements/list-paiements.component').then(m => m.ListPaiementsComponent)
   },
-  // Rediriger toutes les autres routes vers le dashboard
+  {
+    path: 'messages',
+    loadComponent: () => import('./messages/syndic-messages.component').then(m => m.SyndicMessagesComponent)
+  },
+  {
+    path: 'incidents',
+    loadComponent: () => import('./incidents/list-incidents.component').then(m => m.ListIncidentsComponent)
+  },
+  {
+    path: 'proprietaires',
+    loadComponent: () => import('./proprietaires/list-proprietaires.component').then(m => m.ListProprietairesComponent)
+  },
+  {
+    path: 'documents',
+    loadComponent: () => import('./documents/list-documents.component').then(m => m.ListDocumentsComponent)
+  },
   {
     path: '**',
     redirectTo: ''

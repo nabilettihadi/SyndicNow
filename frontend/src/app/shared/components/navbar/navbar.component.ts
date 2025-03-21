@@ -248,95 +248,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   private readonly navItems: NavItem[] = [
+    // Admin navigation items
     {
       label: 'Tableau de bord',
       route: '/admin',
-      icon: 'fas fa-chart-line',
+      icon: 'fas fa-tachometer-alt',
       roles: ['ADMIN']
     },
     {
-      label: 'Tableau de bord',
-      route: '/syndic',
-      icon: 'fas fa-chart-line',
-      roles: ['SYNDIC']
-    },
-    {
-      label: 'Tableau de bord',
-      route: '/proprietaire',
-      icon: 'fas fa-chart-line',
-      roles: ['PROPRIETAIRE']
+      label: 'Utilisateurs',
+      route: '/admin/users',
+      icon: 'fas fa-users',
+      roles: ['ADMIN']
     },
     {
       label: 'Immeubles',
-      route: '/syndic/immeubles',
+      route: '/admin/buildings',
       icon: 'fas fa-building',
-      roles: ['SYNDIC']
-    },
-    {
-      label: 'Appartements',
-      route: '/syndic/appartements',
-      icon: 'fas fa-home',
-      roles: ['SYNDIC']
-    },
-    {
-      label: 'Mes Appartements',
-      route: '/proprietaire/mes-appartements',
-      icon: 'fas fa-home',
-      roles: ['PROPRIETAIRE']
-    },
-    {
-      label: 'Paiements',
-      route: '/syndic/paiements',
-      icon: 'fas fa-money-bill',
-      roles: ['SYNDIC']
-    },
-    {
-      label: 'Mes Paiements',
-      route: '/proprietaire/mes-paiements',
-      icon: 'fas fa-money-bill',
-      roles: ['PROPRIETAIRE']
-    },
-    {
-      label: 'Incidents',
-      route: '/syndic/incidents',
-      icon: 'fas fa-exclamation-triangle',
-      roles: ['SYNDIC']
-    },
-    {
-      label: 'Mes Incidents',
-      route: '/proprietaire/mes-incidents',
-      icon: 'fas fa-exclamation-triangle',
-      roles: ['PROPRIETAIRE']
-    },
-    {
-      label: 'Documents',
-      route: '/syndic/documents',
-      icon: 'fas fa-file-alt',
-      roles: ['SYNDIC']
-    },
-    {
-      label: 'Mes Documents',
-      route: '/proprietaire/mes-documents',
-      icon: 'fas fa-file-alt',
-      roles: ['PROPRIETAIRE']
-    },
-    {
-      label: 'Messages',
-      route: '/syndic/messages',
-      icon: 'fas fa-envelope',
-      roles: ['SYNDIC']
-    },
-    {
-      label: 'Mes Messages',
-      route: '/proprietaire/mes-messages',
-      icon: 'fas fa-envelope',
-      roles: ['PROPRIETAIRE']
-    },
-    {
-      label: 'Réunions',
-      route: '/syndic/reunions',
-      icon: 'fas fa-calendar-alt',
-      roles: ['SYNDIC']
+      roles: ['ADMIN']
     },
     {
       label: 'Syndics',
@@ -345,10 +274,103 @@ export class NavbarComponent implements OnInit, OnDestroy {
       roles: ['ADMIN']
     },
     {
-      label: 'Rapports',
-      route: '/admin/rapports',
-      icon: 'fas fa-file-pdf',
+      label: 'Propriétaires',
+      route: '/admin/proprietaires',
+      icon: 'fas fa-user',
       roles: ['ADMIN']
-    }
+    },
+    // Syndic navigation items
+    {
+      label: 'Tableau de bord',
+      route: '/syndic',
+      icon: 'fas fa-tachometer-alt',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Immeubles',
+      route: '/syndic/immeubles',
+      icon: 'fas fa-building',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Propriétaires',
+      route: '/syndic/proprietaires',
+      icon: 'fas fa-user',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Paiements',
+      route: '/syndic/paiements',
+      icon: 'fas fa-money-bill-wave',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Incidents',
+      route: '/syndic/incidents',
+      icon: 'fas fa-exclamation-triangle',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Documents',
+      route: '/syndic/documents',
+      icon: 'fas fa-file-alt',
+      roles: ['SYNDIC']
+    },
+    {
+      label: 'Messages',
+      route: '/syndic/messages',
+      icon: 'fas fa-envelope',
+      roles: ['SYNDIC']
+    },
+    // Proprietaire navigation items
+    {
+      label: 'Tableau de bord',
+      route: '/proprietaire',
+      icon: 'fas fa-tachometer-alt',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Mes Appartements',
+      route: '/proprietaire/mes-appartements',
+      icon: 'fas fa-home',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Mes Documents',
+      route: '/proprietaire/mes-documents',
+      icon: 'fas fa-file-alt',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Mes Paiements',
+      route: '/proprietaire/mes-paiements',
+      icon: 'fas fa-money-bill-wave',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Mes Incidents',
+      route: '/proprietaire/mes-incidents',
+      icon: 'fas fa-exclamation-triangle',
+      roles: ['PROPRIETAIRE']
+    },
+    {
+      label: 'Mes Messages',
+      route: '/proprietaire/mes-messages',
+      icon: 'fas fa-envelope',
+      roles: ['PROPRIETAIRE']
+    },
   ];
+
+  // Méthodes pour obtenir les éléments de navigation par rôle
+  private getAdminNavItems(): NavItem[] {
+    return this.navItems.filter(item => item.roles.includes('ADMIN'));
+  }
+
+  private getSyndicNavItems(): NavItem[] {
+    return this.navItems.filter(item => item.roles.includes('SYNDIC'));
+  }
+
+  private getProprietaireNavItems(): NavItem[] {
+    return this.navItems.filter(item => item.roles.includes('PROPRIETAIRE'));
+  }
 }

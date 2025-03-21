@@ -5,7 +5,7 @@ import {NavbarComponent} from '@shared/components/navbar/navbar.component';
 import {FooterComponent} from '@shared/components/footer/footer.component';
 import {PaiementService} from '@core/services/paiement.service';
 import {AuthService} from '@core/services/auth.service';
-import {IPaiement, PaiementStats, PaiementType} from './models/paiement.model';
+import {IPaiement, PaiementStats} from '@core/models/paiement.model';
 
 @Component({
   selector: 'app-mes-paiements',
@@ -17,20 +17,24 @@ import {IPaiement, PaiementStats, PaiementType} from './models/paiement.model';
 export class MesPaiementsComponent implements OnInit {
   paiements: IPaiement[] = [];
   filteredPaiements: IPaiement[] = [];
-  selectedType: PaiementType | '' = '';
+  selectedType: 'LOYER' | 'CHARGES' | 'AUTRE' | '' = '';
   selectedPeriod: string = '';
 
   stats: PaiementStats = {
-    prochainPaiement: null,
-    totalPaye: 0,
-    nombrePaiements: 0,
-    etatPaiements: 'A_JOUR',
-    paiementsEnRetard: 0
+    total: 0,
+    parStatus: {},
+    parType: {},
+    parImmeuble: {},
+    montantTotal: 0,
+    montantMoyen: 0
   };
 
   currentYear: number = new Date().getFullYear();
   loading = false;
   error: string | null = null;
+
+  // Ajout de la méthode pour accéder à Object.entries dans le template
+  protected readonly Object = Object;
 
   constructor(
     private paiementService: PaiementService,
@@ -52,7 +56,6 @@ export class MesPaiementsComponent implements OnInit {
           this.paiements = data.map(p => ({
             ...p,
             dateEcheance: new Date(p.datePaiement).toISOString(),
-            methodePaiement: 'VIREMENT',
             immeubleId: p.immeuble?.id || 0,
             date: new Date(p.datePaiement).toISOString()
           })) as unknown as IPaiement[];
@@ -78,22 +81,29 @@ export class MesPaiementsComponent implements OnInit {
   }
 
   updateStatistics() {
-    // Prochain paiement
-    this.stats.prochainPaiement = this.paiements
-      .filter(p => p.status === 'EN_ATTENTE')
-      .sort((a, b) => new Date(a.dateEcheance).getTime() - new Date(b.dateEcheance).getTime())[0] || null;
+    // Statistiques générales
+    this.stats.total = this.paiements.length;
+    this.stats.montantTotal = this.paiements.reduce((sum, p) => sum + p.montant, 0);
+    this.stats.montantMoyen = this.stats.total > 0 ? this.stats.montantTotal / this.stats.total : 0;
 
-    // Total payé cette année
-    const paiementsAnnee = this.paiements.filter(p =>
-      new Date(p.date).getFullYear() === this.currentYear &&
-      p.status === 'PAYE'
-    );
-    this.stats.totalPaye = paiementsAnnee.reduce((sum, p) => sum + p.montant, 0);
-    this.stats.nombrePaiements = paiementsAnnee.length;
+    // Statistiques par statut
+    this.stats.parStatus = this.paiements.reduce((acc, p) => {
+      acc[p.status] = (acc[p.status] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
 
-    // État des paiements
-    this.stats.paiementsEnRetard = this.paiements.filter(p => p.status === 'EN_RETARD').length;
-    this.stats.etatPaiements = this.stats.paiementsEnRetard > 0 ? 'EN_RETARD' : 'A_JOUR';
+    // Statistiques par type
+    this.stats.parType = this.paiements.reduce((acc, p) => {
+      acc[p.type] = (acc[p.type] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
+
+    // Statistiques par immeuble
+    this.stats.parImmeuble = this.paiements.reduce((acc, p) => {
+      const immeubleId = p.immeuble?.id || 'autre';
+      acc[immeubleId] = (acc[immeubleId] || 0) + 1;
+      return acc;
+    }, {} as { [key: string]: number });
   }
 
   downloadRecu(paiement: IPaiement) {
@@ -121,7 +131,7 @@ export class MesPaiementsComponent implements OnInit {
       });
   }
 
-  formatDate(date: string): string {
+  formatDate(date: string | Date): string {
     return new Date(date).toLocaleDateString('fr-FR');
   }
 

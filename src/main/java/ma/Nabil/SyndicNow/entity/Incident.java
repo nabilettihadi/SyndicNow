@@ -2,6 +2,10 @@ package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ma.Nabil.SyndicNow.enums.IncidentCategory;
+import ma.Nabil.SyndicNow.enums.IncidentPriority;
+import ma.Nabil.SyndicNow.enums.IncidentStatus;
+
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -79,16 +83,4 @@ public class Incident {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
-
-    public enum IncidentStatus {
-        NOUVEAU, EN_COURS, RESOLU, FERME
-    }
-
-    public enum IncidentPriority {
-        BASSE, MOYENNE, HAUTE, URGENTE
-    }
-
-    public enum IncidentCategory {
-        PLOMBERIE, ELECTRICITE, ASCENSEUR, NETTOYAGE, SECURITE, CHAUFFAGE, AUTRE
-    }
 }

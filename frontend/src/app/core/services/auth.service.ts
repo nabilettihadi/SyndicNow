@@ -7,8 +7,7 @@ import {environment} from '@env/environment';
 import {Store} from '@ngrx/store';
 import * as AuthActions from '../authentication/store/actions/auth.actions';
 import {Router} from '@angular/router';
-import { User } from '../models/user.model';
-import { NavItem } from '../models/nav-item.model';
+import {NavItem} from '../models/nav-item.model';
 
 @Injectable({
   providedIn: 'root'
@@ -206,11 +205,11 @@ export class AuthService {
           subscriber.next([]);
           return;
         }
-        const authorizedItems = this.navItems.filter(item => 
+        const authorizedItems = this.navItems.filter(item =>
           item.roles.includes(user.role)
         );
         subscriber.next(authorizedItems);
       });
     });
   }
-} 
+}

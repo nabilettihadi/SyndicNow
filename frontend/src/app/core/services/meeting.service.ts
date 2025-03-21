@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { Meeting } from '../models/meeting.model';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '@env/environment';
+import {Meeting} from '../models/meeting.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,8 @@ import { Meeting } from '../models/meeting.model';
 export class MeetingService {
   private apiUrl = `${environment.apiUrl}/api/v1/meetings`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+  }
 
   getAllMeetings(): Observable<Meeting[]> {
     return this.http.get<Meeting[]>(this.apiUrl);
@@ -37,11 +38,11 @@ export class MeetingService {
   }
 
   updateMeetingStatus(id: number, statut: string): Observable<Meeting> {
-    return this.http.patch<Meeting>(`${this.apiUrl}/${id}/statut`, { statut });
+    return this.http.patch<Meeting>(`${this.apiUrl}/${id}/statut`, {statut});
   }
 
   addParticipant(id: number, participantId: number): Observable<Meeting> {
-    return this.http.post<Meeting>(`${this.apiUrl}/${id}/participants`, { participantId });
+    return this.http.post<Meeting>(`${this.apiUrl}/${id}/participants`, {participantId});
   }
 
   removeParticipant(id: number, participantId: number): Observable<Meeting> {
@@ -49,6 +50,6 @@ export class MeetingService {
   }
 
   updateCompteRendu(id: number, compteRendu: string): Observable<Meeting> {
-    return this.http.patch<Meeting>(`${this.apiUrl}/${id}/compte-rendu`, { compteRendu });
+    return this.http.patch<Meeting>(`${this.apiUrl}/${id}/compte-rendu`, {compteRendu});
   }
-} 
+}

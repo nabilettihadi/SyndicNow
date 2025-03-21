@@ -1,8 +1,8 @@
 package ma.Nabil.SyndicNow.repository;
 
 import ma.Nabil.SyndicNow.entity.Incident;
-import ma.Nabil.SyndicNow.entity.Incident.IncidentPriority;
-import ma.Nabil.SyndicNow.entity.Incident.IncidentStatus;
+import ma.Nabil.SyndicNow.enums.IncidentPriority;
+import ma.Nabil.SyndicNow.enums.IncidentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

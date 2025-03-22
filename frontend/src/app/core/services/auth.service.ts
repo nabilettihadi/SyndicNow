@@ -61,12 +61,6 @@ export class AuthService {
       roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
     },
     {
-      label: 'Messages',
-      route: '/messages',
-      icon: 'fas fa-envelope',
-      roles: ['ADMIN', 'SYNDIC', 'PROPRIETAIRE']
-    },
-    {
       label: 'Syndics',
       route: '/syndics',
       icon: 'fas fa-user-tie',

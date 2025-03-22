@@ -98,49 +98,6 @@
         </div>
       </div>
       
-      <!-- Derniers messages et notifications -->
-      <div class="bg-white rounded-xl shadow-md p-6 mb-8">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold text-gray-800">
-            Messages non lus 
-            <span *ngIf="getUnreadMessagesCount() > 0" class="ml-2 px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">
-              {{ getUnreadMessagesCount() }}
-            </span>
-          </h2>
-          <a routerLink="/proprietaire/mes-messages" class="text-blue-600 hover:text-blue-800 text-sm">
-            Tous les messages <i class="fas fa-arrow-right ml-1"></i>
-          </a>
-        </div>
-        
-        <div *ngIf="messages.length === 0" class="flex flex-col items-center justify-center p-6 text-gray-500">
-          <i class="fas fa-envelope-open text-4xl mb-3 text-gray-300"></i>
-          <p>Aucun message à afficher</p>
-        </div>
-        
-        <div *ngIf="messages.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Message dynamiques -->
-          <div *ngFor="let message of messages.slice(0, 3)" class="p-4 rounded-lg border border-gray-100 hover:shadow-md transition-all duration-200 relative overflow-hidden">
-            <div *ngIf="!message.read" class="absolute top-0 right-0 h-4 w-4 bg-blue-500 rounded-full transform translate-x-1 -translate-y-1"></div>
-            <div class="flex items-start">
-              <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                <i class="fas fa-user-tie text-blue-700"></i>
-              </div>
-              <div class="flex-1">
-                <div class="flex justify-between items-start">
-                  <h3 class="font-medium text-gray-900">{{ message.sender || 'Syndic' }}</h3>
-                  <span class="text-xs text-gray-500">{{ message.date | date:'dd/MM/yyyy' }}</span>
-                </div>
-                <div class="font-medium text-sm text-gray-800 mt-1">{{ message.subject }}</div>
-                <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ message.content }}</p>
-                <a routerLink="/proprietaire/mes-messages" class="text-blue-600 hover:text-blue-800 text-xs mt-2 inline-block">
-                  Lire <i class="fas fa-chevron-right ml-1 text-xs"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
       <!-- État des paiements et appartements -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <!-- Distribution des appartements -->

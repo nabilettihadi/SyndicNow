@@ -4,7 +4,6 @@ import { MesAppartementsComponent } from './mes-appartements/mes-appartements.co
 import { MesDocumentsComponent } from './mes-documents/mes-documents.component';
 import { MesPaiementsComponent } from './mes-paiements/mes-paiements.component';
 import { MesIncidentsComponent } from './mes-incidents/mes-incidents.component';
-import { MesMessagesComponent } from './mes-messages/mes-messages.component';
 
 export const PROPRIETAIRE_ROUTES: Routes = [
   {
@@ -26,10 +25,6 @@ export const PROPRIETAIRE_ROUTES: Routes = [
   {
     path: 'mes-incidents',
     component: MesIncidentsComponent
-  },
-  {
-    path: 'mes-messages',
-    component: MesMessagesComponent
   },
   // Rediriger toutes les autres routes vers le dashboard
   {

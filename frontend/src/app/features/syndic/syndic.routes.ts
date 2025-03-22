@@ -18,10 +18,6 @@ export const SYNDIC_ROUTES: Routes = [
     loadComponent: () => import('./paiements/list-paiements.component').then(m => m.ListPaiementsComponent)
   },
   {
-    path: 'messages',
-    loadComponent: () => import('./messages/syndic-messages.component').then(m => m.SyndicMessagesComponent)
-  },
-  {
     path: 'incidents',
     loadComponent: () => import('./incidents/list-incidents.component').then(m => m.ListIncidentsComponent)
   },

@@ -315,12 +315,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       icon: 'fas fa-file-alt',
       roles: ['SYNDIC']
     },
-    {
-      label: 'Messages',
-      route: '/syndic/messages',
-      icon: 'fas fa-envelope',
-      roles: ['SYNDIC']
-    },
     // Proprietaire navigation items
     {
       label: 'Tableau de bord',
@@ -350,12 +344,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       label: 'Mes Incidents',
       route: '/proprietaire/mes-incidents',
       icon: 'fas fa-exclamation-triangle',
-      roles: ['PROPRIETAIRE']
-    },
-    {
-      label: 'Mes Messages',
-      route: '/proprietaire/mes-messages',
-      icon: 'fas fa-envelope',
       roles: ['PROPRIETAIRE']
     },
   ];

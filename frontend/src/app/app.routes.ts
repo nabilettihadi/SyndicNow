@@ -1,6 +1,6 @@
 import {Routes} from '@angular/router';
-import {AuthGuard, DashboardGuard} from '@core/guards/auth.guard';
-import { authGuard } from './core/guards/auth.guard';
+import {authGuard, roleGuard} from './core/guards/auth.guard';
+import {UserRole} from './core/models/user.model';
 
 export const routes: Routes = [
   {
@@ -8,58 +8,31 @@ export const routes: Routes = [
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
   },
   {
-    path: 'dashboard',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/dashboard/dashboard-redirect.component').then(m => m.DashboardRedirectComponent)
-  },
-  {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
   {
-    path: 'syndic',
-    canActivate: [authGuard],
-    data: { roles: ['SYNDIC'] },
-    loadChildren: () => import('./features/syndic/syndic.routes').then(m => m.SYNDIC_ROUTES)
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
+    canActivate: [() => roleGuard([UserRole.ADMIN])]
   },
   {
-    path: 'admin',
-    canActivate: [authGuard],
-    data: { roles: ['ADMIN'] },
-    children: [
-      {
-        path: '',
-        loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent)
-      },
-      {
-        path: 'syndics',
-        loadComponent: () => import('./features/admin/syndics/syndics.component').then(m => m.SyndicsComponent),
-        loadChildren: () => import('./features/admin/syndics/syndics.routes').then(m => m.SYNDICS_ROUTES)
-      },
-      {
-        path: 'proprietaires',
-        loadComponent: () => import('./features/admin/proprietaires/proprietaires.component').then(m => m.ProprietairesComponent),
-        loadChildren: () => import('./features/admin/proprietaires/proprietaires.routes').then(m => m.PROPRIETAIRES_ROUTES)
-      },
-      {
-        path: 'immeubles',
-        loadComponent: () => import('./features/admin/immeubles/immeubles.component').then(m => m.ImmeublesComponent),
-        loadChildren: () => import('./features/admin/immeubles/immeubles.routes').then(m => m.IMMEUBLES_ROUTES)
-      },
-      {
-        path: 'rapports',
-        loadComponent: () => import('./features/admin/reports/reports.component').then(m => m.ReportsComponent)
-      }
-    ]
+    path: 'syndic',
+    loadChildren: () => import('./features/syndic/syndic.routes').then(m => m.SYNDIC_ROUTES),
+    canActivate: [() => roleGuard([UserRole.SYNDIC, UserRole.ADMIN])]
   },
   {
     path: 'proprietaire',
-    canActivate: [authGuard],
-    data: { roles: ['PROPRIETAIRE'] },
-    loadChildren: () => import('./features/proprietaire/proprietaire.routes').then(m => m.PROPRIETAIRE_ROUTES)
+    loadChildren: () => import('./features/proprietaire/proprietaire.routes').then(m => m.PROPRIETAIRE_ROUTES),
+    canActivate: [() => roleGuard([UserRole.PROPRIETAIRE])]
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard-redirect.component').then(m => m.DashboardRedirectComponent),
+    canActivate: [() => authGuard()]
   },
   {
     path: '**',
-    loadComponent: () => import('./shared/components/not-found/not-found.component').then(m => m.NotFoundComponent)
+    redirectTo: ''
   }
 ];

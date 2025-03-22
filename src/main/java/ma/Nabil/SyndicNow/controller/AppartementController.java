@@ -109,4 +109,14 @@ public class AppartementController {
         log.info("Successfully created apartment with ID: {} for proprietaire: {}", response.getId(), proprietaireId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping("/immeuble/{immeubleId}")
+    @Operation(summary = "Get apartments by building", description = "Retrieves a list of apartments in a specific building")
+    @ApiResponse(responseCode = "200", description = "List of apartments retrieved successfully")
+    @PreAuthorize("hasAnyRole('SYNDIC', 'ADMIN', 'PROPRIETAIRE')")
+    public ResponseEntity<List<AppartementResponse>> getAppartementsByImmeuble(@PathVariable Long immeubleId) {
+        log.debug("Fetching apartments for building with ID: {}", immeubleId);
+        List<AppartementResponse> response = appartementService.getAppartementsByImmeuble(immeubleId);
+        return ResponseEntity.ok(response);
+    }
 }

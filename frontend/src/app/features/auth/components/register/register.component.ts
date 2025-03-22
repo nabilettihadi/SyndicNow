@@ -22,6 +22,16 @@ export class RegisterComponent {
     {value: 'SYNDIC', label: 'Syndic'},
     {value: 'PROPRIETAIRE', label: 'Propriétaire'}
   ];
+  
+  preferenceCommunications = [
+    {value: 'EMAIL', label: 'Email'},
+    {value: 'TELEPHONE', label: 'Téléphone'}
+  ];
+  
+  typeProprietaires = [
+    {value: 'PERSONNE_PHYSIQUE', label: 'Personne physique'},
+    {value: 'PERSONNE_MORALE', label: 'Personne morale'}
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -42,31 +52,46 @@ export class RegisterComponent {
       siret: [''],
       numeroLicence: [''],
       societe: [''],
-      dateDebutActivite: ['']
+      dateDebutActivite: [''],
+      // Champs spécifiques au propriétaire
+      preferencesCommunication: ['EMAIL'],
+      typeProprietaire: ['PERSONNE_PHYSIQUE']
     }, {validator: this.passwordMatchValidator});
 
     // Écouter les changements du rôle pour mettre à jour les validations
     this.registerForm.get('role')?.valueChanges.subscribe(role => {
-      this.updateSyndicValidators(role);
+      this.updateFormValidators(role);
     });
   }
 
-  private updateSyndicValidators(role: string) {
+  private updateFormValidators(role: string) {
     const syndicControls = ['siret', 'numeroLicence', 'societe', 'dateDebutActivite'];
+    const proprietaireControls = ['preferencesCommunication', 'typeProprietaire'];
 
     if (role === 'SYNDIC') {
       this.registerForm.get('siret')?.setValidators([Validators.required, Validators.pattern(/^\d{14}$/)]);
       this.registerForm.get('numeroLicence')?.setValidators([Validators.required]);
       this.registerForm.get('societe')?.setValidators([Validators.required]);
       this.registerForm.get('dateDebutActivite')?.setValidators([Validators.required]);
-    } else {
+      
+      // Réinitialiser les contrôles propriétaire
+      proprietaireControls.forEach(control => {
+        this.registerForm.get(control)?.clearValidators();
+        this.registerForm.get(control)?.setValue('');
+      });
+    } else if (role === 'PROPRIETAIRE') {
+      // Réinitialiser les contrôles syndic
       syndicControls.forEach(control => {
         this.registerForm.get(control)?.clearValidators();
         this.registerForm.get(control)?.setValue('');
       });
+      
+      this.registerForm.get('preferencesCommunication')?.setValue('EMAIL');
+      this.registerForm.get('typeProprietaire')?.setValue('PERSONNE_PHYSIQUE');
     }
 
-    syndicControls.forEach(control => {
+    // Mettre à jour la validité de tous les contrôles
+    [...syndicControls, ...proprietaireControls].forEach(control => {
       this.registerForm.get(control)?.updateValueAndValidity();
     });
   }
@@ -95,6 +120,12 @@ export class RegisterComponent {
           numeroLicence: formValue.numeroLicence,
           societe: formValue.societe,
           dateDebutActivite: formValue.dateDebutActivite
+        });
+      } else if (formValue.role === 'PROPRIETAIRE') {
+        // Ajouter les champs du propriétaire
+        Object.assign(userData, {
+          preferencesCommunication: formValue.preferencesCommunication,
+          typeProprietaire: formValue.typeProprietaire
         });
       }
 

@@ -23,9 +23,6 @@ public class Admin extends User {
     @Column(name = "numero_agrement")
     private String numeroAgrement;
     
-    @Column(name = "contact_urgence")
-    private String contactUrgence;
-    
     @PrePersist
     public void onCreateAdmin() {
         if (getRole() == null) {

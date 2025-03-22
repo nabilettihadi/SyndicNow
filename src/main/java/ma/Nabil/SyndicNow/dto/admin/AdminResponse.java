@@ -20,7 +20,6 @@ public class AdminResponse {
     private String adresse;
     private String cin;
     private String numeroAgrement;
-    private String contactUrgence;
     private LocalDateTime dateNaissance;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

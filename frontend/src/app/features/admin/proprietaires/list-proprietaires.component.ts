@@ -304,19 +304,22 @@ export class ListProprietairesComponent implements OnInit {
 
   loadProprietaires(): void {
     this.isLoading = true;
-    this.proprietaireService.getAllProprietaires().subscribe({
-      next: (data) => {
-        this.proprietaires = data;
-        this.calculateStats();
-        this.applyFilters();
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement des propriétaires:', error);
-        this.error = 'Une erreur est survenue lors du chargement des propriétaires';
-        this.isLoading = false;
-      }
-    });
+    this.error = null;
+
+    this.proprietaireService.getAllProprietaires()
+      .subscribe({
+        next: (data) => {
+          this.proprietaires = data;
+          this.calculateStats();
+          this.applyFilters();
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors du chargement des propriétaires', error);
+          this.error = 'Impossible de charger la liste des propriétaires. Veuillez réessayer plus tard.';
+          this.isLoading = false;
+        }
+      });
   }
 
   calculateStats(): void {

@@ -77,6 +77,14 @@ public class AppartementServiceImpl implements AppartementService {
     }
 
     @Override
+    public List<AppartementResponse> getAppartementsByImmeuble(Long immeubleId) {
+        List<Appartement> appartements = appartementRepository.findByImmeubleId(immeubleId);
+        return appartements.stream()
+                .map(appartementMapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public AppartementResponse createAppartementForProprietaire(Long proprietaireId, AppartementRequest dto) {
         Proprietaire proprietaire = proprietaireRepository.findById(proprietaireId)
                 .orElseThrow(() -> new ResourceNotFoundException("Proprietaire not found"));

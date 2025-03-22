@@ -45,7 +45,7 @@ export class ListSyndicsComponent implements OnInit {
     this.isLoading = true;
     this.syndicService.getAllSyndics().subscribe({
       next: (data) => {
-        this.syndics = Array.isArray(data) ? data : [];
+        this.syndics = Array.isArray(data) ? this.transformSyndicsData(data) : [];
         this.calculateStats();
         this.applyFilters();
         this.isLoading = false;
@@ -58,13 +58,58 @@ export class ListSyndicsComponent implements OnInit {
     });
   }
 
+  transformSyndicsData(syndics: Syndic[]): Syndic[] {
+    return syndics.map(syndic => {
+      if (syndic.immeubles && !syndic.nombreImmeubles) {
+        syndic.nombreImmeubles = syndic.immeubles.length;
+      } else if (!syndic.immeubles) {
+        syndic.immeubles = [];
+        if (!syndic.nombreImmeubles) {
+          syndic.nombreImmeubles = 0;
+        }
+      }
+      return syndic;
+    });
+  }
+
   calculateStats(): void {
-    this.stats = {
-      totalSyndics: this.syndics.length,
-      activeSyndics: this.syndics.filter(s => s.status === 'ACTIF').length,
-      pendingSyndics: this.syndics.filter(s => s.status === 'EN_ATTENTE').length,
-      totalBuildings: this.syndics.reduce((acc, s) => acc + (s.immeubles?.length || 0), 0)
-    };
+    if (!this.syndics || this.syndics.length === 0) {
+      this.stats = {
+        totalSyndics: 0,
+        activeSyndics: 0,
+        pendingSyndics: 0,
+        totalBuildings: 0
+      };
+      return;
+    }
+
+    this.stats.totalSyndics = this.syndics.length;
+    
+    // Calculer le nombre de syndics actifs
+    this.stats.activeSyndics = this.syndics.filter(
+      syndic => syndic.status && syndic.status.toUpperCase() === 'ACTIF'
+    ).length;
+    
+    // Calculer le nombre de syndics en attente
+    this.stats.pendingSyndics = this.syndics.filter(
+      syndic => syndic.status && syndic.status.toUpperCase() === 'EN_ATTENTE'
+    ).length;
+    
+    // Calculer le nombre total d'immeubles gérés
+    this.stats.totalBuildings = this.syndics.reduce(
+      (total, syndic) => {
+        // Vérifier si nombreImmeubles existe
+        if (syndic.nombreImmeubles !== undefined) {
+          return total + syndic.nombreImmeubles;
+        }
+        // Sinon, utiliser la longueur du tableau immeubles si disponible 
+        else if (syndic.immeubles && Array.isArray(syndic.immeubles)) {
+          return total + syndic.immeubles.length;
+        }
+        return total;
+      }, 
+      0
+    );
   }
 
   applyFilters(): void {

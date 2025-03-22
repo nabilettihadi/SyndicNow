@@ -4,7 +4,8 @@ export interface Immeuble {
   adresse: string;
   codePostal: string;
   ville: string;
-  dateConstruction: Date;
+  dateConstruction?: Date;
+  anneeConstruction?: number;
   nombreEtages: number;
   nombreAppartements: number;
   appartmentsOccupes?: number;
@@ -14,6 +15,9 @@ export interface Immeuble {
     id: number;
     nom: string;
   };
+  description?: string;
+  dateCreation?: Date;
+  dateModification?: Date;
 }
 
 export interface ImmeubleStats {

@@ -5,7 +5,7 @@ export interface Incident {
   priorite: 'HAUTE' | 'MOYENNE' | 'BASSE';
   statut: 'NOUVEAU' | 'EN_COURS' | 'RESOLU';
   dateCreation: Date;
-  date?: Date; // Alias pour la compatibilité avec les templates
+  date?: Date;
   rapporteur: string;
   immeubleId: number;
   immeuble?: {
@@ -23,8 +23,12 @@ export interface IncidentWithStatus extends Incident {
 export function addStatusAlias(incident: Incident): IncidentWithStatus {
   const incidentWithStatus = incident as IncidentWithStatus;
   Object.defineProperty(incidentWithStatus, 'status', {
-    get: function() { return this.statut; },
-    set: function(value) { this.statut = value; },
+    get: function () {
+      return this.statut;
+    },
+    set: function (value) {
+      this.statut = value;
+    },
     enumerable: true
   });
   // Ajouter également la propriété date si elle n'existe pas
@@ -45,4 +49,4 @@ export interface IncidentStats {
   parImmeuble: {
     [key: string]: number;
   };
-} 
+}

@@ -35,6 +35,12 @@ public class AdminInitializer implements CommandLineRunner {
 
     @Value("${admin.cin:ADMIN123}")
     private String adminCin;
+    
+    @Value("${admin.adresse:Adresse administrative}")
+    private String adminAdresse;
+    
+    @Value("${admin.numeroAgrement:AGR-12345}")
+    private String adminNumeroAgrement;
 
     @Override
     public void run(String... args) {
@@ -43,7 +49,16 @@ public class AdminInitializer implements CommandLineRunner {
             log.info("Aucun administrateur trouvé, création d'un compte administrateur par défaut");
 
             // Créer un utilisateur administrateur
-            Admin admin = Admin.builder().nom(adminNom).prenom(adminPrenom).email(adminEmail).password(passwordEncoder.encode(adminPassword)).telephone(adminTelephone).cin(adminCin).build();
+            Admin admin = Admin.builder()
+                    .nom(adminNom)
+                    .prenom(adminPrenom)
+                    .email(adminEmail)
+                    .password(passwordEncoder.encode(adminPassword))
+                    .telephone(adminTelephone)
+                    .cin(adminCin)
+                    .adresse(adminAdresse)
+                    .numeroAgrement(adminNumeroAgrement)
+                    .build();
 
             userRepository.save(admin);
             log.info("Compte administrateur créé avec succès: {}", adminEmail);

@@ -8,7 +8,7 @@ import {Document} from '@core/models/document.model';
   providedIn: 'root'
 })
 export class DocumentService {
-  private apiUrl = `${environment.apiUrl}/api/v1/documents`;
+  private apiUrl = `${environment.apiUrl}/documents`;
 
   constructor(private http: HttpClient) {
   }

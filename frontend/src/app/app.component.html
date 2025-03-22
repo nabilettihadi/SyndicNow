@@ -117,7 +117,6 @@
     border-radius: 2.75rem;
     border: 0;
     transition: background 0.3s ease;
-    font-family: var(--inter-font);
     font-size: 0.875rem;
     font-style: normal;
     font-weight: 500;
@@ -180,7 +179,7 @@
 </style>
 
 <div class="min-h-screen bg-gray-100">
-  <app-navbar></app-navbar>
+  <app-navbar *ngIf="showNavbar"></app-navbar>
   <router-outlet></router-outlet>
 </div>
 

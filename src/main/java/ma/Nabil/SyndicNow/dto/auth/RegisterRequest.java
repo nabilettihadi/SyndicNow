@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.Nabil.SyndicNow.enums.PreferenceCommunication;
 import ma.Nabil.SyndicNow.enums.Role;
+import ma.Nabil.SyndicNow.enums.TypeProprietaire;
 
 import java.time.LocalDateTime;
 
@@ -53,4 +55,9 @@ public class RegisterRequest {
     private String societe;
 
     private LocalDateTime dateDebutActivite;
+    
+    // Champs spécifiques au propriétaire
+    private PreferenceCommunication preferencesCommunication;
+    
+    private TypeProprietaire typeProprietaire;
 } 

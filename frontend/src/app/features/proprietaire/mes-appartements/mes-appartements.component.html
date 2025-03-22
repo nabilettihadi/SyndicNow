@@ -3,144 +3,223 @@
 
   <main class="container mx-auto px-4 py-8 flex-grow">
     <div class="max-w-7xl mx-auto">
-      <!-- En-tête avec statistiques -->
-      <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <div>
-            <h1 class="text-3xl font-bold text-gray-900">Mes Appartements</h1>
-            <p class="mt-2 text-gray-600">Gérez vos propriétés et suivez leurs états</p>
+      <div class="flex flex-col md:flex-row items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Mes Appartements</h1>
+        
+        <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div class="relative flex-grow max-w-md">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+              </svg>
+            </div>
+            <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()" 
+              class="block w-full p-2.5 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white" 
+              placeholder="Rechercher un appartement..." />
           </div>
-          <div class="mt-4 md:mt-0">
-            <button class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200">
-              <i class="fas fa-plus mr-2"></i>Ajouter un appartement
+          
+          <button (click)="toggleAddForm()" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300/25 font-medium rounded-lg text-sm px-4 py-2.5 transition-all duration-200 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+            <span *ngIf="!showAddForm">Créer un appartement</span>
+            <span *ngIf="showAddForm">Annuler</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Statistiques -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <p class="text-sm text-gray-500">Total Appartements</p>
+          <p class="text-2xl font-bold text-gray-800">{{ totalAppartements }}</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <p class="text-sm text-gray-500">Occupés</p>
+          <p class="text-2xl font-bold text-green-600">{{ appartementsOccupes }}</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <p class="text-sm text-gray-500">Libres</p>
+          <p class="text-2xl font-bold text-blue-600">{{ appartementsLibres }}</p>
+        </div>
+      </div>
+
+      <!-- Formulaire d'ajout/modification -->
+      <div *ngIf="showAddForm" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+        <h2 class="text-xl font-semibold mb-4">{{ editingAppartementId ? 'Modifier' : 'Ajouter' }} un appartement</h2>
+        
+        <form [formGroup]="appartementForm" (ngSubmit)="saveAppartement()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="form-group">
+            <label for="numero" class="block mb-2 text-sm font-medium text-gray-700">Numéro d'appartement</label>
+            <input type="text" id="numero" formControlName="numero" 
+                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
+            <div *ngIf="appartementForm.get('numero')?.invalid && appartementForm.get('numero')?.touched" class="text-sm text-red-600 mt-1">
+              Numéro d'appartement requis (max 10 caractères)
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="etage" class="block mb-2 text-sm font-medium text-gray-700">Étage</label>
+            <input type="number" id="etage" formControlName="etage"
+                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
+            <div *ngIf="appartementForm.get('etage')?.invalid && appartementForm.get('etage')?.touched" class="text-sm text-red-600 mt-1">
+              Étage requis (entre -5 et 100)
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="surface" class="block mb-2 text-sm font-medium text-gray-700">Surface (m²)</label>
+            <input type="number" id="surface" formControlName="surface"
+                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
+            <div *ngIf="appartementForm.get('surface')?.invalid && appartementForm.get('surface')?.touched" class="text-sm text-red-600 mt-1">
+              Surface requise (entre 1 et 1000 m²)
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="nombrePieces" class="block mb-2 text-sm font-medium text-gray-700">Nombre de pièces</label>
+            <input type="number" id="nombrePieces" formControlName="nombrePieces"
+                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
+            <div *ngIf="appartementForm.get('nombrePieces')?.invalid && appartementForm.get('nombrePieces')?.touched" class="text-sm text-red-600 mt-1">
+              Nombre de pièces requis (entre 1 et 20)
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="loyer" class="block mb-2 text-sm font-medium text-gray-700">Loyer (€/mois)</label>
+            <input type="number" id="loyer" formControlName="loyer"
+                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
+          </div>
+          
+          <div class="form-group">
+            <label for="charges" class="block mb-2 text-sm font-medium text-gray-700">Charges (€/mois)</label>
+            <input type="number" id="charges" formControlName="charges"
+                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
+          </div>
+          
+          <div class="form-group">
+            <label for="status" class="block mb-2 text-sm font-medium text-gray-700">Statut</label>
+            <select id="status" formControlName="status"
+                    class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+              <option value="LIBRE">Libre</option>
+              <option value="OCCUPE">Occupé</option>
+              <option value="EN_TRAVAUX">En travaux</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="immeubleId" class="block mb-2 text-sm font-medium text-gray-700">Immeuble</label>
+            <select id="immeubleId" formControlName="immeubleId"
+                    class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+              <option [ngValue]="null" disabled>Sélectionnez un immeuble</option>
+              <!-- Ajoutez ici les options pour les immeubles disponibles -->
+            </select>
+            <div *ngIf="appartementForm.get('immeubleId')?.invalid && appartementForm.get('immeubleId')?.touched" class="text-sm text-red-600 mt-1">
+              Immeuble requis
+            </div>
+          </div>
+          
+          <div class="form-group md:col-span-2">
+            <label for="description" class="block mb-2 text-sm font-medium text-gray-700">Description</label>
+            <textarea id="description" formControlName="description" rows="3"
+                      class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"></textarea>
+          </div>
+          
+          <div class="md:col-span-2 flex justify-end gap-3 mt-4">
+            <button type="button" (click)="cancelEdit()" 
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+              Annuler
+            </button>
+            <button type="submit" [disabled]="appartementForm.invalid || loading"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+              {{ editingAppartementId ? 'Mettre à jour' : 'Ajouter' }}
             </button>
           </div>
-        </div>
-
-        <!-- Statistiques -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-indigo-50 rounded-lg p-4">
-            <div class="flex items-center">
-              <div class="p-3 bg-indigo-100 rounded-full">
-                <i class="fas fa-building text-indigo-600 text-xl"></i>
-              </div>
-              <div class="ml-4">
-                <p class="text-sm text-indigo-600">Total Appartements</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ totalAppartements }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="bg-green-50 rounded-lg p-4">
-            <div class="flex items-center">
-              <div class="p-3 bg-green-100 rounded-full">
-                <i class="fas fa-check-circle text-green-600 text-xl"></i>
-              </div>
-              <div class="ml-4">
-                <p class="text-sm text-green-600">Occupés</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ appartementsOccupes }}</p>
-              </div>
-            </div>
-          </div>
-          <div class="bg-blue-50 rounded-lg p-4">
-            <div class="flex items-center">
-              <div class="p-3 bg-blue-100 rounded-full">
-                <i class="fas fa-door-open text-blue-600 text-xl"></i>
-              </div>
-              <div class="ml-4">
-                <p class="text-sm text-blue-600">Disponibles</p>
-                <p class="text-2xl font-semibold text-gray-900">{{ appartementsLibres }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
 
       <!-- Message d'erreur -->
-      <div *ngIf="error"
-           class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg shadow-sm"
-           role="alert">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
-          </div>
-          <div class="ml-3">
-            <p class="text-sm text-red-700">{{ error }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Loader -->
-      <div *ngIf="loading" class="flex justify-center items-center py-12">
-        <div class="flex flex-col items-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600"></div>
-          <p class="mt-4 text-gray-600">Chargement de vos appartements...</p>
-        </div>
+      <div *ngIf="error" class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+        {{ error }}
+        <button class="float-right" (click)="error = null">&times;</button>
       </div>
 
       <!-- Liste des appartements -->
-      <div *ngIf="!loading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Message si aucun appartement -->
-        <div *ngIf="appartements.length === 0"
-             class="col-span-full bg-white p-8 rounded-xl shadow-sm text-center">
-          <div class="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto">
-            <i class="fas fa-building text-gray-400 text-2xl"></i>
-          </div>
-          <h3 class="mt-4 text-lg font-medium text-gray-900">Aucun appartement</h3>
-          <p class="mt-2 text-gray-500">Vous n'avez pas encore d'appartements enregistrés.</p>
-          <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200">
-            Ajouter un appartement
-          </button>
-        </div>
+      <div *ngIf="loading" class="flex justify-center items-center py-8">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
 
-        <!-- Carte d'appartement -->
-        <div *ngFor="let appartement of appartements"
-             class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden border border-gray-100">
-          <div class="relative h-48">
-            <img src="assets/images/placeholder-apartment.jpg"
-                 [alt]="'Appartement ' + appartement.numero"
-                 class="w-full h-full object-cover">
-            <div class="absolute top-4 right-4">
-              <span [class]="'px-3 py-1 text-sm font-medium rounded-full ' + getStatusClass(appartement.status || '')">
-                {{ appartement.status || 'NON_DEFINI' }}
-              </span>
-            </div>
-          </div>
+      <div *ngIf="!loading && filteredAppartements.length === 0" class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
+        <p class="text-gray-500">Aucun appartement trouvé.</p>
+      </div>
 
-          <div class="p-6">
-            <div class="flex justify-between items-start mb-4">
-              <h3 class="text-xl font-semibold text-gray-900">
-                Appartement {{ appartement.numero }}
-              </h3>
-              <span class="text-sm text-gray-500">
-                {{ formatDate(appartement.createdAt) }}
+      <div *ngIf="!loading && filteredAppartements.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div *ngFor="let appartement of filteredAppartements" class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div class="p-5">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-800">{{ appartement.numero }}</h3>
+                <p class="text-sm text-gray-600">{{ appartement.immeubleName }}</p>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getStatusClass(appartement.status || 'LIBRE')">
+                {{ appartement.status === 'OCCUPE' ? 'Occupé' : appartement.status === 'LIBRE' ? 'Libre' : 'En travaux' }}
               </span>
             </div>
             
-            <div class="space-y-3 text-gray-600">
-              <div class="flex items-center">
-                <i class="fas fa-layer-group text-gray-400 w-6"></i>
-                <span>{{ getEtageLabel(appartement.etage) }}</span>
+            <div class="grid grid-cols-2 gap-2 mb-4">
+              <div>
+                <p class="text-xs text-gray-500">Étage</p>
+                <p class="text-sm font-medium">{{ getEtageLabel(appartement.etage) }}</p>
               </div>
-              <div class="flex items-center">
-                <i class="fas fa-ruler-combined text-gray-400 w-6"></i>
-                <span>{{ appartement.superficie }} m²</span>
+              <div>
+                <p class="text-xs text-gray-500">Surface</p>
+                <p class="text-sm font-medium">{{ appartement.surface }} m²</p>
               </div>
-              <div class="flex items-center">
-                <i class="fas fa-building text-gray-400 w-6"></i>
-                <span>{{ appartement.immeubleName }}</span>
+              <div>
+                <p class="text-xs text-gray-500">Pièces</p>
+                <p class="text-sm font-medium">{{ appartement.nombrePieces }}</p>
+              </div>
+              <div>
+                <p class="text-xs text-gray-500">Loyer</p>
+                <p class="text-sm font-medium">{{ appartement.loyer }} €/mois</p>
               </div>
             </div>
+            
+            <p *ngIf="appartement.description" class="text-sm text-gray-600 mb-4 line-clamp-2">{{ appartement.description }}</p>
+            
+            <div class="flex justify-between items-center">
+              <p class="text-xs text-gray-400">{{ appartement.createdAt ? 'Créé le ' + formatDate(appartement.createdAt) : 'Date inconnue' }}</p>
+              <div class="flex gap-2">
+                <button (click)="editAppartement(appartement)" 
+                        class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                  </svg>
+                </button>
+                <button (click)="confirmDelete(appartement)" 
+                        class="p-1.5 text-red-600 hover:bg-red-50 rounded-full transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="mt-6 flex gap-3">
-              <button [routerLink]="['/proprietaire/appartement', appartement.id]"
-                      class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors duration-200 flex items-center justify-center">
-                <i class="fas fa-eye mr-2"></i>Détails
-              </button>
-              <button [routerLink]="['/proprietaire/documents', appartement.id]"
-                      class="flex-1 bg-white text-indigo-600 px-4 py-2 rounded-lg border border-indigo-600 hover:bg-indigo-50 transition-colors duration-200 flex items-center justify-center">
-                <i class="fas fa-file-alt mr-2"></i>Docs
-              </button>
-            </div>
+      <!-- Modal de confirmation de suppression -->
+      <div *ngIf="showDeleteConfirmation" class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full">
+          <h3 class="text-lg font-semibold mb-4">Confirmer la suppression</h3>
+          <p class="mb-6">Êtes-vous sûr de vouloir supprimer l'appartement <span class="font-medium">{{ selectedAppartement?.numero }}</span> ?</p>
+          <div class="flex justify-end gap-3">
+            <button (click)="cancelDelete()" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+              Annuler
+            </button>
+            <button (click)="deleteAppartement()" class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700">
+              Supprimer
+            </button>
           </div>
         </div>
       </div>

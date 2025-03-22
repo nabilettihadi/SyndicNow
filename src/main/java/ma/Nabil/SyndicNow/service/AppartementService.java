@@ -20,5 +20,12 @@ public interface AppartementService {
 
     List<AppartementResponse> getAppartementsByProprietaire(Long proprietaireId);
 
+    /**
+     * Récupère tous les appartements d'un immeuble spécifique
+     * @param immeubleId l'identifiant de l'immeuble
+     * @return liste des appartements associés à l'immeuble
+     */
+    List<AppartementResponse> getAppartementsByImmeuble(Long immeubleId);
+
     AppartementResponse createAppartementForProprietaire(Long proprietaireId, AppartementRequest dto);
 }

@@ -34,7 +34,5 @@ public class AdminRequest {
     
     private String numeroAgrement;
     
-    private String contactUrgence;
-    
     private LocalDateTime dateNaissance;
 } 

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from '@env/environment';
 import {Paiement, PaiementStatistics} from '../models/paiement.model';
@@ -20,29 +20,49 @@ export interface StripePaymentResponse {
   providedIn: 'root'
 })
 export class PaiementService {
-  private apiUrl = `${environment.apiUrl}/api/v1/paiements`;
+  private apiUrl = `${environment.apiUrl}/paiements`;
 
   constructor(private http: HttpClient) {
   }
 
-  getAllPaiements(): Observable<Paiement[]> {
-    return this.http.get<Paiement[]>(this.apiUrl);
+  getAllPaiements(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
   }
 
-  getPaiementById(id: number): Observable<Paiement> {
-    return this.http.get<Paiement>(`${this.apiUrl}/${id}`);
+  getPaiementById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  createPaiement(paiement: Partial<Paiement>): Observable<Paiement> {
-    return this.http.post<Paiement>(this.apiUrl, paiement);
+  createPaiement(paiement: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, paiement);
   }
 
-  updatePaiement(id: number, paiement: Partial<Paiement>): Observable<Paiement> {
-    return this.http.put<Paiement>(`${this.apiUrl}/${id}`, paiement);
+  updatePaiement(id: number, paiement: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, paiement);
   }
 
   deletePaiement(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  getPaiementsByImmeuble(immeubleId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/immeuble/${immeubleId}`);
+  }
+
+  getPaiementsByAppartement(appartementId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/appartement/${appartementId}`);
+  }
+
+  getPaiementsByStatus(status: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/status/${status}`);
+  }
+
+  getPaiementsByPeriod(startDate: string, endDate: string): Observable<any[]> {
+    let params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+    
+    return this.http.get<any[]>(`${this.apiUrl}/period`, { params });
   }
 
   getPaiementsByProprietaire(proprietaireId: number): Observable<Paiement[]> {
@@ -51,10 +71,6 @@ export class PaiementService {
 
   getPaiementsBySyndic(syndicId: number): Observable<Paiement[]> {
     return this.http.get<Paiement[]>(`${this.apiUrl}/syndic/${syndicId}`);
-  }
-
-  getPaiementsByAppartement(appartementId: number): Observable<Paiement[]> {
-    return this.http.get<Paiement[]>(`${this.apiUrl}/appartement/${appartementId}`);
   }
 
   getPaiementStatistics(): Observable<PaiementStatistics> {
@@ -79,10 +95,6 @@ export class PaiementService {
 
   verifyPaymentStatus(sessionId: string): Observable<{ status: string, paiementId: number }> {
     return this.http.get<{ status: string, paiementId: number }>(`${this.apiUrl}/verify-payment/${sessionId}`);
-  }
-
-  getAllPaiementsByStatus(status: string): Observable<Paiement[]> {
-    return this.http.get<Paiement[]>(`${this.apiUrl}/status/${status}`);
   }
 
   getPaymentStatistics(): Observable<any> {

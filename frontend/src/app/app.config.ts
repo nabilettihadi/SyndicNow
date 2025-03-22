@@ -12,12 +12,18 @@ import {AuthEffects} from '@core/authentication/store/effects/auth.effects';
 import {environment} from '@env/environment';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ToastrModule} from 'ngx-toastr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     importProvidersFrom(
       BrowserModule,
-      BrowserAnimationsModule
+      BrowserAnimationsModule,
+      ToastrModule.forRoot({
+        timeOut: 3000,
+        positionClass: 'toast-top-right',
+        preventDuplicates: true,
+      })
     ),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),

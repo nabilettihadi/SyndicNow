@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ReportService, ReportStats, ReportData } from '@core/services/report.service';
+import { catchError, finalize, of } from 'rxjs';
 
 @Component({
   selector: 'app-reports',
@@ -16,7 +18,7 @@ export class ReportsComponent implements OnInit {
   selectedReportType: string = 'general';
 
   // Données statistiques
-  stats = {
+  stats: ReportStats = {
     totalUsers: 0,
     totalPayments: 0,
     conversionRate: 0,
@@ -25,8 +27,10 @@ export class ReportsComponent implements OnInit {
 
   // Données détaillées pour le tableau
   detailedData: any[] = [];
+  isLoading: boolean = false;
+  error: string | null = null;
 
-  constructor() {}
+  constructor(private reportService: ReportService) {}
 
   ngOnInit(): void {
     // Initialiser les dates
@@ -50,23 +54,36 @@ export class ReportsComponent implements OnInit {
   }
 
   loadReportData(): void {
-    // Simuler le chargement des données
-    // Dans une application réelle, vous appelleriez un service
-    setTimeout(() => {
-      this.stats = {
-        totalUsers: 2548,
-        totalPayments: 245690,
-        conversionRate: 68.5,
-        averageSatisfaction: 4.2
-      };
-
-      this.detailedData = [
-        { date: new Date(2025, 2, 1), users: 150, payments: 12500, conversionRate: 65.3 },
-        { date: new Date(2025, 2, 8), users: 180, payments: 18700, conversionRate: 67.8 },
-        { date: new Date(2025, 2, 15), users: 210, payments: 22400, conversionRate: 71.2 },
-        { date: new Date(2025, 2, 21), users: 225, payments: 26800, conversionRate: 72.5 }
-      ];
-    }, 500);
+    this.isLoading = true;
+    this.error = null;
+    
+    this.reportService.getReportData(
+      this.startDate,
+      this.endDate,
+      this.selectedReportType
+    ).pipe(
+      catchError(error => {
+        console.error('Erreur lors du chargement des rapports', error);
+        this.error = 'Impossible de charger les données des rapports. Veuillez réessayer plus tard.';
+        return of({ 
+          stats: {
+            totalUsers: 0,
+            totalPayments: 0,
+            conversionRate: 0,
+            averageSatisfaction: 0
+          },
+          detailedData: []
+        } as ReportData);
+      }),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe((data: ReportData) => {
+      if (data.stats) {
+        this.stats = data.stats;
+        this.detailedData = data.detailedData;
+      }
+    });
   }
 
   formatDate(date: Date): string {

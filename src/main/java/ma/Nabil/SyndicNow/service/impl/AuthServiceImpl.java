@@ -91,8 +91,18 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
         User user;
         if (request.getRole() == Role.PROPRIETAIRE) {
-            user = Proprietaire.builder().nom(request.getNom()).prenom(request.getPrenom()).email(request.getEmail()).password(passwordEncoder.encode(request.getPassword())).telephone(request.getTelephone()).adresse(request.getAdresse()).cin(request.getCin()).build();
-            user = proprietaireRepository.save((Proprietaire) user);
+            Proprietaire proprietaire = Proprietaire.builder()
+                    .nom(request.getNom())
+                    .prenom(request.getPrenom())
+                    .email(request.getEmail())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .telephone(request.getTelephone())
+                    .adresse(request.getAdresse())
+                    .cin(request.getCin())
+                    .preferencesCommunication(request.getPreferencesCommunication())
+                    .typeProprietaire(request.getTypeProprietaire())
+                    .build();
+            user = proprietaireRepository.save(proprietaire);
         } else if (request.getRole() == Role.SYNDIC) {
             // Vérifier que les champs obligatoires du syndic sont présents
             if (request.getSiret() == null || request.getNumeroLicence() == null || request.getSociete() == null || request.getDateDebutActivite() == null) {

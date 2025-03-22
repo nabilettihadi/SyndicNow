@@ -1,7 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Router} from '@angular/router';
-import {catchError, exhaustMap, map, of, tap} from 'rxjs';
+import {catchError, exhaustMap, from, map, of, switchMap} from 'rxjs';
 import {AuthService} from '@core/services/auth.service';
 import * as AuthActions from '../actions/auth.actions';
 
@@ -31,8 +31,10 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.loginSuccess),
-        tap(() => {
-          this.router.navigate(['/dashboard']);
+        switchMap(() => {
+          return from(this.router.navigate(['/dashboard'])).pipe(
+            map(() => void 0)
+          );
         })
       ),
     {dispatch: false}
@@ -66,8 +68,10 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.registerSuccess),
-        tap(() => {
-          this.router.navigate(['/dashboard']);
+        switchMap(() => {
+          return from(this.router.navigate(['/dashboard'])).pipe(
+            map(() => void 0)
+          );
         })
       ),
     {dispatch: false}
@@ -89,8 +93,10 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.logoutSuccess),
-        tap(() => {
-          this.router.navigate(['/auth/login']);
+        switchMap(() => {
+          return from(this.router.navigate(['/auth/login'])).pipe(
+            map(() => void 0)
+          );
         })
       ),
     {dispatch: false}

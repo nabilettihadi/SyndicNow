@@ -1,21 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
-import { FormsModule } from '@angular/forms';
-import { catchError, forkJoin, map, of } from 'rxjs';
-import { UserService } from '@core/services/user.service';
-import { SyndicService } from '@core/services/syndic.service';
-import { ImmeubleService } from '@core/services/immeuble.service';
-import { PaiementService } from '@core/services/paiement.service';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {FormsModule} from '@angular/forms';
+import {catchError, forkJoin, of} from 'rxjs';
+import {ActivityItem, UserService} from '@core/services/user.service';
+import {SyndicService} from '@core/services/syndic.service';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {PaiementService} from '@core/services/paiement.service';
 
 interface DashboardStats {
   usersCount: number;
   syndicsCount: number;
   immeublesCount: number;
   revenueTotal: number;
-  recentActivity: any[];
+  recentActivity: ActivityItem[];
 }
 
 @Component({
@@ -49,7 +49,7 @@ interface DashboardStats {
                 Une erreur est survenue
               </h3>
               <div class="mt-2 text-sm text-red-700">
-                <p>{{error}}</p>
+                <p>{{ error }}</p>
               </div>
             </div>
           </div>
@@ -73,7 +73,7 @@ interface DashboardStats {
                     </dt>
                     <dd class="flex items-baseline">
                       <div class="text-2xl font-semibold text-gray-900">
-                        {{stats.usersCount}}
+                        {{ stats.usersCount }}
                       </div>
                     </dd>
                   </dl>
@@ -105,7 +105,7 @@ interface DashboardStats {
                     </dt>
                     <dd class="flex items-baseline">
                       <div class="text-2xl font-semibold text-gray-900">
-                        {{stats.syndicsCount}}
+                        {{ stats.syndicsCount }}
                       </div>
                     </dd>
                   </dl>
@@ -137,7 +137,7 @@ interface DashboardStats {
                     </dt>
                     <dd class="flex items-baseline">
                       <div class="text-2xl font-semibold text-gray-900">
-                        {{stats.immeublesCount}}
+                        {{ stats.immeublesCount }}
                       </div>
                     </dd>
                   </dl>
@@ -169,7 +169,7 @@ interface DashboardStats {
                     </dt>
                     <dd class="flex items-baseline">
                       <div class="text-2xl font-semibold text-gray-900">
-                        {{stats.revenueTotal | currency:'MAD':'symbol':'1.0-0'}}
+                        {{ stats.revenueTotal | currency:'MAD':'symbol':'1.0-0' }}
                       </div>
                     </dd>
                   </dl>
@@ -195,21 +195,22 @@ interface DashboardStats {
                 <div class="px-4 py-4 sm:px-6">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                      <div [ngClass]="getActivityIconClass(activity.type)" class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center">
+                      <div [ngClass]="getActivityIconClass(activity.type)"
+                           class="flex-shrink-0 h-10 w-10 rounded-full flex items-center justify-center">
                         <i [class]="getActivityIcon(activity.type)"></i>
                       </div>
                       <div class="ml-4">
                         <div class="text-sm font-medium text-gray-900">
-                          {{activity.title}}
+                          {{ activity.title }}
                         </div>
                         <div class="text-sm text-gray-500">
-                          {{activity.description}}
+                          {{ activity.description }}
                         </div>
                       </div>
                     </div>
                     <div class="ml-2 flex-shrink-0 flex">
                       <div class="text-sm text-gray-500">
-                        {{formatDate(activity.date)}}
+                        {{ formatDate(activity.date) }}
                       </div>
                     </div>
                   </div>
@@ -230,7 +231,8 @@ interface DashboardStats {
                   <p>Créer un nouveau compte syndic pour gérer des immeubles.</p>
                 </div>
                 <div class="mt-5">
-                  <a routerLink="/admin/syndics/add" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                  <a routerLink="/admin/syndics/add"
+                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Ajouter un syndic
                   </a>
                 </div>
@@ -244,7 +246,8 @@ interface DashboardStats {
                   <p>Enregistrer un nouvel immeuble dans le système.</p>
                 </div>
                 <div class="mt-5">
-                  <a routerLink="/admin/immeubles/add" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                  <a routerLink="/admin/immeubles/add"
+                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Ajouter un immeuble
                   </a>
                 </div>
@@ -258,7 +261,8 @@ interface DashboardStats {
                   <p>Consulter et générer des rapports d'activité.</p>
                 </div>
                 <div class="mt-5">
-                  <a routerLink="/admin/rapports" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                  <a routerLink="/admin/rapports"
+                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     Voir les rapports
                   </a>
                 </div>
@@ -279,7 +283,7 @@ export class AdminDashboardComponent implements OnInit {
     revenueTotal: 0,
     recentActivity: []
   };
-  
+
   isLoading: boolean = true;
   error: string | null = null;
 
@@ -288,7 +292,8 @@ export class AdminDashboardComponent implements OnInit {
     private syndicService: SyndicService,
     private immeubleService: ImmeubleService,
     private paiementService: PaiementService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.loadDashboardData();
@@ -297,66 +302,45 @@ export class AdminDashboardComponent implements OnInit {
   loadDashboardData(): void {
     this.isLoading = true;
     this.error = null;
-    
+
     forkJoin({
-      users: this.userService.getUsersCount().pipe(catchError(() => of(0))),
-      syndics: this.syndicService.getSyndicsCount().pipe(catchError(() => of(0))),
-      immeubles: this.immeubleService.getImmeublesCount().pipe(catchError(() => of(0))),
-      revenue: this.paiementService.getTotalRevenue().pipe(catchError(() => of(0))),
-    }).pipe(
-      map(results => {
+      users: this.userService.getAllUsers().pipe(catchError(err => {
+        console.error('Erreur lors de la récupération des utilisateurs', err);
+        return of([]);
+      })),
+      syndics: this.syndicService.getAllSyndics().pipe(catchError(err => {
+        console.error('Erreur lors de la récupération des syndics', err);
+        return of([]);
+      })),
+      immeubles: this.immeubleService.getAllImmeubles().pipe(catchError(err => {
+        console.error('Erreur lors de la récupération des immeubles', err);
+        return of([]);
+      })),
+      paiements: this.paiementService.getAllPaiements().pipe(catchError(err => {
+        console.error('Erreur lors de la récupération des paiements', err);
+        return of([]);
+      })),
+      activites: this.userService.getRecentActivities().pipe(catchError(err => {
+        console.error('Erreur lors de la récupération des activités récentes', err);
+        return of([]);
+      }))
+    }).subscribe({
+      next: (results) => {
         this.stats = {
-          usersCount: results.users,
-          syndicsCount: results.syndics,
-          immeublesCount: results.immeubles,
-          revenueTotal: results.revenue,
-          recentActivity: this.generateMockActivity() // Pour la démonstration
+          usersCount: results.users.length,
+          syndicsCount: results.syndics.length,
+          immeublesCount: results.immeubles.length,
+          revenueTotal: results.paiements.reduce((sum, paiement) => sum + paiement.montant, 0),
+          recentActivity: results.activites
         };
         this.isLoading = false;
-      }),
-      catchError(error => {
-        console.error('Erreur lors du chargement des données du tableau de bord', error);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des données', error);
         this.error = 'Impossible de charger les données du tableau de bord. Veuillez réessayer plus tard.';
         this.isLoading = false;
-        return of(null);
-      })
-    ).subscribe();
-  }
-
-  // Génère des données d'activité fictives pour la démonstration
-  private generateMockActivity(): any[] {
-    return [
-      {
-        type: 'user',
-        title: 'Nouvel utilisateur',
-        description: 'Ahmed Belkadi a créé un compte',
-        date: new Date(2025, 2, 20)
-      },
-      {
-        type: 'syndic',
-        title: 'Nouveau syndic',
-        description: 'Syndic Atlas a été ajouté au système',
-        date: new Date(2025, 2, 19)
-      },
-      {
-        type: 'immeuble',
-        title: 'Nouvel immeuble',
-        description: 'Résidence Andalous a été ajoutée',
-        date: new Date(2025, 2, 18)
-      },
-      {
-        type: 'payment',
-        title: 'Paiement reçu',
-        description: 'Paiement de 15,000 MAD reçu pour Résidence Majorelle',
-        date: new Date(2025, 2, 17)
-      },
-      {
-        type: 'system',
-        title: 'Maintenance système',
-        description: 'Mise à jour de la plateforme vers la version 2.1',
-        date: new Date(2025, 2, 15)
       }
-    ];
+    });
   }
 
   getActivityIconClass(type: string): string {

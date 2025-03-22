@@ -36,12 +36,13 @@ public class SecurityConfig {
                 // Endpoints spécifiques aux rôles
                 // Admin
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/immeubles/**").hasAnyRole("ADMIN", "SYNDIC", "PROPRIETAIRE")
 
                 // Syndic
-                .requestMatchers("/api/syndic/**").hasRole("SYNDIC").requestMatchers(HttpMethod.POST, "/api/immeubles/**").hasRole("SYNDIC").requestMatchers(HttpMethod.PUT, "/api/immeubles/**").hasRole("SYNDIC").requestMatchers(HttpMethod.DELETE, "/api/immeubles/**").hasRole("SYNDIC").requestMatchers(HttpMethod.POST, "/api/appartements/**").hasRole("SYNDIC").requestMatchers(HttpMethod.PUT, "/api/appartements/**").hasRole("SYNDIC").requestMatchers(HttpMethod.DELETE, "/api/appartements/**").hasRole("SYNDIC")
+                .requestMatchers("/api/syndic/**").hasRole("SYNDIC").requestMatchers(HttpMethod.POST, "/api/immeubles/**").hasAnyRole("ADMIN", "SYNDIC").requestMatchers(HttpMethod.PUT, "/api/immeubles/**").hasAnyRole("ADMIN", "SYNDIC").requestMatchers(HttpMethod.DELETE, "/api/immeubles/**").hasAnyRole("ADMIN", "SYNDIC").requestMatchers(HttpMethod.POST, "/api/appartements/**").hasAnyRole("ADMIN", "SYNDIC").requestMatchers(HttpMethod.PUT, "/api/appartements/**").hasAnyRole("ADMIN", "SYNDIC").requestMatchers(HttpMethod.DELETE, "/api/appartements/**").hasAnyRole("ADMIN", "SYNDIC")
 
                 // Propriétaire
-                .requestMatchers("/api/proprietaire/**").hasRole("PROPRIETAIRE").requestMatchers(HttpMethod.GET, "/api/immeubles/**").hasAnyRole("SYNDIC", "PROPRIETAIRE").requestMatchers(HttpMethod.GET, "/api/appartements/**").hasAnyRole("SYNDIC", "PROPRIETAIRE")
+                .requestMatchers("/api/proprietaire/**").hasRole("PROPRIETAIRE").requestMatchers(HttpMethod.GET, "/api/immeubles/**").hasAnyRole("ADMIN", "SYNDIC", "PROPRIETAIRE").requestMatchers(HttpMethod.GET, "/api/appartements/**").hasAnyRole("ADMIN", "SYNDIC", "PROPRIETAIRE")
 
                 // Autres endpoints nécessitent une authentification
                 .anyRequest().authenticated()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authenticationProvider(authenticationProvider).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

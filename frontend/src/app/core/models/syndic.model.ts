@@ -7,6 +7,8 @@ export interface Syndic {
   status: 'ACTIF' | 'INACTIF' | 'EN_ATTENTE';
   dateCreation: Date;
   immeubles: any[];
+  nombreImmeubles?: number;
+  adresse?: string;
 }
 
 export interface SyndicStats {

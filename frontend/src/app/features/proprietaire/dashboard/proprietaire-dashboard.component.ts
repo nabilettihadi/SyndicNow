@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { AppartementService } from '@core/services/appartement.service';
@@ -12,6 +12,8 @@ import { Appartement } from '@core/models/appartement.model';
 import { Paiement } from '@core/models/paiement.model';
 import { Incident, IncidentWithStatus } from '@core/models/incident.model';
 import { AuthService } from '@core/services/auth.service';
+import { MessageService } from '@core/services/message.service';
+import { Message } from '@core/models/message.model';
 
 @Component({
   selector: 'app-proprietaire-dashboard',
@@ -21,7 +23,7 @@ import { AuthService } from '@core/services/auth.service';
   styles: []
 })
 export class ProprietaireDashboardComponent implements OnInit {
-  userId: number = 1; // À remplacer par l'ID de l'utilisateur actuel
+  userId: number = 0;
   lastLoginDate: Date = new Date();
   isLoading = true;
   hasError = false;
@@ -37,30 +39,46 @@ export class ProprietaireDashboardComponent implements OnInit {
   appartements: Appartement[] = [];
   paiements: Paiement[] = [];
   incidents: IncidentWithStatus[] = [];
+  messages: Message[] = [];
   
   // Filtres
   searchTerm: string = '';
   filteredAppartements: Appartement[] = [];
 
+  // Date actuelle pour calculs
+  currentDate = new Date();
+
   constructor(
     private appartementService: AppartementService,
     private paiementService: PaiementService,
     private incidentService: IncidentService,
+    private messageService: MessageService,
     private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    // Récupérer l'ID utilisateur depuis le service d'authentification
-    // this.userId = this.authService.currentUserValue?.id;
-    
-    // Simuler une date de dernière connexion
-    this.lastLoginDate = new Date(new Date().getTime() - Math.floor(Math.random() * 24 * 60 * 60 * 1000));
-    
-    forkJoin({
-      appartements: this.loadAppartements(),
-      paiements: this.loadPaiements(),
-      incidents: this.loadIncidents()
-    }).subscribe({
+    // Récupérer l'ID utilisateur authentifié
+    this.authService.currentUser$.pipe(
+      tap(user => {
+        if (user) {
+          this.userId = user.userId;
+          this.lastLoginDate = new Date(); // Utiliser la date actuelle puisque lastLoginDate n'est pas disponible
+        }
+      }),
+      switchMap(() => {
+        if (!this.userId) {
+          throw new Error('Utilisateur non authentifié');
+        }
+        
+        // Charger toutes les données nécessaires en parallèle
+        return forkJoin({
+          appartements: this.loadAppartements(),
+          paiements: this.loadPaiements(),
+          incidents: this.loadIncidents(),
+          messages: this.loadMessages()
+        });
+      })
+    ).subscribe({
       next: () => {
         this.calculateStatistics();
         this.isLoading = false;
@@ -69,7 +87,7 @@ export class ProprietaireDashboardComponent implements OnInit {
         console.error('Erreur lors du chargement des données:', error);
         this.isLoading = false;
         this.hasError = true;
-        this.errorMessage = 'Une erreur est survenue lors du chargement des données';
+        this.errorMessage = error.message || 'Une erreur est survenue lors du chargement des données';
       }
     });
   }
@@ -120,12 +138,34 @@ export class ProprietaireDashboardComponent implements OnInit {
     );
   }
 
+  loadMessages(): Observable<Message[]> {
+    return this.messageService.getMessagesByUser(this.userId).pipe(
+      map((data: Message[]) => {
+        // Tri des messages par date (les plus récents d'abord)
+        this.messages = data.sort((a, b) => 
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+        );
+        return data;
+      }),
+      catchError(error => {
+        console.error('Erreur lors du chargement des messages:', error);
+        return of([]);
+      })
+    );
+  }
+
   calculateStatistics(): void {
+    // Statistiques des appartements
     this.totalAppartements = this.appartements.length;
     this.occupiedAppartements = this.appartements.filter(app => app.status === 'OCCUPE').length;
     this.freeAppartements = this.appartements.filter(app => app.status === 'LIBRE').length;
+    
+    // Statistiques financières des 12 derniers mois
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    
     this.totalRevenue = this.paiements
-      .filter(p => p.status === 'PAYE')
+      .filter(p => p.status === 'PAYE' && new Date(p.date) >= oneYearAgo)
       .reduce((total, p) => total + p.montant, 0);
   }
 
@@ -168,6 +208,43 @@ export class ProprietaireDashboardComponent implements OnInit {
         return 'fas fa-money-check';
       default:
         return 'fas fa-money-bill';
+    }
+  }
+
+  getUnreadMessagesCount(): number {
+    return this.messages.filter(m => !m.read).length;
+  }
+  
+  getRecentIncidents(): IncidentWithStatus[] {
+    // Retourne les 3 incidents les plus récents
+    return this.incidents.slice(0, 3);
+  }
+
+  // Méthode pour obtenir la classe CSS basée sur le statut de l'incident
+  getIncidentStatusClass(incident: IncidentWithStatus): string {
+    switch (incident.status) {
+      case 'NOUVEAU':
+        return 'bg-blue-100 text-blue-800';
+      case 'EN_COURS':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'RESOLU':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
+
+  // Méthode pour obtenir le texte formaté du statut de l'incident
+  getIncidentStatusText(incident: IncidentWithStatus): string {
+    switch (incident.status) {
+      case 'NOUVEAU':
+        return 'Nouveau';
+      case 'EN_COURS':
+        return 'En cours';
+      case 'RESOLU':
+        return 'Résolu';
+      default:
+        return incident.status;
     }
   }
 } 

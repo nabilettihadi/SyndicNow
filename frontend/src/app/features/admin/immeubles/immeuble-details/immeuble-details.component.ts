@@ -1,10 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ImmeubleService } from '@core/services/immeuble.service';
 import { AppartementService } from '@core/services/appartement.service';
 import { Immeuble } from '@core/models/immeuble.model';
 import { Appartement } from '@core/models/appartement.model';
+import { SyndicService } from '@core/services/syndic.service';
+import { Syndic } from '@core/models/syndic.model';
+import { ToastrService } from 'ngx-toastr';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-immeuble-details',
@@ -361,11 +365,30 @@ export class ImmeubleDetailsComponent implements OnInit {
   isLoadingAppartements: boolean = false;
   appartementsError: string | null = null;
 
+  // Suppression d'immeuble
+  showDeleteModal: boolean = false;
+  isDeleting: boolean = false;
+  
+  // Gestion du syndic
+  showSyndicModal: boolean = false;
+  availableSyndics: Syndic[] = [];
+  selectedSyndicId: number | null = null;
+  isLoadingSyndics: boolean = false;
+  isSavingSyndic: boolean = false;
+  syndicError: string | null = null;
+
+  // Ajouter une propriété pour indiquer si des données de secours sont utilisées
+  usingMockData: boolean = false;
+
+  private toastr = inject(ToastrService);
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private immeubleService: ImmeubleService,
-    private appartementService: AppartementService
+    private syndicService: SyndicService,
+    private appartementService: AppartementService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -382,39 +405,77 @@ export class ImmeubleDetailsComponent implements OnInit {
 
   loadImmeuble(id: number): void {
     this.isLoading = true;
-    this.error = null;
-
-    this.immeubleService.getImmeubleById(id).subscribe(
-      (immeuble: Immeuble) => {
+    this.error = '';
+    
+    this.immeubleService.getImmeubleById(id).subscribe({
+      next: (immeuble) => {
         this.immeuble = immeuble;
         this.isLoading = false;
         this.loadAppartements();
       },
-      (error: any) => {
-        console.error('Erreur lors du chargement de l\'immeuble:', error);
-        this.error = 'Impossible de charger les détails de l\'immeuble';
+      error: (error) => {
+        console.error(`Erreur lors du chargement de l'immeuble ${id}:`, error);
+        this.error = `Impossible de charger les détails de l'immeuble. ${error.status === 0 
+          ? 'Le serveur ne répond pas.' 
+          : `Erreur ${error.status}: ${error.statusText || 'Erreur inconnue'}`}`;
         this.isLoading = false;
       }
-    );
+    });
   }
 
   loadAppartements(): void {
-    if (!this.immeuble?.id) return;
-
+    if (!this.immeuble || !this.immeuble.id) {
+      this.appartementsError = 'Impossible de charger les appartements: ID d\'immeuble non disponible';
+      return;
+    }
+    
     this.isLoadingAppartements = true;
-    this.appartementsError = null;
-
-    this.appartementService.getAppartementsByImmeuble(this.immeuble.id).subscribe(
-      (appartements: Appartement[]) => {
-        this.appartements = appartements;
+    this.appartementsError = '';
+    this.usingMockData = false;
+    
+    const immeubleId = this.immeuble.id;
+    console.log(`Chargement des appartements pour l'immeuble ${immeubleId}`);
+    
+    this.appartementService.getAppartementsByImmeuble(immeubleId).subscribe({
+      next: (data) => {
+        this.appartements = data;
         this.isLoadingAppartements = false;
+        console.log(`${this.appartements.length} appartements chargés`);
+        
+        // Vérifier si nous utilisons des données fictives (via le service)
+        if (data.length > 0 && (data as any[])[0]?.mockData === true) {
+          this.usingMockData = true;
+        }
       },
-      (error: any) => {
-        console.error('Erreur lors du chargement des appartements:', error);
-        this.appartementsError = 'Impossible de charger les appartements';
+      error: (error) => {
         this.isLoadingAppartements = false;
+        console.error(`Erreur lors du chargement des appartements pour l'immeuble ${immeubleId}:`, error);
+        
+        // Si le service n'a pas déjà fourni des données de secours, générer des données fictives ici
+        if (error.status === 500) {
+          this.appartementsError = "Le serveur a rencontré un problème lors du chargement des appartements.";
+          this.appartements = this.getMockAppartements();
+          this.usingMockData = true;
+          console.log("Utilisation de données fictives pour les appartements");
+        } else {
+          this.appartementsError = error.message || "Impossible de charger les appartements";
+        }
       }
-    );
+    });
+  }
+
+  // Méthode pour générer des données fictives d'appartements en cas d'erreur
+  private getMockAppartements(): any[] {
+    return Array(5).fill(0).map((_, index) => ({
+      id: index + 1,
+      numero: `A${index + 101}`,
+      etage: Math.floor(index / 2) + 1,
+      surface: Math.floor(Math.random() * 50) + 30,
+      nombrePieces: Math.floor(Math.random() * 3) + 1,
+      status: index % 3 === 0 ? 'OCCUPÉ' : 'LIBRE',
+      proprietaireId: index % 2 === 0 ? 1 : 2,
+      proprietaireNom: index % 2 === 0 ? 'John Doe' : 'Jane Smith'
+    }));
   }
 
   getTotalAppartements(): number {
@@ -473,5 +534,104 @@ export class ImmeubleDetailsComponent implements OnInit {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  }
+
+  // Gestion de la suppression
+  confirmDelete(): void {
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteModal = false;
+  }
+
+  deleteImmeuble(): void {
+    if (!this.immeuble) return;
+    
+    this.isDeleting = true;
+    
+    this.immeubleService.deleteImmeuble(this.immeuble.id).subscribe({
+      next: () => {
+        this.toastr.success(`L'immeuble "${this.immeuble?.nom}" a été supprimé avec succès.`);
+        this.router.navigate(['/admin/immeubles']);
+      },
+      error: (err) => {
+        console.error('Erreur lors de la suppression de l\'immeuble', err);
+        this.toastr.error('Impossible de supprimer l\'immeuble. Veuillez réessayer plus tard.');
+        this.isDeleting = false;
+        this.showDeleteModal = false;
+      }
+    });
+  }
+
+  // Gestion du syndic
+  assignerSyndic(): void {
+    this.isLoadingSyndics = true;
+    this.syndicError = null;
+    this.selectedSyndicId = null;
+    this.showSyndicModal = true;
+    
+    this.syndicService.getAllSyndics().subscribe({
+      next: (data) => {
+        this.availableSyndics = data.filter(s => s.status === 'ACTIF');
+        this.isLoadingSyndics = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des syndics', err);
+        this.syndicError = 'Impossible de charger la liste des syndics disponibles.';
+        this.isLoadingSyndics = false;
+      }
+    });
+  }
+
+  confirmAssignerSyndic(): void {
+    if (!this.immeuble || !this.selectedSyndicId) return;
+    
+    this.isSavingSyndic = true;
+    
+    this.immeubleService.assignerSyndicImmeuble(this.immeuble.id, this.selectedSyndicId).subscribe({
+      next: (data) => {
+        this.immeuble = data;
+        this.toastr.success('Le syndic a été assigné avec succès à l\'immeuble.');
+        this.cancelSyndicModal();
+      },
+      error: (err) => {
+        console.error('Erreur lors de l\'assignation du syndic', err);
+        this.syndicError = 'Impossible d\'assigner le syndic à l\'immeuble.';
+        this.isSavingSyndic = false;
+      }
+    });
+  }
+
+  retirerSyndic(): void {
+    if (!this.immeuble || !this.immeuble.syndic) return;
+    
+    this.isSavingSyndic = true;
+    
+    this.immeubleService.retirerSyndicImmeuble(this.immeuble.id).subscribe({
+      next: (data) => {
+        this.immeuble = data;
+        this.toastr.success('Le syndic a été retiré avec succès de l\'immeuble.');
+        this.isSavingSyndic = false;
+      },
+      error: (err) => {
+        console.error('Erreur lors du retrait du syndic', err);
+        this.toastr.error('Impossible de retirer le syndic de l\'immeuble.');
+        this.isSavingSyndic = false;
+      }
+    });
+  }
+
+  cancelSyndicModal(): void {
+    this.showSyndicModal = false;
+    this.selectedSyndicId = null;
+    this.syndicError = null;
+    this.isSavingSyndic = false;
+  }
+
+  // Gestion des appartements
+  ajouterAppartement(): void {
+    // TODO: Implémenter l'ajout d'appartement
+    this.toastr.info('La fonctionnalité d\'ajout d\'appartement sera disponible prochainement.');
   }
 }

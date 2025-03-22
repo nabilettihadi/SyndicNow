@@ -193,6 +193,43 @@
       </div>
     </div>
 
+    <!-- Champs spécifiques au propriétaire -->
+    <div *ngIf="registerForm.get('role')?.value === 'PROPRIETAIRE'" class="proprietaire-fields">
+      <h2 class="section-title">Informations complémentaires</h2>
+      
+      <div class="form-group">
+        <label class="form-label">Préférence de communication</label>
+        <div class="radio-group">
+          <div *ngFor="let pref of preferenceCommunications" class="radio-option">
+            <input
+              type="radio"
+              [id]="'pref-' + pref.value"
+              [value]="pref.value"
+              formControlName="preferencesCommunication"
+              class="radio-input"
+            />
+            <label [for]="'pref-' + pref.value" class="radio-label">{{ pref.label }}</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Type de propriétaire</label>
+        <div class="radio-group">
+          <div *ngFor="let type of typeProprietaires" class="radio-option">
+            <input
+              type="radio"
+              [id]="'type-' + type.value"
+              [value]="type.value"
+              formControlName="typeProprietaire"
+              class="radio-input"
+            />
+            <label [for]="'type-' + type.value" class="radio-label">{{ type.label }}</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Mot de passe -->
     <div class="form-section">
       <h2 class="section-title">Sécurité</h2>

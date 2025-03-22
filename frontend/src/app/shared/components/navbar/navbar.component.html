@@ -24,8 +24,8 @@
 
       <!-- Boutons droits -->
       <div class="flex items-center space-x-2">
-        <!-- User menu -->
-        <div class="ml-3 relative">
+        <!-- User menu - Visible seulement si authentifié -->
+        <div *ngIf="isAuthenticated$ | async" class="ml-3 relative">
           <button (click)="toggleUserMenu()"
                   class="flex items-center space-x-3 p-2 rounded-full hover:bg-white/10 transition-colors duration-200">
             <div class="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center text-white font-medium border-2 border-white/20">
@@ -58,6 +58,16 @@
           </div>
         </div>
 
+        <!-- Boutons de connexion et inscription - Visible seulement si non authentifié -->
+        <div *ngIf="!(isAuthenticated$ | async)" class="flex space-x-2">
+          <a routerLink="/auth/login" class="px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-white/10 transition-colors duration-200">
+            Se connecter
+          </a>
+          <a routerLink="/auth/register" class="px-3 py-2 rounded-md text-sm font-medium bg-white text-blue-600 hover:bg-blue-50 transition-colors duration-200">
+            Créer un compte
+          </a>
+        </div>
+
         <!-- Mobile menu button -->
         <button (click)="toggleMobileMenu()"
                 class="md:hidden ml-2 p-2 rounded-md text-white/90 hover:bg-white/10 hover:text-white
@@ -80,6 +90,20 @@
           <span>{{ item.label }}</span>
         </a>
       </ng-container>
+      
+      <!-- Liens d'authentification pour le menu mobile -->
+      <div *ngIf="!(isAuthenticated$ | async)" class="border-t border-blue-600 pt-2 mt-2">
+        <a routerLink="/auth/login" 
+           class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 transition-colors duration-200">
+          <i class="fas fa-sign-in-alt mr-2"></i>
+          Se connecter
+        </a>
+        <a routerLink="/auth/register" 
+           class="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-white/10 transition-colors duration-200">
+          <i class="fas fa-user-plus mr-2"></i>
+          Créer un compte
+        </a>
+      </div>
     </div>
   </div>
 </nav>

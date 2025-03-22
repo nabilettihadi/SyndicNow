@@ -28,6 +28,35 @@
   </header>
 
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Message d'erreur -->
+    <div *ngIf="error" class="rounded-md bg-red-50 p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">
+            Une erreur est survenue
+          </h3>
+          <div class="mt-2 text-sm text-red-700">
+            <p>{{error}}</p>
+          </div>
+          <div class="mt-4">
+            <button type="button" 
+                    (click)="loadSyndics()"
+                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+              Réessayer
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- État du chargement -->
+    <div *ngIf="isLoading" class="flex justify-center my-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+    </div>
+
     <!-- Statistiques -->
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Total Syndics -->
@@ -177,7 +206,7 @@
               <div class="flex items-center">
                 <div class="mr-6 text-right">
                   <div class="text-sm font-medium text-gray-900">
-                    {{syndic.immeubles.length || 0}} immeubles
+                    {{syndic.immeubles && syndic.immeubles.length || syndic.nombreImmeubles || 0}} immeubles
                   </div>
                   <div class="text-sm text-gray-500">
                     {{syndic.ville}}

@@ -13,7 +13,7 @@ import {NavItem} from '../models/nav-item.model';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = `${environment.apiUrl}/auth`;
+  private readonly API_URL = `${environment.apiUrl}/api/auth`;
   private readonly TOKEN_KEY = 'token';
   private readonly USER_KEY = 'currentUser';
   private currentUserSubject = new BehaviorSubject<LoginResponse | null>(null);

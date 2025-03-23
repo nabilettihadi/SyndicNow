@@ -360,4 +360,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private getProprietaireNavItems(): NavItem[] {
     return this.navItems.filter(item => item.roles.includes('PROPRIETAIRE'));
   }
+
+  getProfilRoute(): string {
+    if (!this.currentUser) return '/';
+    
+    switch (this.currentUser.role) {
+      case 'ADMIN':
+        return '/admin/profil';
+      case 'SYNDIC':
+        return '/syndic/profil';
+      case 'PROPRIETAIRE':
+        return '/proprietaire/profil';
+      default:
+        return '/';
+    }
+  }
 }

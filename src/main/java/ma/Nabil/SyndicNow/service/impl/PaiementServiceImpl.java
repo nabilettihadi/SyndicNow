@@ -170,4 +170,12 @@ public class PaiementServiceImpl implements PaiementService {
 
         return statistics;
     }
+
+    @Override
+    public List<PaiementResponse> getPaiementsBySyndic(Long syndicId) {
+        List<Paiement> paiements = paiementRepository.findBySyndicId(syndicId);
+        return paiements.stream()
+                .map(paiementMapper::toPaiementResponse)
+                .collect(Collectors.toList());
+    }
 }

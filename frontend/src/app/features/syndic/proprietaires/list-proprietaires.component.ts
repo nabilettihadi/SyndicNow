@@ -84,4 +84,19 @@ export class ListProprietairesComponent implements OnInit {
     });
     return Array.from(villesSet).sort();
   }
+  
+  // Méthode pour calculer le nombre total d'appartements
+  getTotalAppartements(): number {
+    return this.proprietaires.reduce((acc, prop) => acc + (prop.appartements?.length || 0), 0);
+  }
+  
+  // Méthode pour obtenir le nombre de propriétaires actifs (avec au moins un appartement)
+  getProprietairesActifs(): number {
+    return this.proprietaires.filter(prop => (prop.appartements?.length ?? 0) > 0).length;
+  }
+  
+  // Méthode pour obtenir le nombre de propriétaires inactifs (sans appartement)
+  getProprietairesInactifs(): number {
+    return this.proprietaires.filter(prop => !prop.appartements?.length).length;
+  }
 } 

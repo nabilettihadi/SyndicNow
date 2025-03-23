@@ -7,15 +7,13 @@ import * as AuthActions from '../actions/auth.actions';
 
 @Injectable()
 export class AuthEffects {
-  private readonly actions$: Actions = inject(Actions)
+  private actions$ = inject(Actions);
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {
-  }
+  constructor() {}
 
-  login$ = createEffect(() =>
+  readonly login = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.login),
       exhaustMap(({credentials}) =>
@@ -27,7 +25,7 @@ export class AuthEffects {
     )
   );
 
-  loginSuccess$ = createEffect(
+  readonly loginSuccess = createEffect(
     () =>
       this.actions$.pipe(
         ofType(AuthActions.loginSuccess),
@@ -40,7 +38,7 @@ export class AuthEffects {
     {dispatch: false}
   );
 
-  register$ = createEffect(() =>
+  readonly register = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.register),
       exhaustMap(({userData}) =>
@@ -64,7 +62,7 @@ export class AuthEffects {
     )
   );
 
-  registerSuccess$ = createEffect(
+  readonly registerSuccess = createEffect(
     () =>
       this.actions$.pipe(
         ofType(AuthActions.registerSuccess),
@@ -77,7 +75,7 @@ export class AuthEffects {
     {dispatch: false}
   );
 
-  logout$ = createEffect(() =>
+  readonly logout = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.logout),
       exhaustMap(() =>
@@ -89,7 +87,7 @@ export class AuthEffects {
     )
   );
 
-  logoutSuccess$ = createEffect(
+  readonly logoutSuccess = createEffect(
     () =>
       this.actions$.pipe(
         ofType(AuthActions.logoutSuccess),

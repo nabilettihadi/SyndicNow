@@ -20,7 +20,7 @@ export interface StripePaymentResponse {
   providedIn: 'root'
 })
 export class PaiementService {
-  private apiUrl = `${environment.apiUrl}/paiements`;
+  private apiUrl = `${environment.apiUrl}/api/paiements`;
 
   constructor(private http: HttpClient) {
   }

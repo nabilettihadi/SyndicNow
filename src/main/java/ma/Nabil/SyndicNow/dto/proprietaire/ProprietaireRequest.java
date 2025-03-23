@@ -3,6 +3,7 @@ package ma.Nabil.SyndicNow.dto.proprietaire;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,9 @@ public class ProprietaireRequest {
     @NotBlank(message = "L'email est obligatoire")
     @Email(message = "Format d'email invalide")
     private String email;
+    
+    @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères")
+    private String password;
 
     @NotBlank(message = "Le numéro de téléphone est obligatoire")
     @Pattern(regexp = "^(\\+212|0)[5-7][0-9]{8}$", message = "Format de numéro de téléphone invalide")
@@ -31,6 +35,7 @@ public class ProprietaireRequest {
 
     private String adresse;
     private String cin;
+    private String ville;
     private PreferenceCommunication preferencesCommunication;
     private TypeProprietaire typeProprietaire;
     private Long immeubleId;

@@ -80,20 +80,37 @@ export class ListIncidentsComponent implements OnInit {
     this.filteredIncidents = filtered;
   }
 
-  getStatusClass(statut: string): string {
+  getTotalByStatus(status: string): number {
+    return this.incidents.filter(incident => incident.status === status).length;
+  }
+
+  getStatusBadgeClass(statut: string): string {
     switch (statut) {
       case 'RESOLU':
-        return 'syndic-badge syndic-badge-success';
+        return 'bg-green-100 text-green-800';
       case 'EN_COURS':
-        return 'syndic-badge syndic-badge-warning';
+        return 'bg-yellow-100 text-yellow-800';
       case 'NOUVEAU':
-        return 'syndic-badge syndic-badge-error';
+        return 'bg-red-100 text-red-800';
       default:
-        return 'syndic-badge';
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
+  
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'RESOLU':
+        return 'Résolu';
+      case 'EN_COURS':
+        return 'En cours';
+      case 'NOUVEAU':
+        return 'Nouveau';
+      default:
+        return status;
     }
   }
 
-  getPriorityClass(priorite: string): string {
+  getPriorityColorClass(priorite: string): string {
     switch (priorite) {
       case 'HAUTE':
         return 'text-red-500';
@@ -103,6 +120,34 @@ export class ListIncidentsComponent implements OnInit {
         return 'text-blue-500';
       default:
         return 'text-gray-500';
+    }
+  }
+  
+  getPriorityLabel(priorite: string): string {
+    switch (priorite) {
+      case 'HAUTE':
+        return 'Haute';
+      case 'MOYENNE':
+        return 'Moyenne';
+      case 'BASSE':
+        return 'Basse';
+      default:
+        return priorite;
+    }
+  }
+  
+  deleteIncident(id: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet incident ?')) {
+      this.incidentService.deleteIncident(id).subscribe({
+        next: () => {
+          this.incidents = this.incidents.filter(i => i.id !== id);
+          this.filteredIncidents = this.filteredIncidents.filter(i => i.id !== id);
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression de l\'incident:', error);
+          alert('Une erreur est survenue lors de la suppression de l\'incident');
+        }
+      });
     }
   }
 } 

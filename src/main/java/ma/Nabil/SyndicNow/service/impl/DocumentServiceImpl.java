@@ -59,4 +59,12 @@ public class DocumentServiceImpl implements DocumentService {
     public List<Document> getDocumentsByProprietaire(Long proprietaireId) {
         return documentRepository.findByProprietaireId(proprietaireId);
     }
+
+    @Override
+    public List<Document> getDocumentsBySyndic(Long syndicId) {
+        // Temporairement, retournons tous les documents
+        // Idéalement, nous devrions utiliser une requête spécifique
+        return documentRepository.findAll();
+        // TODO: Implémenter findBySyndicId dans le repository quand le modèle de données le permettra
+    }
 }

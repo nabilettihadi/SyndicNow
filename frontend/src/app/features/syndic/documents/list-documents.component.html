@@ -1,121 +1,242 @@
-<div class="syndic-page">
-  <app-navbar></app-navbar>
-  
-  <header class="syndic-header">
-    <div class="syndic-container">
+<div class="syndic-page bg-gray-50 min-h-screen">
+  <header class="bg-gradient-to-r from-blue-900 to-blue-700 py-10 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-4xl font-bold mb-4">Gestion des Documents</h1>
       <p class="text-lg text-blue-100">Gérez et organisez tous les documents relatifs à vos immeubles</p>
     </div>
   </header>
 
-  <div class="syndic-container">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Chargement -->
-    <div *ngIf="isLoading" class="syndic-loading">
-      <div class="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center gap-4">
+    <div *ngIf="isLoading" class="flex justify-center py-16">
+      <div class="bg-white p-8 rounded-xl shadow-xl flex flex-col items-center gap-4">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-900 border-t-transparent"></div>
         <p class="text-blue-900 font-medium">Chargement des documents...</p>
       </div>
     </div>
 
     <!-- Erreur -->
-    <div *ngIf="hasError" class="syndic-error">
+    <div *ngIf="hasError" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6 flex items-center gap-3">
       <i class="fas fa-exclamation-circle text-xl"></i>
       <span>{{ errorMessage }}</span>
     </div>
 
     <!-- Contenu principal -->
-    <div *ngIf="!isLoading && !hasError">
-      <div class="syndic-card">
-        <div class="syndic-card-header">
-          <h2 class="syndic-card-title">Liste des Documents</h2>
-          <button (click)="openUploadModal()" class="syndic-button syndic-button-primary">
-            <i class="fas fa-upload"></i>
-            Ajouter un document
-          </button>
-        </div>
-
-        <!-- Recherche et filtres -->
-        <div class="flex flex-wrap gap-4 mb-8">
-          <div class="relative flex-grow">
-            <input
-              type="text"
-              [(ngModel)]="searchTerm"
-              (keyup)="applyFilter()"
-              placeholder="Rechercher un document..."
-              class="syndic-input"
-            />
-            <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+    <div *ngIf="!isLoading && !hasError" class="space-y-8">
+      <!-- Statistiques -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-blue-500">
+          <div class="bg-blue-100 p-3 rounded-lg">
+            <i class="fas fa-file-alt text-blue-700 text-xl"></i>
           </div>
+          <div>
+            <p class="text-sm text-gray-500">Total des documents</p>
+            <p class="text-2xl font-bold text-gray-800">{{ documents.length }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-green-500">
+          <div class="bg-green-100 p-3 rounded-lg">
+            <i class="fas fa-file-invoice text-green-700 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Factures</p>
+            <p class="text-2xl font-bold text-gray-800">{{ getDocumentsByType('FACTURE') }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-indigo-500">
+          <div class="bg-indigo-100 p-3 rounded-lg">
+            <i class="fas fa-file-contract text-indigo-700 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Contrats</p>
+            <p class="text-2xl font-bold text-gray-800">{{ getDocumentsByType('CONTRAT') }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-purple-500">
+          <div class="bg-purple-100 p-3 rounded-lg">
+            <i class="fas fa-file-signature text-purple-700 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Règlements</p>
+            <p class="text-2xl font-bold text-gray-800">{{ getDocumentsByType('REGLEMENT') }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carte principale -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="p-6 flex flex-col md:flex-row md:items-center md:justify-between border-b">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Liste des Documents</h2>
           
-          <select 
-            [(ngModel)]="typeFilter" 
-            (change)="applyFilter()"
-            class="syndic-input w-auto"
-          >
-            <option value="ALL">Tous les types</option>
-            <option value="CONTRAT">Contrats</option>
-            <option value="FACTURE">Factures</option>
-            <option value="REGLEMENT">Règlements</option>
-            <option value="AUTRE">Autres</option>
-          </select>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+              <i class="fas fa-file-export"></i>
+              Exporter
+            </button>
+            <button (click)="openUploadModal()" class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+              <i class="fas fa-upload"></i>
+              Ajouter un document
+            </button>
+          </div>
+        </div>
+        
+        <!-- Recherche et filtres -->
+        <div class="p-6 border-b bg-gray-50">
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="relative flex-grow">
+              <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                (keyup)="applyFilter()"
+                placeholder="Rechercher un document..."
+                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+            
+            <select 
+              [(ngModel)]="typeFilter" 
+              (change)="applyFilter()"
+              class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="ALL">Tous les types</option>
+              <option value="CONTRAT">Contrats</option>
+              <option value="FACTURE">Factures</option>
+              <option value="REGLEMENT">Règlements</option>
+              <option value="AUTRE">Autres</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Liste des documents -->
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white rounded-lg overflow-hidden">
-            <thead class="bg-gray-100 text-gray-700">
+        <!-- Tableau des documents (visible sur les écrans moyens et grands) -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
               <tr>
-                <th class="py-3 px-4 text-left">Document</th>
-                <th class="py-3 px-4 text-left">Type</th>
-                <th class="py-3 px-4 text-left">Taille</th>
-                <th class="py-3 px-4 text-left">Date</th>
-                <th class="py-3 px-4 text-left">Immeuble</th>
-                <th class="py-3 px-4 text-center">Actions</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Document
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Type
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Taille
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Immeuble
+                </th>
+                <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-gray-200">
               <tr *ngFor="let document of filteredDocuments" class="hover:bg-gray-50">
-                <td class="py-3 px-4">
+                <td class="px-6 py-4">
                   <div class="flex items-center">
                     <i [class]="getDocumentIcon(document.format)" class="text-2xl mr-3"></i>
                     <div>
-                      <p class="font-medium text-blue-900">{{ document.nom }}</p>
+                      <p class="font-medium text-gray-900">{{ document.nom }}</p>
                       <p class="text-sm text-gray-500 line-clamp-1">{{ document.description }}</p>
                     </div>
                   </div>
                 </td>
-                <td class="py-3 px-4">
+                <td class="px-6 py-4 whitespace-nowrap">
                   <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getDocumentTypeClass(document.type)">
                     {{ document.type }}
                   </span>
                 </td>
-                <td class="py-3 px-4">{{ formatFileSize(document.taille) }}</td>
-                <td class="py-3 px-4">{{ document.dateCreation | date:'dd/MM/yyyy' }}</td>
-                <td class="py-3 px-4">{{ document.immeuble?.nom || 'N/A' }}</td>
-                <td class="py-3 px-4">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ formatFileSize(document.taille) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ document.dateCreation | date:'dd/MM/yyyy' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ document.immeuble?.nom || 'N/A' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                   <div class="flex justify-center gap-2">
-                    <button (click)="viewDocumentDetails(document)" class="p-1 text-blue-600 hover:text-blue-800" title="Voir les détails">
+                    <button (click)="viewDocumentDetails(document)" class="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50" title="Voir les détails">
                       <i class="fas fa-eye"></i>
                     </button>
-                    <button (click)="downloadDocument(document)" class="p-1 text-green-600 hover:text-green-800" title="Télécharger">
+                    <button (click)="downloadDocument(document)" class="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50" title="Télécharger">
                       <i class="fas fa-download"></i>
                     </button>
-                    <button (click)="deleteDocument(document)" class="p-1 text-red-600 hover:text-red-800" title="Supprimer">
+                    <button (click)="deleteDocument(document)" class="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50" title="Supprimer">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </div>
                 </td>
               </tr>
-              
-              <!-- Message si aucun document -->
-              <tr *ngIf="filteredDocuments.length === 0">
-                <td colspan="6" class="py-8 text-center">
-                  <i class="fas fa-file-alt text-4xl text-blue-200 mb-4"></i>
-                  <p class="text-gray-500 text-lg">Aucun document trouvé</p>
-                </td>
-              </tr>
             </tbody>
           </table>
+        </div>
+        
+        <!-- Cards pour les documents (mobile) -->
+        <div class="md:hidden">
+          <div *ngFor="let document of filteredDocuments" class="border-b border-gray-200 p-4 hover:bg-gray-50">
+            <div class="flex justify-between items-start mb-2">
+              <div class="flex items-center">
+                <i [class]="getDocumentIcon(document.format)" class="text-2xl mr-3"></i>
+                <div>
+                  <p class="font-medium text-gray-900">{{ document.nom }}</p>
+                  <p class="text-sm text-gray-500">{{ formatFileSize(document.taille) }} - {{ document.dateCreation | date:'dd/MM/yyyy' }}</p>
+                </div>
+              </div>
+              <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getDocumentTypeClass(document.type)">
+                {{ document.type }}
+              </span>
+            </div>
+            
+            <p class="text-gray-700 mb-4 line-clamp-2">{{ document.description }}</p>
+            
+            <div *ngIf="document.immeuble" class="flex items-center text-gray-600 mb-4">
+              <i class="fas fa-building w-5"></i>
+              <span class="ml-2">{{ document.immeuble.nom }}</span>
+            </div>
+
+            <div class="flex justify-end gap-3">
+              <button (click)="viewDocumentDetails(document)" class="text-indigo-600 p-2 rounded hover:bg-indigo-50" title="Voir les détails">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button (click)="downloadDocument(document)" class="text-green-600 p-2 rounded hover:bg-green-50" title="Télécharger">
+                <i class="fas fa-download"></i>
+              </button>
+              <button (click)="deleteDocument(document)" class="text-red-600 p-2 rounded hover:bg-red-50" title="Supprimer">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message si aucun document -->
+        <div *ngIf="filteredDocuments.length === 0" class="py-16 flex flex-col items-center">
+          <div class="bg-blue-50 rounded-full p-6 mb-4">
+            <i class="fas fa-file-alt text-4xl text-blue-300"></i>
+          </div>
+          <p class="text-gray-500 text-lg mb-4">Aucun document trouvé</p>
+          <button (click)="openUploadModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+            <i class="fas fa-upload"></i>
+            Ajouter un document
+          </button>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="filteredDocuments.length > 0" class="px-6 py-4 bg-gray-50 border-t flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            Affichage de <span class="font-medium">{{ filteredDocuments.length }}</span> sur <span class="font-medium">{{ documents.length }}</span> documents
+          </div>
+          <div class="flex items-center space-x-2">
+            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">Précédent</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">Suivant</button>
+          </div>
         </div>
       </div>
     </div>
@@ -125,62 +246,82 @@
   <div *ngIf="selectedDocument" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
       <div class="p-6">
-        <div class="flex justify-between items-start mb-4">
-          <h3 class="text-xl font-bold text-blue-900">Détails du document</h3>
-          <button (click)="closeDocumentDetails()" class="text-gray-500 hover:text-gray-700">
+        <div class="flex justify-between items-start mb-6">
+          <h3 class="text-xl font-bold text-gray-900">Détails du document</h3>
+          <button (click)="closeDocumentDetails()" class="text-gray-500 hover:text-gray-700 p-1">
             <i class="fas fa-times"></i>
           </button>
         </div>
         
-        <div class="space-y-4">
+        <div class="space-y-6">
           <div class="flex items-center">
             <i [class]="getDocumentIcon(selectedDocument.format)" class="text-3xl mr-4"></i>
             <div>
-              <h4 class="text-lg font-semibold">{{ selectedDocument.nom }}</h4>
+              <h4 class="text-lg font-semibold text-gray-900">{{ selectedDocument.nom }}</h4>
               <span [class]="'px-2 py-1 rounded-full text-xs font-medium ' + getDocumentTypeClass(selectedDocument.type)">
                 {{ selectedDocument.type }}
               </span>
             </div>
           </div>
           
-          <p class="text-gray-700">{{ selectedDocument.description }}</p>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <p class="text-gray-700">{{ selectedDocument.description }}</p>
+          </div>
           
-          <div class="grid grid-cols-2 gap-4">
-            <div class="text-sm">
-              <p class="text-gray-500">Format</p>
-              <p class="font-medium">{{ selectedDocument.format }}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h5 class="text-sm font-medium text-gray-500 mb-2">Informations du fichier</h5>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Format</span>
+                  <span class="font-medium">{{ selectedDocument.format }}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Taille</span>
+                  <span class="font-medium">{{ formatFileSize(selectedDocument.taille) }}</span>
+                </div>
+              </div>
             </div>
-            <div class="text-sm">
-              <p class="text-gray-500">Taille</p>
-              <p class="font-medium">{{ formatFileSize(selectedDocument.taille) }}</p>
-            </div>
-            <div class="text-sm">
-              <p class="text-gray-500">Date de création</p>
-              <p class="font-medium">{{ selectedDocument.dateCreation | date:'dd/MM/yyyy HH:mm' }}</p>
-            </div>
-            <div *ngIf="selectedDocument.dateModification" class="text-sm">
-              <p class="text-gray-500">Dernière modification</p>
-              <p class="font-medium">{{ selectedDocument.dateModification | date:'dd/MM/yyyy HH:mm' }}</p>
+            
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h5 class="text-sm font-medium text-gray-500 mb-2">Dates</h5>
+              <div class="space-y-2">
+                <div class="flex justify-between">
+                  <span class="text-gray-600">Création</span>
+                  <span class="font-medium">{{ selectedDocument.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div *ngIf="selectedDocument.dateModification" class="flex justify-between">
+                  <span class="text-gray-600">Modification</span>
+                  <span class="font-medium">{{ selectedDocument.dateModification | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+              </div>
             </div>
           </div>
           
-          <div *ngIf="selectedDocument.immeuble" class="text-sm">
-            <p class="text-gray-500">Immeuble</p>
-            <p class="font-medium">{{ selectedDocument.immeuble.nom }}</p>
+          <div *ngIf="selectedDocument.immeuble || selectedDocument.appartement" class="bg-gray-50 p-4 rounded-lg">
+            <h5 class="text-sm font-medium text-gray-500 mb-2">Localisation</h5>
+            <div class="space-y-2">
+              <div *ngIf="selectedDocument.immeuble" class="flex items-center">
+                <i class="fas fa-building text-gray-400 w-5"></i>
+                <span class="ml-2">{{ selectedDocument.immeuble.nom }}</span>
+              </div>
+              <div *ngIf="selectedDocument.appartement" class="flex items-center">
+                <i class="fas fa-home text-gray-400 w-5"></i>
+                <span class="ml-2">Appartement {{ selectedDocument.appartement.numero }}</span>
+              </div>
+            </div>
           </div>
           
-          <div *ngIf="selectedDocument.appartement" class="text-sm">
-            <p class="text-gray-500">Appartement</p>
-            <p class="font-medium">{{ selectedDocument.appartement.numero }}</p>
+          <div *ngIf="selectedDocument.creePar" class="bg-gray-50 p-4 rounded-lg">
+            <h5 class="text-sm font-medium text-gray-500 mb-2">Métadonnées</h5>
+            <div class="flex items-center">
+              <i class="fas fa-user text-gray-400 w-5"></i>
+              <span class="ml-2">Créé par: {{ selectedDocument.creePar.nom }} {{ selectedDocument.creePar.prenom }}</span>
+            </div>
           </div>
           
-          <div *ngIf="selectedDocument.creePar" class="text-sm">
-            <p class="text-gray-500">Créé par</p>
-            <p class="font-medium">{{ selectedDocument.creePar.nom }} {{ selectedDocument.creePar.prenom }}</p>
-          </div>
-          
-          <div *ngIf="selectedDocument.tags && selectedDocument.tags.length > 0" class="text-sm">
-            <p class="text-gray-500">Tags</p>
+          <div *ngIf="selectedDocument.tags && selectedDocument.tags.length > 0" class="bg-gray-50 p-4 rounded-lg">
+            <h5 class="text-sm font-medium text-gray-500 mb-2">Tags</h5>
             <div class="flex flex-wrap gap-2 mt-1">
               <span *ngFor="let tag of selectedDocument.tags"
                     class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
@@ -190,12 +331,12 @@
           </div>
         </div>
         
-        <div class="mt-6 flex justify-end gap-3">
-          <button (click)="closeDocumentDetails()" class="syndic-button syndic-button-secondary">
+        <div class="mt-8 flex justify-end gap-3">
+          <button (click)="closeDocumentDetails()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
             Fermer
           </button>
-          <button (click)="downloadDocument(selectedDocument)" class="syndic-button syndic-button-primary">
-            <i class="fas fa-download mr-2"></i>
+          <button (click)="downloadDocument(selectedDocument)" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+            <i class="fas fa-download"></i>
             Télécharger
           </button>
         </div>
@@ -207,9 +348,9 @@
   <div *ngIf="isUploadModalOpen" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-xl max-w-md w-full">
       <div class="p-6">
-        <div class="flex justify-between items-start mb-4">
-          <h3 class="text-xl font-bold text-blue-900">Ajouter un document</h3>
-          <button (click)="closeUploadModal()" class="text-gray-500 hover:text-gray-700">
+        <div class="flex justify-between items-start mb-6">
+          <h3 class="text-xl font-bold text-gray-900">Ajouter un document</h3>
+          <button (click)="closeUploadModal()" class="text-gray-500 hover:text-gray-700 p-1">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -217,22 +358,29 @@
         <div *ngIf="uploadProgress === 0" class="space-y-4">
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">Fichier</label>
-            <input type="file" (change)="onFileSelected($event)" class="w-full p-2 border border-gray-300 rounded-md">
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer">
+              <input type="file" (change)="onFileSelected($event)" class="hidden" id="fileUpload">
+              <label for="fileUpload" class="cursor-pointer">
+                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-3"></i>
+                <p class="text-gray-500">Glissez votre fichier ici ou <span class="text-blue-600">parcourir</span></p>
+                <p *ngIf="uploadFile" class="mt-2 text-sm text-green-600">Fichier sélectionné: {{ uploadFile.name }}</p>
+              </label>
+            </div>
           </div>
           
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">Nom</label>
-            <input type="text" class="syndic-input" placeholder="Nom du document">
+            <input type="text" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Nom du document">
           </div>
           
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">Description</label>
-            <textarea class="syndic-input" rows="3" placeholder="Description du document"></textarea>
+            <textarea class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" rows="3" placeholder="Description du document"></textarea>
           </div>
           
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">Type</label>
-            <select class="syndic-input">
+            <select class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
               <option value="CONTRAT">Contrat</option>
               <option value="FACTURE">Facture</option>
               <option value="REGLEMENT">Règlement</option>
@@ -242,35 +390,46 @@
           
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700">Immeuble (optionnel)</label>
-            <select class="syndic-input">
+            <select class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
               <option value="">Non spécifié</option>
               <!-- Options d'immeubles ici -->
             </select>
           </div>
+          
+          <div class="space-y-2">
+            <label class="block text-sm font-medium text-gray-700">Tags (optionnel)</label>
+            <input type="text" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Séparez les tags par des virgules">
+          </div>
         </div>
         
-        <div *ngIf="uploadProgress > 0" class="py-6">
-          <div class="text-center mb-4">
-            <p class="font-medium mb-1">Téléchargement en cours...</p>
-            <p class="text-sm text-gray-500">{{ uploadProgress }}%</p>
-          </div>
-          <div class="w-full bg-gray-200 rounded-full h-2.5">
+        <div *ngIf="uploadProgress > 0 && uploadProgress < 100" class="py-6">
+          <h4 class="text-center font-medium text-gray-700 mb-4">Téléchargement en cours...</h4>
+          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
             <div class="bg-blue-600 h-2.5 rounded-full" [style.width.%]="uploadProgress"></div>
           </div>
+          <p class="text-center text-sm text-gray-500">{{ uploadProgress }}%</p>
         </div>
         
-        <div class="mt-6 flex justify-end gap-3">
-          <button (click)="closeUploadModal()" class="syndic-button syndic-button-secondary">
+        <div *ngIf="uploadProgress === 100" class="py-8 flex flex-col items-center">
+          <div class="bg-green-100 p-3 rounded-full mb-4">
+            <i class="fas fa-check text-green-600 text-2xl"></i>
+          </div>
+          <p class="text-gray-800 text-lg font-medium mb-1">Téléchargement réussi!</p>
+          <p class="text-gray-500 text-sm mb-6">Votre document a été ajouté avec succès.</p>
+          <button (click)="closeUploadModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
+            Fermer
+          </button>
+        </div>
+        
+        <div *ngIf="uploadProgress === 0" class="mt-6 flex justify-end gap-3">
+          <button (click)="closeUploadModal()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">
             Annuler
           </button>
-          <button *ngIf="uploadProgress === 0 && uploadFile" (click)="uploadDocument({})" class="syndic-button syndic-button-primary">
-            <i class="fas fa-upload mr-2"></i>
+          <button (click)="uploadDocument({})" [disabled]="!uploadFile" [ngClass]="{'opacity-50 cursor-not-allowed': !uploadFile}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             Télécharger
           </button>
         </div>
       </div>
     </div>
   </div>
-
-  <app-footer></app-footer>
 </div> 

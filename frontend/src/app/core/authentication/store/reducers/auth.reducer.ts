@@ -1,6 +1,7 @@
 import {createReducer, on} from '@ngrx/store';
 import * as AuthActions from '../actions/auth.actions';
 import {AuthState} from '../../models/auth.model';
+
 export const initialState: AuthState = {
   user: null,
   loading: false,
@@ -10,7 +11,6 @@ export const initialState: AuthState = {
 export const authReducer = createReducer(
   initialState,
 
-  // Initialize auth state
   on(AuthActions.initializeAuthState, (state) => ({
     ...state,
     loading: true,
@@ -65,7 +65,7 @@ export const authReducer = createReducer(
       nom: user.nom,
       prenom: user.prenom,
       role: user.role,
-      token: '' // Le token sera géré par le service d'authentification
+      token: ''
     },
     loading: false,
     error: null

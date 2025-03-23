@@ -44,4 +44,6 @@ public interface PaiementService {
     List<PaiementResponse> getPaiementsByProprietaire(Long proprietaireId);
 
     Map<String, Object> getPaiementStatistics();
+
+    List<PaiementResponse> getPaiementsBySyndic(Long syndicId);
 }

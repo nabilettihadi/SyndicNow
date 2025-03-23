@@ -1,83 +1,218 @@
-<div class="syndic-page">
+<div class="syndic-page bg-gray-50 min-h-screen">
   <app-navbar></app-navbar>
   
-  <header class="syndic-header">
-    <div class="syndic-container">
+  <header class="bg-gradient-to-r from-blue-900 to-blue-700 py-10 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-4xl font-bold mb-4">Gestion des Paiements</h1>
       <p class="text-lg text-blue-100">Suivez et gérez tous les paiements de vos immeubles</p>
     </div>
   </header>
 
-  <div class="syndic-container">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Chargement -->
-    <div *ngIf="isLoading" class="syndic-loading">
-      <div class="bg-white p-8 rounded-2xl shadow-xl flex flex-col items-center gap-4">
+    <div *ngIf="isLoading" class="flex justify-center py-16">
+      <div class="bg-white p-8 rounded-xl shadow-xl flex flex-col items-center gap-4">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-900 border-t-transparent"></div>
         <p class="text-blue-900 font-medium">Chargement des paiements...</p>
       </div>
     </div>
 
     <!-- Erreur -->
-    <div *ngIf="hasError" class="syndic-error">
+    <div *ngIf="hasError" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6 flex items-center gap-3">
       <i class="fas fa-exclamation-circle text-xl"></i>
       <span>{{ errorMessage }}</span>
     </div>
 
     <!-- Contenu principal -->
-    <div *ngIf="!isLoading && !hasError">
-      <div class="syndic-card">
-        <div class="syndic-card-header">
-          <h2 class="syndic-card-title">Liste des Paiements</h2>
-          <button class="syndic-button syndic-button-primary">
-            <i class="fas fa-plus"></i>
-            Ajouter un paiement
-          </button>
-        </div>
-
-        <!-- Recherche et filtres -->
-        <div class="flex flex-wrap gap-4 mb-8">
-          <div class="relative flex-grow">
-            <input
-              type="text"
-              [(ngModel)]="searchTerm"
-              (keyup)="applyFilter()"
-              placeholder="Rechercher un paiement..."
-              class="syndic-input"
-            />
-            <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-blue-400"></i>
+    <div *ngIf="!isLoading && !hasError" class="space-y-8">
+      <!-- Statistiques -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-blue-500">
+          <div class="bg-blue-100 p-3 rounded-lg">
+            <i class="fas fa-money-bill-wave text-blue-700 text-xl"></i>
           </div>
+          <div>
+            <p class="text-sm text-gray-500">Total des paiements</p>
+            <p class="text-2xl font-bold text-gray-800">{{ paiements.length }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-green-500">
+          <div class="bg-green-100 p-3 rounded-lg">
+            <i class="fas fa-check-circle text-green-700 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Paiements payés</p>
+            <p class="text-2xl font-bold text-gray-800">{{ getTotalByStatus('PAYE') }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-yellow-500">
+          <div class="bg-yellow-100 p-3 rounded-lg">
+            <i class="fas fa-clock text-yellow-700 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Paiements en attente</p>
+            <p class="text-2xl font-bold text-gray-800">{{ getTotalByStatus('EN_ATTENTE') }}</p>
+          </div>
+        </div>
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-red-500">
+          <div class="bg-red-100 p-3 rounded-lg">
+            <i class="fas fa-exclamation-triangle text-red-700 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Paiements retardés</p>
+            <p class="text-2xl font-bold text-gray-800">{{ getTotalByStatus('RETARDE') }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Carte principale -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="p-6 flex flex-col md:flex-row md:items-center md:justify-between border-b">
+          <h2 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Liste des Paiements</h2>
           
-          <select 
-            [(ngModel)]="statusFilter" 
-            (change)="applyFilter()"
-            class="syndic-input w-auto"
-          >
-            <option value="ALL">Tous les statuts</option>
-            <option value="PAYE">Payé</option>
-            <option value="EN_ATTENTE">En attente</option>
-            <option value="RETARDE">Retardé</option>
-            <option value="ANNULE">Annulé</option>
-          </select>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button class="btn-primary flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+              <i class="fas fa-file-export"></i>
+              Exporter
+            </button>
+            <button class="btn-success flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+              <i class="fas fa-plus"></i>
+              Ajouter un paiement
+            </button>
+          </div>
+        </div>
+        
+        <!-- Recherche et filtres -->
+        <div class="p-6 border-b bg-gray-50">
+          <div class="flex flex-col md:flex-row gap-4">
+            <div class="relative flex-grow">
+              <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                (keyup)="applyFilter()"
+                placeholder="Rechercher un paiement..."
+                class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <i class="fas fa-search absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+            
+            <select 
+              [(ngModel)]="statusFilter" 
+              (change)="applyFilter()"
+              class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="ALL">Tous les statuts</option>
+              <option value="PAYE">Payé</option>
+              <option value="EN_ATTENTE">En attente</option>
+              <option value="RETARDE">Retardé</option>
+              <option value="ANNULE">Annulé</option>
+            </select>
+            
+            <select 
+              [(ngModel)]="periodeFilter" 
+              (change)="applyFilter()"
+              class="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="ALL">Toutes les périodes</option>
+              <option value="THIS_MONTH">Ce mois</option>
+              <option value="LAST_MONTH">Mois dernier</option>
+              <option value="THIS_YEAR">Cette année</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Liste des paiements -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Tableau des paiements (visible sur les écrans moyens et grands) -->
+        <div class="hidden md:block overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Référence
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Montant
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Méthode
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Propriétaire
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Statut
+                </th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <tr *ngFor="let paiement of filteredPaiements" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ paiement.reference }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">{{ paiement.date | date:'dd/MM/yyyy' }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ paiement.montant | currency:'MAD ' }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-500">{{ paiement.methode }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ paiement.proprietaire?.nom }} {{ paiement.proprietaire?.prenom }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span [ngClass]="getStatusBadgeClass(paiement.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                    {{ getStatusLabel(paiement.status) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <div class="flex justify-end gap-2">
+                    <a [routerLink]="['/syndic/paiements', paiement.id]" 
+                      class="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                    <a [routerLink]="['/syndic/paiements/edit', paiement.id]" 
+                      class="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button (click)="deletePaiement(paiement.id)" 
+                      class="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cards pour les paiements (mobile) -->
+        <div class="md:hidden">
           <div *ngFor="let paiement of filteredPaiements" 
-               class="bg-white rounded-xl border border-blue-100 p-6 hover:shadow-lg transition-all duration-300">
-            <div class="flex justify-between items-start mb-4">
+               class="border-b border-gray-200 p-4 hover:bg-gray-50">
+            <div class="flex justify-between items-start mb-2">
               <div>
-                <h3 class="text-lg font-semibold text-blue-900">{{ paiement.reference }}</h3>
-                <p class="text-sm text-gray-600">{{ paiement.date | date:'dd/MM/yyyy' }}</p>
+                <h3 class="text-lg font-semibold text-gray-900">{{ paiement.reference }}</h3>
+                <p class="text-sm text-gray-500">{{ paiement.date | date:'dd/MM/yyyy' }}</p>
               </div>
-              <span [ngClass]="getStatusClass(paiement.status)" class="syndic-badge">
-                {{ paiement.status }}
+              <span [ngClass]="getStatusBadgeClass(paiement.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                {{ getStatusLabel(paiement.status) }}
               </span>
             </div>
             
-            <div class="space-y-2 mb-6">
+            <div class="space-y-2 mb-4">
               <div class="flex items-center text-gray-600">
                 <i class="fas fa-money-bill-wave w-5"></i>
-                <span class="ml-2">{{ paiement.montant | currency:'MAD ' }}</span>
+                <span class="ml-2 font-medium">{{ paiement.montant | currency:'MAD ' }}</span>
               </div>
               <div class="flex items-center text-gray-600">
                 <i class="fas fa-credit-card w-5"></i>
@@ -91,23 +226,42 @@
 
             <div class="flex justify-end gap-3">
               <a [routerLink]="['/syndic/paiements', paiement.id]" 
-                 class="syndic-button syndic-button-secondary">
+                 class="text-indigo-600 p-2 rounded hover:bg-indigo-50">
                 <i class="fas fa-eye"></i>
-                Détails
               </a>
               <a [routerLink]="['/syndic/paiements/edit', paiement.id]" 
-                 class="syndic-button syndic-button-primary">
+                 class="text-blue-600 p-2 rounded hover:bg-blue-50">
                 <i class="fas fa-edit"></i>
-                Modifier
               </a>
+              <button (click)="deletePaiement(paiement.id)" 
+                 class="text-red-600 p-2 rounded hover:bg-red-50">
+                <i class="fas fa-trash-alt"></i>
+              </button>
             </div>
           </div>
+        </div>
 
-          <!-- Message si aucun paiement -->
-          <div *ngIf="filteredPaiements.length === 0" 
-               class="col-span-full text-center py-12">
-            <i class="fas fa-money-bill-wave text-4xl text-blue-200 mb-4"></i>
-            <p class="text-gray-500 text-lg">Aucun paiement trouvé</p>
+        <!-- Message si aucun paiement -->
+        <div *ngIf="filteredPaiements.length === 0" 
+             class="py-16 flex flex-col items-center">
+          <div class="bg-blue-50 rounded-full p-6 mb-4">
+            <i class="fas fa-money-bill-wave text-4xl text-blue-300"></i>
+          </div>
+          <p class="text-gray-500 text-lg mb-4">Aucun paiement trouvé</p>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+            <i class="fas fa-plus"></i>
+            Ajouter un paiement
+          </button>
+        </div>
+
+        <!-- Pagination -->
+        <div *ngIf="filteredPaiements.length > 0" class="px-6 py-4 bg-gray-50 border-t flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            Affichage de <span class="font-medium">{{ filteredPaiements.length }}</span> sur <span class="font-medium">{{ paiements.length }}</span> paiements
+          </div>
+          <div class="flex items-center space-x-2">
+            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">Précédent</button>
+            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm bg-white hover:bg-gray-50">Suivant</button>
           </div>
         </div>
       </div>

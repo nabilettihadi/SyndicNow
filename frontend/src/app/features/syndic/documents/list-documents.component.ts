@@ -2,15 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
 import { DocumentService } from '@core/services/document.service';
 import { Document as AppDocument } from '@core/models/document.model';
 
 @Component({
   selector: 'app-list-documents',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, NavbarComponent, FooterComponent],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './list-documents.component.html',
   styleUrls: []
 })
@@ -76,6 +74,10 @@ export class ListDocumentsComponent implements OnInit {
     }
     
     this.filteredDocuments = filtered;
+  }
+
+  getDocumentsByType(type: string): number {
+    return this.documents.filter(document => document.type === type).length;
   }
 
   getDocumentTypeClass(type: string): string {

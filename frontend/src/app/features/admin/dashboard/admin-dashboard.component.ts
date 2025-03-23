@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
-import {NavbarComponent} from '@shared/components/navbar/navbar.component';
-import {FooterComponent} from '@shared/components/footer/footer.component';
 import {FormsModule} from '@angular/forms';
 import {catchError, forkJoin, of} from 'rxjs';
 import {ActivityItem, UserService} from '@core/services/user.service';
@@ -21,7 +19,7 @@ interface DashboardStats {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent, FooterComponent, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   template: `
     <div class="min-h-screen bg-gray-50">
       <header class="bg-white shadow-sm">
@@ -273,7 +271,7 @@ interface DashboardStats {
       </main>
     </div>
   `,
-  styles: []
+  styleUrls: []
 })
 export class AdminDashboardComponent implements OnInit {
   stats: DashboardStats = {

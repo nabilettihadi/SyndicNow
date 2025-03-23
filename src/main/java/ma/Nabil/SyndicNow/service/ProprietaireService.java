@@ -15,4 +15,11 @@ public interface ProprietaireService {
     List<ProprietaireResponse> getAllProprietaires();
 
     void deleteProprietaire(Long id);
+
+    /**
+     * Met à jour le profil du propriétaire actuellement connecté
+     * @param dto Les données de mise à jour du profil
+     * @return Les informations du propriétaire mises à jour
+     */
+    ProprietaireResponse updateProfile(ProprietaireRequest dto);
 }

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/paiements")
+@RequestMapping("/api/paiements")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Payment Management", description = "APIs for managing payments")
@@ -212,6 +212,15 @@ public class PaiementController {
     public ResponseEntity<List<PaiementResponse>> getPaiementsByProprietaire(@PathVariable Long proprietaireId) {
         log.debug("Fetching payments for proprietaire with ID: {}", proprietaireId);
         List<PaiementResponse> response = paiementService.getPaiementsByProprietaire(proprietaireId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/syndic/{syndicId}")
+    @Operation(summary = "Get payments by syndic", description = "Retrieves a list of payments for a specific syndic")
+    @ApiResponse(responseCode = "200", description = "List of payments retrieved successfully")
+    public ResponseEntity<List<PaiementResponse>> getPaiementsBySyndic(@PathVariable Long syndicId) {
+        log.debug("Fetching payments for syndic with ID: {}", syndicId);
+        List<PaiementResponse> response = paiementService.getPaiementsBySyndic(syndicId);
         return ResponseEntity.ok(response);
     }
 

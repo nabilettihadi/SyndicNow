@@ -42,9 +42,6 @@ export class ProprietaireDashboardComponent implements OnInit {
   searchTerm: string = '';
   filteredAppartements: Appartement[] = [];
 
-  // Date actuelle pour calculs
-  currentDate = new Date();
-
   constructor(
     private appartementService: AppartementService,
     private paiementService: PaiementService,
@@ -59,7 +56,7 @@ export class ProprietaireDashboardComponent implements OnInit {
       tap(user => {
         if (user) {
           this.userId = user.userId;
-          this.lastLoginDate = new Date(); // Utiliser la date actuelle puisque lastLoginDate n'est pas disponible
+          this.lastLoginDate = new Date();
         }
       }),
       switchMap(() => {

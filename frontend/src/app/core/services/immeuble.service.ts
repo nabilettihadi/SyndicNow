@@ -10,7 +10,7 @@ import {AuthService} from './auth.service';
   providedIn: 'root'
 })
 export class ImmeubleService {
-  private apiUrl = `${environment.apiUrl}/v1/immeubles`;
+  private apiUrl = `${environment.apiUrl}/api/immeubles`;
 
   constructor(
     private http: HttpClient,
@@ -141,7 +141,7 @@ export class ImmeubleService {
     
     // L'API backend n'a pas d'endpoint /api/v1/immeubles/{id}/appartements
     // Utiliser plutôt /api/appartements avec un filtre pour l'immeuble
-    return this.http.get<any[]>(`${environment.apiUrl}/appartements/immeuble/${immeubleId}`)
+    return this.http.get<any[]>(`${environment.apiUrl}/api/appartements/immeuble/${immeubleId}`)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error(`Erreur lors de la récupération des appartements pour l'immeuble ${immeubleId}:`, error);
@@ -149,7 +149,7 @@ export class ImmeubleService {
           if (error.status === 404) {
             // Tenter un autre endpoint possible
             console.log(`Endpoint /appartements/immeuble/${immeubleId} non trouvé, essai avec /api/appartements?immeubleId=${immeubleId}`);
-            return this.http.get<any[]>(`${environment.apiUrl}/appartements?immeubleId=${immeubleId}`)
+            return this.http.get<any[]>(`${environment.apiUrl}/api/appartements?immeubleId=${immeubleId}`)
               .pipe(
                 catchError((innerError) => {
                   console.error(`Échec également avec l'endpoint alternatif:`, innerError);

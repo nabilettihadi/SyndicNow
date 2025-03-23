@@ -24,6 +24,7 @@ export class ListPaiementsComponent implements OnInit {
   filteredPaiements: Paiement[] = [];
   searchTerm: string = '';
   statusFilter: string = 'ALL';
+  periodeFilter: string = 'ALL';
 
   constructor(private paiementService: PaiementService) {}
 
@@ -48,7 +49,7 @@ export class ListPaiementsComponent implements OnInit {
   }
 
   applyFilter(): void {
-    if (!this.searchTerm.trim() && this.statusFilter === 'ALL') {
+    if (!this.searchTerm.trim() && this.statusFilter === 'ALL' && this.periodeFilter === 'ALL') {
       this.filteredPaiements = [...this.paiements];
       return;
     }
@@ -58,6 +59,38 @@ export class ListPaiementsComponent implements OnInit {
     // Filtre par statut
     if (this.statusFilter !== 'ALL') {
       filtered = filtered.filter(paiement => paiement.status === this.statusFilter);
+    }
+    
+    // Filtre par période
+    if (this.periodeFilter !== 'ALL') {
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+      
+      switch (this.periodeFilter) {
+        case 'THIS_MONTH':
+          filtered = filtered.filter(paiement => {
+            const paiementDate = new Date(paiement.date);
+            return paiementDate.getMonth() === currentMonth && 
+                   paiementDate.getFullYear() === currentYear;
+          });
+          break;
+        case 'LAST_MONTH':
+          filtered = filtered.filter(paiement => {
+            const paiementDate = new Date(paiement.date);
+            const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+            return paiementDate.getMonth() === lastMonth && 
+                   paiementDate.getFullYear() === lastMonthYear;
+          });
+          break;
+        case 'THIS_YEAR':
+          filtered = filtered.filter(paiement => {
+            const paiementDate = new Date(paiement.date);
+            return paiementDate.getFullYear() === currentYear;
+          });
+          break;
+      }
     }
     
     // Filtre par texte de recherche
@@ -74,18 +107,52 @@ export class ListPaiementsComponent implements OnInit {
     this.filteredPaiements = filtered;
   }
 
-  getStatusClass(statut: string): string {
+  getTotalByStatus(status: string): number {
+    return this.paiements.filter(paiement => paiement.status === status).length;
+  }
+
+  getStatusBadgeClass(statut: string): string {
     switch (statut) {
       case 'PAYE':
-        return 'syndic-badge syndic-badge-success';
+        return 'bg-green-100 text-green-800';
       case 'EN_ATTENTE':
-        return 'syndic-badge syndic-badge-warning';
+        return 'bg-yellow-100 text-yellow-800';
       case 'RETARDE':
-        return 'syndic-badge syndic-badge-error';
+        return 'bg-red-100 text-red-800';
       case 'ANNULE':
-        return 'syndic-badge';
+        return 'bg-gray-100 text-gray-800';
       default:
-        return 'syndic-badge';
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'PAYE':
+        return 'Payé';
+      case 'EN_ATTENTE':
+        return 'En attente';
+      case 'RETARDE':
+        return 'Retardé';
+      case 'ANNULE':
+        return 'Annulé';
+      default:
+        return status;
+    }
+  }
+
+  deletePaiement(id: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce paiement ?')) {
+      this.paiementService.deletePaiement(id).subscribe({
+        next: () => {
+          this.paiements = this.paiements.filter(p => p.id !== id);
+          this.filteredPaiements = this.filteredPaiements.filter(p => p.id !== id);
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression du paiement:', error);
+          alert('Une erreur est survenue lors de la suppression du paiement');
+        }
+      });
     }
   }
 } 

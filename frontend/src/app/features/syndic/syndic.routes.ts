@@ -30,6 +30,10 @@ export const SYNDIC_ROUTES: Routes = [
     loadComponent: () => import('./documents/list-documents.component').then(m => m.ListDocumentsComponent)
   },
   {
+    path: 'profil',
+    loadComponent: () => import('./profil/profil.component').then(m => m.ProfilComponent)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

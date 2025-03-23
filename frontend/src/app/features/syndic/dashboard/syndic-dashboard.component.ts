@@ -18,8 +18,7 @@ import { AuthService } from '@core/services/auth.service';
   selector: 'app-syndic-dashboard',
   standalone: true,
   imports: [CommonModule, NavbarComponent, FooterComponent, RouterModule, FormsModule],
-  templateUrl: './syndic-dashboard.component.html',
-  styleUrls: ['./syndic-dashboard.component.css']
+  templateUrl: './syndic-dashboard.component.html'
 })
 export class SyndicDashboardComponent implements OnInit {
   syndicId: number = 1; // À remplacer par l'ID du syndic actuel

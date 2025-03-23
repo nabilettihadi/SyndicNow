@@ -9,7 +9,7 @@ import {Proprietaire, ProprietaireStats} from '@core/models/proprietaire.model';
   providedIn: 'root'
 })
 export class ProprietaireService {
-  private apiUrl = `${environment.apiUrl}/proprietaires`;
+  private apiUrl = `${environment.apiUrl}/api/proprietaires`;
 
   constructor(private http: HttpClient) {
   }

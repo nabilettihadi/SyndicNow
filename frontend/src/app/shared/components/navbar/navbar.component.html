@@ -44,7 +44,7 @@
                 <div class="font-medium">{{ userName$ | async }}</div>
                 <div class="text-white/80">{{ getRoleLabel((currentUser$ | async)?.role || '') }}</div>
               </div>
-              <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">
+              <a [routerLink]="getProfilRoute()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">
                 <i class="fas fa-user mr-2"></i>Mon profil
               </a>
               <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700">

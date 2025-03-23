@@ -8,7 +8,7 @@ import {Syndic, SyndicStats} from '@core/models/syndic.model';
   providedIn: 'root'
 })
 export class SyndicService {
-  private apiUrl = environment.apiUrl + '/syndics';
+  private apiUrl = environment.apiUrl + '/api/syndics';
 
   constructor(private http: HttpClient) {
   }

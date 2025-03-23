@@ -12,6 +12,7 @@ import ma.Nabil.SyndicNow.dto.syndic.SyndicResponse;
 import ma.Nabil.SyndicNow.service.SyndicService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,5 +78,18 @@ public class SyndicController {
         syndicService.deleteSyndic(id);
         log.info("Successfully deleted syndic with ID: {}", id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @PutMapping("/profile")
+    @Operation(summary = "Update the current syndic's profile", description = "Allows a syndic to update their personal information")
+    @ApiResponse(responseCode = "200", description = "Profile successfully updated")
+    @ApiResponse(responseCode = "400", description = "Invalid input data")
+    @ApiResponse(responseCode = "404", description = "Syndic not found")
+    @PreAuthorize("hasRole('SYNDIC')")
+    public ResponseEntity<SyndicResponse> updateProfile(@Valid @RequestBody SyndicRequest dto) {
+        log.info("Updating current syndic profile");
+        SyndicResponse response = syndicService.updateProfile(dto);
+        log.info("Successfully updated syndic profile");
+        return ResponseEntity.ok(response);
     }
 }

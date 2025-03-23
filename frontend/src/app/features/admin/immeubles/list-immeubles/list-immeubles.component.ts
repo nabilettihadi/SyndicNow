@@ -173,7 +173,7 @@ export class ListImmeublesComponent implements OnInit {
       'Content-Type': 'application/json'
     });
     
-    const fullUrl = `${environment.apiUrl}${endpoint.startsWith('/') ? endpoint : '/'+endpoint}`;
+    const fullUrl = `${environment.apiUrl}/api${endpoint.startsWith('/') ? endpoint : '/'+endpoint}`;
     console.log(`Test direct de l'endpoint: ${fullUrl}`);
     
     this.http.get<Immeuble[]>(fullUrl, { headers }).subscribe({

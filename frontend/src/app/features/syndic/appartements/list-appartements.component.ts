@@ -6,6 +6,7 @@ import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { AppartementService } from '@core/services/appartement.service';
 import { Appartement } from '@core/models/appartement.model';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-list-appartements',
@@ -24,9 +25,18 @@ export class ListAppartementsComponent implements OnInit {
   filteredAppartements: Appartement[] = [];
   searchTerm: string = '';
 
-  constructor(private appartementService: AppartementService) {}
+  constructor(
+    private appartementService: AppartementService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    // Récupérer l'ID du syndic connecté
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.userId) {
+      this.syndicId = currentUser.userId;
+    }
+    
     this.loadAppartements();
   }
 
@@ -56,8 +66,8 @@ export class ListAppartementsComponent implements OnInit {
     this.filteredAppartements = this.appartements.filter(appartement => 
       appartement.numero.toLowerCase().includes(searchLower) || 
       appartement.etage.toString().includes(searchLower) ||
-      appartement.immeuble?.nom.toLowerCase().includes(searchLower) ||
-      appartement.status.toLowerCase().includes(searchLower)
+      appartement.immeuble?.nom?.toLowerCase().includes(searchLower) ||
+      appartement.status?.toLowerCase().includes(searchLower)
     );
   }
 
@@ -72,5 +82,33 @@ export class ListAppartementsComponent implements OnInit {
       default:
         return 'syndic-badge';
     }
+  }
+  
+  getStatusBadgeClass(statut: string): string {
+    switch (statut) {
+      case 'OCCUPE':
+        return 'bg-green-100 text-green-800';
+      case 'LIBRE':
+        return 'bg-blue-100 text-blue-800';
+      case 'EN_TRAVAUX':
+        return 'bg-amber-100 text-amber-800';
+      case 'RESERVE':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  }
+
+  // Statistiques calculées
+  get totalAppartements(): number {
+    return this.appartements.length;
+  }
+
+  get occupiedAppartements(): number {
+    return this.appartements.filter(a => a.status === 'OCCUPE').length;
+  }
+
+  get freeAppartements(): number {
+    return this.appartements.filter(a => a.status === 'LIBRE').length;
   }
 } 

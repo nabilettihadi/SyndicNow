@@ -9,7 +9,7 @@ import {Appartement, AppartementDetails, AppartementStats} from '../models/appar
   providedIn: 'root'
 })
 export class AppartementService {
-  private apiUrl = `${environment.apiUrl}/appartements`;
+  private apiUrl = `${environment.apiUrl}/api/appartements`;
 
   constructor(private http: HttpClient) {
   }
@@ -50,7 +50,7 @@ export class AppartementService {
       .pipe(
         catchError((error) => {
           console.error(`Erreur lors du chargement des appartements pour l'immeuble ${immeubleId}:`, error);
-          
+
           // Si l'endpoint /immeuble/ n'existe pas, essayer avec un paramètre de requête
           if (error.status === 404) {
             console.log(`Tentative avec un paramètre de requête: /api/appartements?immeubleId=${immeubleId}`);
@@ -62,7 +62,7 @@ export class AppartementService {
                 })
               );
           }
-          
+
           return this.handleError(error);
         })
       );

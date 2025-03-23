@@ -15,4 +15,11 @@ public interface SyndicService {
     List<SyndicResponse> getAllSyndics();
 
     void deleteSyndic(Long id);
+
+    /**
+     * Met à jour le profil du syndic actuellement connecté
+     * @param dto Les données de mise à jour du profil
+     * @return Les informations du syndic mises à jour
+     */
+    SyndicResponse updateProfile(SyndicRequest dto);
 }

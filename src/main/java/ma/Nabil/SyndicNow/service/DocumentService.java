@@ -16,4 +16,6 @@ public interface DocumentService {
     List<Document> listDocuments();
 
     List<Document> getDocumentsByProprietaire(Long proprietaireId);
+
+    List<Document> getDocumentsBySyndic(Long syndicId);
 }

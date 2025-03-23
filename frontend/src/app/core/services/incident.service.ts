@@ -8,7 +8,7 @@ import {addStatusAlias, Incident, IncidentWithStatus} from '@core/models/inciden
   providedIn: 'root'
 })
 export class IncidentService {
-  private apiUrl = `${environment.apiUrl}/incidents`;
+  private apiUrl = `${environment.apiUrl}/api/incidents`;
 
   constructor(private http: HttpClient) {
   }

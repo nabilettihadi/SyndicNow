@@ -335,8 +335,6 @@ export class AdminDashboardComponent implements OnInit {
         return 'bg-green-100';
       case 'immeuble':
         return 'bg-yellow-100';
-      case 'payment':
-        return 'bg-purple-100';
       case 'system':
         return 'bg-gray-100';
       default:
@@ -352,8 +350,6 @@ export class AdminDashboardComponent implements OnInit {
         return 'fas fa-user-tie text-green-600';
       case 'immeuble':
         return 'fas fa-building text-yellow-600';
-      case 'payment':
-        return 'fas fa-money-bill-wave text-purple-600';
       case 'system':
         return 'fas fa-cog text-gray-600';
       default:

@@ -10,7 +10,7 @@ import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.mapper.ImmeubleMapper;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
 import ma.Nabil.SyndicNow.repository.ImmeubleRepository;
-import ma.Nabil.SyndicNow.repository.PaiementRepository;
+
 import ma.Nabil.SyndicNow.repository.ProprietaireRepository;
 import ma.Nabil.SyndicNow.service.ImmeubleService;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,6 @@ public class ImmeubleServiceImpl implements ImmeubleService {
     private final ImmeubleRepository immeubleRepository;
     private final AppartementRepository appartementRepository;
     private final ProprietaireRepository proprietaireRepository;
-    private final PaiementRepository paiementRepository;
     private final ImmeubleMapper immeubleMapper;
 
     @Override
@@ -78,8 +77,6 @@ public class ImmeubleServiceImpl implements ImmeubleService {
         Long totalImmeubles = immeubleRepository.count();
         Long totalAppartements = appartementRepository.count();
         Long totalProprietaires = proprietaireRepository.count();
-        Double totalRevenu = paiementRepository.findAll().stream().mapToDouble(paiement -> paiement.getMontant().doubleValue()).sum();
-
-        return ImmeubleStatistics.builder().totalImmeubles(totalImmeubles).totalAppartements(totalAppartements).totalProprietaires(totalProprietaires).totalRevenu(totalRevenu).build();
+        return ImmeubleStatistics.builder().totalImmeubles(totalImmeubles).totalAppartements(totalAppartements).totalProprietaires(totalProprietaires).build();
     }
 }

@@ -6,11 +6,13 @@ import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleRequest;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleResponse;
 import ma.Nabil.SyndicNow.dto.immeuble.ImmeubleStatistics;
 import ma.Nabil.SyndicNow.entity.Immeuble;
+import ma.Nabil.SyndicNow.entity.Syndic;
 import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.mapper.ImmeubleMapper;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
 import ma.Nabil.SyndicNow.repository.ImmeubleRepository;
 import ma.Nabil.SyndicNow.repository.ProprietaireRepository;
+import ma.Nabil.SyndicNow.repository.SyndicRepository;
 import ma.Nabil.SyndicNow.service.ImmeubleService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ public class ImmeubleServiceImpl implements ImmeubleService {
     private final ImmeubleRepository immeubleRepository;
     private final AppartementRepository appartementRepository;
     private final ProprietaireRepository proprietaireRepository;
+    private final SyndicRepository syndicRepository;
     private final ImmeubleMapper immeubleMapper;
 
     @Override
@@ -77,5 +80,23 @@ public class ImmeubleServiceImpl implements ImmeubleService {
         Long totalAppartements = appartementRepository.count();
         Long totalProprietaires = proprietaireRepository.count();
         return ImmeubleStatistics.builder().totalImmeubles(totalImmeubles).totalAppartements(totalAppartements).totalProprietaires(totalProprietaires).build();
+    }
+
+    @Override
+    @Transactional
+    public ImmeubleResponse assignerSyndic(Long immeubleId, Long syndicId) {
+        log.debug("Assigning syndic {} to immeuble {}", syndicId, immeubleId);
+        
+        Immeuble immeuble = immeubleRepository.findById(immeubleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Immeuble non trouvé avec l'id: " + immeubleId));
+        
+        Syndic syndic = syndicRepository.findById(syndicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Syndic non trouvé avec l'id: " + syndicId));
+
+        immeuble.setSyndic(syndic);
+        Immeuble updatedImmeuble = immeubleRepository.save(immeuble);
+        
+        log.debug("Successfully assigned syndic {} to immeuble {}", syndicId, immeubleId);
+        return immeubleMapper.toResponse(updatedImmeuble);
     }
 }

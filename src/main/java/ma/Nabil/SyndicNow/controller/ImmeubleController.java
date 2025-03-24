@@ -92,4 +92,17 @@ public class ImmeubleController {
     public ResponseEntity<List<ImmeubleResponse>> getImmeublesBySyndic(@PathVariable Long syndicId) {
         return ResponseEntity.ok(immeubleService.getImmeublesBySyndic(syndicId));
     }
+
+    @PostMapping("/{id}/syndic/{syndicId}")
+    @Operation(summary = "Assign a syndic to a building", description = "Assigns a syndic to a building based on the provided IDs")
+    @ApiResponse(responseCode = "200", description = "Syndic successfully assigned to building")
+    @ApiResponse(responseCode = "404", description = "Building or syndic not found")
+    public ResponseEntity<ImmeubleResponse> assignerSyndic(
+            @Parameter(description = "ID of the building") @PathVariable Long id,
+            @Parameter(description = "ID of the syndic to assign") @PathVariable Long syndicId) {
+        log.info("Assigning syndic {} to building {}", syndicId, id);
+        ImmeubleResponse response = immeubleService.assignerSyndic(id, syndicId);
+        log.info("Successfully assigned syndic {} to building {}", syndicId, id);
+        return ResponseEntity.ok(response);
+    }
 }

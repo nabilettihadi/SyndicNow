@@ -20,4 +20,6 @@ public interface ImmeubleService {
     void deleteImmeuble(Long id);
 
     ImmeubleStatistics getImmeubleStatistics();
+
+    ImmeubleResponse assignerSyndic(Long immeubleId, Long syndicId);
 }

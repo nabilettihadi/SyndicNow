@@ -8,16 +8,30 @@ import {Syndic, SyndicStats} from '@core/models/syndic.model';
   providedIn: 'root'
 })
 export class SyndicService {
-  private apiUrl = environment.apiUrl + '/api/syndics';
+  private apiUrl = `${environment.apiUrl}/api/syndics`;
 
   constructor(private http: HttpClient) {
   }
 
   // Récupérer tous les syndics
   getAllSyndics(): Observable<Syndic[]> {
+    console.log('Appel API getAllSyndics:', this.apiUrl);
     return this.http.get<Syndic[]>(this.apiUrl)
       .pipe(
-        catchError(this.handleError)
+        catchError((error: HttpErrorResponse) => {
+          console.error('Erreur lors de la récupération des syndics:', error);
+          if (error.status === 401) {
+            return throwError(() => new Error('Non autorisé. Veuillez vous connecter.'));
+          }
+          if (error.status === 404) {
+            return throwError(() => new Error('Le service des syndics n\'est pas disponible.'));
+          }
+          if (error.status === 500) {
+            console.error('Erreur serveur détaillée:', error.error);
+            return throwError(() => new Error('Erreur serveur: ' + (error.error?.message || 'Une erreur interne est survenue')));
+          }
+          return throwError(() => new Error('Une erreur est survenue lors de la récupération des syndics.'));
+        })
       );
   }
 

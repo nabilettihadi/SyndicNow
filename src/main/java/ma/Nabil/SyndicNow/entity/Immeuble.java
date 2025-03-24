@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "immeubles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,43 +26,72 @@ public class Immeuble {
     private String adresse;
 
     @Column(nullable = false)
-    private String codePostal;
-
-    @Column(nullable = false)
     private String ville;
 
-    @Column(nullable = false)
+    @Column(name = "code_postal")
+    private String codePostal;
+
+    @Column(name = "nombre_etages")
     private Integer nombreEtages;
 
-    @Column(nullable = false)
+    @Column(name = "nombre_appartements")
     private Integer nombreAppartements;
 
-    @Column(nullable = false)
+    @Column(name = "annee_construction")
     private Integer anneeConstruction;
+
+    @Column(length = 1000)
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "syndic_id", nullable = false)
     private Syndic syndic;
 
-    @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appartement> appartements = new ArrayList<>();
 
-    private String description;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime dateCreation;
-
-    @Column(nullable = false)
-    private LocalDateTime dateModification;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        dateCreation = LocalDateTime.now();
-        dateModification = LocalDateTime.now();
+        createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        dateModification = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    // Méthodes utilitaires pour gérer la relation bidirectionnelle
+    public void addAppartement(Appartement appartement) {
+        appartements.add(appartement);
+        appartement.setImmeuble(this);
+    }
+
+    public void removeAppartement(Appartement appartement) {
+        appartements.remove(appartement);
+        appartement.setImmeuble(null);
+    }
+
+    // Getters pour la compatibilité avec le mapper
+    public LocalDateTime getDateCreation() {
+        return createdAt;
+    }
+
+    public LocalDateTime getDateModification() {
+        return updatedAt;
+    }
+
+    // Setters pour la compatibilité avec le mapper
+    public void setDateCreation(LocalDateTime dateCreation) {
+        this.createdAt = dateCreation;
+    }
+
+    public void setDateModification(LocalDateTime dateModification) {
+        this.updatedAt = dateModification;
     }
 }

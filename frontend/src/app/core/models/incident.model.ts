@@ -1,13 +1,13 @@
 export interface Incident {
-  id: number;
-  titre: string;
+  id?: number;
+  title: string;
   description: string;
-  priorite: 'HAUTE' | 'MOYENNE' | 'BASSE';
-  statut: 'NOUVEAU' | 'EN_COURS' | 'RESOLU';
-  dateCreation: Date;
-  date?: Date;
-  rapporteur: string;
+  priority: 'HAUTE' | 'MOYENNE' | 'BASSE';
+  status: 'NOUVEAU' | 'EN_COURS' | 'RESOLU';
+  reportedDate?: Date;
   immeubleId: number;
+  appartementId: number;
+  category: 'PLOMBERIE' | 'ELECTRICITE' | 'CHAUFFAGE' | 'CLIMATISATION' | 'ASCENSEUR' | 'SERRURERIE' | 'TOITURE' | 'PARTIES_COMMUNES' | 'INFILTRATION' | 'AUTRE';
   immeuble?: {
     id: number;
     nom: string;
@@ -16,26 +16,23 @@ export interface Incident {
 
 // Interface étendue qui ajoute la propriété status comme alias de statut
 export interface IncidentWithStatus extends Incident {
-  status: 'NOUVEAU' | 'EN_COURS' | 'RESOLU';
+  statut: string;
+  titre: string;
+  priorite: string;
+  categorie: string;
+  date?: Date;
 }
 
 // Cette fonction convertit un Incident en IncidentWithStatus
 export function addStatusAlias(incident: Incident): IncidentWithStatus {
-  const incidentWithStatus = incident as IncidentWithStatus;
-  Object.defineProperty(incidentWithStatus, 'status', {
-    get: function () {
-      return this.statut;
-    },
-    set: function (value) {
-      this.statut = value;
-    },
-    enumerable: true
-  });
-  // Ajouter également la propriété date si elle n'existe pas
-  if (!incidentWithStatus.date) {
-    incidentWithStatus.date = incidentWithStatus.dateCreation;
-  }
-  return incidentWithStatus;
+  return {
+    ...incident,
+    statut: incident.status,
+    titre: incident.title,
+    priorite: incident.priority,
+    categorie: incident.category,
+    date: incident.reportedDate
+  };
 }
 
 export interface IncidentStats {

@@ -49,27 +49,7 @@ export class AppartementService {
   }
 
   getAppartementsByImmeuble(immeubleId: number): Observable<Appartement[]> {
-    console.log(`Service appartement: Chargement des appartements pour l'immeuble ${immeubleId}`);
-    return this.http.get<Appartement[]>(`${this.apiUrl}/immeuble/${immeubleId}`)
-      .pipe(
-        catchError((error) => {
-          console.error(`Erreur lors du chargement des appartements pour l'immeuble ${immeubleId}:`, error);
-
-          // Si l'endpoint /immeuble/ n'existe pas, essayer avec un paramètre de requête
-          if (error.status === 404) {
-            console.log(`Tentative avec un paramètre de requête: /api/appartements?immeubleId=${immeubleId}`);
-            return this.http.get<Appartement[]>(`${this.apiUrl}?immeubleId=${immeubleId}`)
-              .pipe(
-                catchError((secondError) => {
-                  console.error('Échec de la deuxième tentative:', secondError);
-                  return this.handleError(secondError);
-                })
-              );
-          }
-
-          return this.handleError(error);
-        })
-      );
+    return this.http.get<Appartement[]>(`${this.apiUrl}/immeuble/${immeubleId}`);
   }
 
   getAppartementsByProprietaire(proprietaireId: number): Observable<Appartement[]> {

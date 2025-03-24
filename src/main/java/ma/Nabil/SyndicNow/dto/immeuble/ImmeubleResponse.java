@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.Nabil.SyndicNow.dto.syndic.SyndicResponse;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,7 @@ public class ImmeubleResponse {
     private Integer anneeConstruction;
     private String description;
     private Long syndicId;
+    private SyndicResponse syndic;
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
-} 
+}

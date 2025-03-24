@@ -43,8 +43,8 @@ export class IncidentService {
     );
   }
 
-  updateIncident(id: number, incident: Incident): Observable<IncidentWithStatus> {
-    return this.http.put<Incident>(`${this.apiUrl}/${id}`, incident).pipe(
+  updateIncident(id: number, incident: Partial<Incident>): Observable<IncidentWithStatus> {
+    return this.http.patch<Incident>(`${this.apiUrl}/${id}`, incident).pipe(
       map(incident => addStatusAlias(incident))
     );
   }

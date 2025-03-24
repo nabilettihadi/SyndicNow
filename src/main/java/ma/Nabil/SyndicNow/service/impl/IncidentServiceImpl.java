@@ -11,6 +11,8 @@ import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.mapper.IncidentMapper;
 import ma.Nabil.SyndicNow.repository.IncidentRepository;
 import ma.Nabil.SyndicNow.repository.SyndicRepository;
+import ma.Nabil.SyndicNow.repository.UserRepository;
+import ma.Nabil.SyndicNow.security.CustomUserDetails;
 import ma.Nabil.SyndicNow.service.IncidentService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -27,12 +29,16 @@ public class IncidentServiceImpl implements IncidentService {
 
     private final IncidentRepository incidentRepository;
     private final SyndicRepository syndicRepository;
+    private final UserRepository userRepository;
     private final IncidentMapper incidentMapper;
 
     @Override
     @Transactional
     public IncidentResponse createIncident(IncidentRequest request) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        CustomUserDetails currentUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        
+        User currentUser = userRepository.findById(currentUserDetails.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
         
         Incident incident = incidentMapper.toEntity(request, currentUser);
         incident = incidentRepository.save(incident);

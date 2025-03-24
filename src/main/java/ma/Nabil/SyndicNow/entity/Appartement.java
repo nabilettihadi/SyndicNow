@@ -1,25 +1,18 @@
 package ma.Nabil.SyndicNow.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Getter
-@Setter
-@Builder
+@Table(name = "appartements")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EntityListeners(AuditingEntityListener.class)
-@Table(name = "appartements")
 public class Appartement {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,29 +20,37 @@ public class Appartement {
     @Column(nullable = false)
     private String numero;
 
+    @Column(nullable = false)
     private Integer etage;
+
     private Double surface;
+
     private Integer nombrePieces;
-    private String type;
 
     @Column(length = 1000)
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "immeuble_id")
+    @JoinColumn(name = "immeuble_id", nullable = false)
     private Immeuble immeuble;
 
-    @OneToMany(mappedBy = "appartement", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<Paiement> paiements = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proprietaire_id")
-    private Proprietaire proprietaire;
+    @JoinColumn(name = "proprietaire_id", nullable = false)
+    private User proprietaire;
 
-    @CreatedDate
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }

@@ -2,13 +2,11 @@ package ma.Nabil.SyndicNow.mapper;
 
 import ma.Nabil.SyndicNow.dto.paiement.PaiementRequest;
 import ma.Nabil.SyndicNow.dto.paiement.PaiementResponse;
+import ma.Nabil.SyndicNow.dto.paiement.PaiementDTO;
 import ma.Nabil.SyndicNow.entity.Paiement;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface PaiementMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
@@ -34,4 +32,15 @@ public interface PaiementMapper {
     @Mapping(target = "createdBy", ignore = true)
     @Mapping(target = "updatedBy", ignore = true)
     void updatePaiementFromRequest(PaiementRequest request, @MappingTarget Paiement paiement);
+
+    @Mapping(target = "proprietaire", source = "appartement.proprietaire")
+    @Mapping(target = "appartementId", source = "appartement.id")
+    PaiementDTO toDto(Paiement paiement);
+
+    @Mapping(target = "appartement.proprietaire", source = "proprietaire")
+    @Mapping(target = "appartement.id", source = "appartementId")
+    Paiement toEntity(PaiementDTO paiementDTO);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updatePaiementFromDto(PaiementDTO paiementDTO, @MappingTarget Paiement paiement);
 }

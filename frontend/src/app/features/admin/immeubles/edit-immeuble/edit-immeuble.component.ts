@@ -6,6 +6,7 @@ import { ImmeubleService } from '@core/services/immeuble.service';
 import { SyndicService } from '@core/services/syndic.service';
 import { Immeuble } from '@core/models/immeuble.model';
 import { Syndic } from '@core/models/syndic.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-edit-immeuble',
@@ -35,12 +36,64 @@ import { Syndic } from '@core/models/syndic.model';
         </div>
       </header>
 
-      <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Liste des syndics -->
+        <div class="mb-8 bg-white shadow overflow-hidden sm:rounded-lg">
+          <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+            <div>
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Liste des Syndics</h3>
+              <p class="mt-1 text-sm text-gray-500">Sélectionnez un syndic pour l'assigner à l'immeuble</p>
+            </div>
+          </div>
+
+          <div class="border-t border-gray-200">
+            <div *ngIf="isLoadingSyndics" class="flex justify-center py-6">
+              <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+            </div>
+
+            <div *ngIf="!isLoadingSyndics && syndics.length === 0" class="text-center py-6">
+              <p class="text-gray-500">Aucun syndic disponible</p>
+            </div>
+
+            <ul *ngIf="!isLoadingSyndics && syndics.length > 0" class="divide-y divide-gray-200">
+              <li *ngFor="let syndic of syndics" class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                      <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
+                        <span class="text-primary-600 font-medium">{{syndic.nom.charAt(0)}}</span>
+                      </div>
+                    </div>
+                    <div class="ml-4">
+                      <div class="text-sm font-medium text-gray-900">{{syndic.nom}}</div>
+                      <div class="text-sm text-gray-500">{{syndic.email}}</div>
+                      <div class="text-sm text-gray-500">{{syndic.telephone}}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <button 
+                      (click)="assignerSyndic(syndic.id)"
+                      [disabled]="isAssigning"
+                      [class.opacity-50]="isAssigning"
+                      class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                      <span *ngIf="isAssigning" class="mr-2">
+                        <i class="fas fa-spinner fa-spin"></i>
+                      </span>
+                      Assigner
+                    </button>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Informations de l'immeuble -->
         <div *ngIf="isLoading" class="flex justify-center py-10">
           <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
         </div>
         
-        <div *ngIf="error && !isLoading" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
+        <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
           {{ error }}
         </div>
 
@@ -124,16 +177,6 @@ import { Syndic } from '@core/models/syndic.model';
                 </div>
               </div>
 
-              <!-- Syndic -->
-              <div class="mb-6">
-                <label for="syndicId" class="block text-sm font-medium text-gray-700">Syndic</label>
-                <select id="syndicId" formControlName="syndicId"
-                        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-                  <option [ngValue]="null">Aucun syndic</option>
-                  <option *ngFor="let syndic of syndics" [ngValue]="syndic.id">{{ syndic.nom }}</option>
-                </select>
-              </div>
-
               <!-- Boutons de soumission -->
               <div class="flex justify-end space-x-3">
                 <button type="button" (click)="resetForm()"
@@ -164,6 +207,8 @@ export class EditImmeubleComponent implements OnInit {
   submitted: boolean = false;
   isSubmitting: boolean = false;
   isLoading: boolean = true;
+  isLoadingSyndics: boolean = true;
+  isAssigning: boolean = false;
   error: string = '';
   success: string = '';
   
@@ -172,7 +217,8 @@ export class EditImmeubleComponent implements OnInit {
     private immeubleService: ImmeubleService,
     private syndicService: SyndicService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
     this.immeubleForm = this.fb.group({
       nom: ['', Validators.required],
@@ -181,8 +227,7 @@ export class EditImmeubleComponent implements OnInit {
       ville: ['', Validators.required],
       dateConstruction: [null],
       nombreEtages: [1, [Validators.required, Validators.min(1)]],
-      status: ['ACTIF', Validators.required],
-      syndicId: [null]
+      status: ['ACTIF', Validators.required]
     });
   }
 
@@ -216,13 +261,16 @@ export class EditImmeubleComponent implements OnInit {
   }
 
   loadSyndics(): void {
+    this.isLoadingSyndics = true;
     this.syndicService.getAllSyndics().subscribe({
       next: (syndics) => {
         this.syndics = syndics;
+        this.isLoadingSyndics = false;
       },
       error: (error) => {
         console.error('Erreur lors du chargement des syndics:', error);
-        // On ne définit pas d'erreur car ce n'est pas critique
+        this.error = 'Impossible de charger la liste des syndics.';
+        this.isLoadingSyndics = false;
       }
     });
   }
@@ -242,8 +290,7 @@ export class EditImmeubleComponent implements OnInit {
       ville: immeuble.ville,
       dateConstruction: dateConstruction,
       nombreEtages: immeuble.nombreEtages,
-      status: immeuble.status,
-      syndicId: immeuble.syndicId
+      status: immeuble.status
     });
   }
 
@@ -260,7 +307,7 @@ export class EditImmeubleComponent implements OnInit {
 
     this.isSubmitting = true;
     
-    const immeubleData = this.immeubleForm.value;
+    const immeubleData = { ...this.immeubleForm.value };
     
     // Transformation de la date si nécessaire
     if (immeubleData.dateConstruction) {
@@ -292,5 +339,24 @@ export class EditImmeubleComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/admin/immeubles', this.immeubleId]);
+  }
+
+  assignerSyndic(syndicId: number): void {
+    if (!this.immeubleId) return;
+    
+    this.isAssigning = true;
+    this.immeubleService.assignerSyndicImmeuble(this.immeubleId, syndicId).subscribe({
+      next: (result) => {
+        this.immeuble = result;
+        this.toastr.success('Le syndic a été assigné avec succès');
+        this.isAssigning = false;
+        this.loadImmeuble(); // Recharger les données de l'immeuble
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'assignation du syndic:', error);
+        this.toastr.error('Une erreur est survenue lors de l\'assignation du syndic');
+        this.isAssigning = false;
+      }
+    });
   }
 } 

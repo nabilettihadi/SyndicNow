@@ -29,10 +29,10 @@ public class AdminRequest {
     private String telephone;
 
     private String adresse;
-    
+
     private String cin;
-    
+
     private String numeroAgrement;
-    
+
     private LocalDateTime dateNaissance;
 } 

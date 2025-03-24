@@ -30,15 +30,15 @@ public class SyndicServiceImpl implements SyndicService {
     @Transactional
     public SyndicResponse createSyndic(SyndicRequest request) {
         Syndic syndic = syndicMapper.toEntity(request);
-        
+
         // Encoder le mot de passe
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             syndic.setPassword(passwordEncoder.encode(request.getPassword()));
         }
-        
+
         // Définir le rôle
         syndic.setRole(Role.SYNDIC);
-        
+
         syndic = syndicRepository.save(syndic);
         return syndicMapper.toResponseDto(syndic);
     }
@@ -50,7 +50,7 @@ public class SyndicServiceImpl implements SyndicService {
                 .orElseThrow(() -> new ResourceNotFoundException("Syndic non trouvé avec l'ID: " + id));
 
         syndicMapper.updateEntityFromDto(request, syndic);
-        
+
         // Encoder le mot de passe si fourni
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             syndic.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -59,29 +59,29 @@ public class SyndicServiceImpl implements SyndicService {
         syndic = syndicRepository.save(syndic);
         return syndicMapper.toResponseDto(syndic);
     }
-    
+
     @Override
     @Transactional
     public SyndicResponse updateProfile(SyndicRequest request) {
         // Récupérer l'utilisateur authentifié
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        
+
         // Récupérer le syndic par email
         Syndic syndic = syndicRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur connecté non trouvé"));
-        
+
         // Mettre à jour uniquement les champs non null
         if (request.getNom() != null) syndic.setNom(request.getNom());
         if (request.getPrenom() != null) syndic.setPrenom(request.getPrenom());
-        
+
         // Ne pas permettre de changer l'email car c'est l'identifiant
-        
+
         // Encoder le mot de passe si fourni
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             syndic.setPassword(passwordEncoder.encode(request.getPassword()));
         }
-        
+
         // Mettre à jour les autres champs uniquement s'ils sont fournis
         if (request.getTelephone() != null) syndic.setTelephone(request.getTelephone());
         if (request.getAdresse() != null) syndic.setAdresse(request.getAdresse());
@@ -94,7 +94,7 @@ public class SyndicServiceImpl implements SyndicService {
                 syndic.setSiret(request.getSiret());
             }
         }
-        
+
         syndic = syndicRepository.save(syndic);
         return syndicMapper.toResponseDto(syndic);
     }

@@ -10,7 +10,6 @@ import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;
 import ma.Nabil.SyndicNow.mapper.ImmeubleMapper;
 import ma.Nabil.SyndicNow.repository.AppartementRepository;
 import ma.Nabil.SyndicNow.repository.ImmeubleRepository;
-
 import ma.Nabil.SyndicNow.repository.ProprietaireRepository;
 import ma.Nabil.SyndicNow.service.ImmeubleService;
 import org.springframework.stereotype.Service;

@@ -5,7 +5,6 @@ import lombok.*;
 import ma.Nabil.SyndicNow.enums.IncidentCategory;
 import ma.Nabil.SyndicNow.enums.IncidentPriority;
 import ma.Nabil.SyndicNow.enums.IncidentStatus;
-
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;

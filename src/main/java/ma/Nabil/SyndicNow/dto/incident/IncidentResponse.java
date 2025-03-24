@@ -27,7 +27,7 @@ public class IncidentResponse {
     private String attachmentUrls;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
+
     // Informations liées
     private Long reportedById;
     private String reportedByName;

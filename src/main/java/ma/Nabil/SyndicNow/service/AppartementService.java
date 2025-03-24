@@ -22,6 +22,7 @@ public interface AppartementService {
 
     /**
      * Récupère tous les appartements d'un immeuble spécifique
+     *
      * @param immeubleId l'identifiant de l'immeuble
      * @return liste des appartements associés à l'immeuble
      */

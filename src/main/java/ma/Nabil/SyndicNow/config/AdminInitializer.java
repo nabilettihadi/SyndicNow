@@ -35,10 +35,10 @@ public class AdminInitializer implements CommandLineRunner {
 
     @Value("${admin.cin:ADMIN123}")
     private String adminCin;
-    
+
     @Value("${admin.adresse:Adresse administrative}")
     private String adminAdresse;
-    
+
     @Value("${admin.numeroAgrement:AGR-12345}")
     private String adminNumeroAgrement;
 

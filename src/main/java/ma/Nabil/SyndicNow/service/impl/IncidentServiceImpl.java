@@ -3,7 +3,9 @@ package ma.Nabil.SyndicNow.service.impl;
 import lombok.RequiredArgsConstructor;
 import ma.Nabil.SyndicNow.dto.incident.IncidentRequest;
 import ma.Nabil.SyndicNow.dto.incident.IncidentResponse;
-import ma.Nabil.SyndicNow.entity.*;
+import ma.Nabil.SyndicNow.entity.Incident;
+import ma.Nabil.SyndicNow.entity.Syndic;
+import ma.Nabil.SyndicNow.entity.User;
 import ma.Nabil.SyndicNow.enums.IncidentPriority;
 import ma.Nabil.SyndicNow.enums.IncidentStatus;
 import ma.Nabil.SyndicNow.exception.InvalidOperationException;
@@ -36,13 +38,13 @@ public class IncidentServiceImpl implements IncidentService {
     @Transactional
     public IncidentResponse createIncident(IncidentRequest request) {
         CustomUserDetails currentUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
+
         User currentUser = userRepository.findById(currentUserDetails.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé"));
-        
+
         Incident incident = incidentMapper.toEntity(request, currentUser);
         incident = incidentRepository.save(incident);
-        
+
         return incidentMapper.toResponse(incident);
     }
 
@@ -58,7 +60,7 @@ public class IncidentServiceImpl implements IncidentService {
 
         incidentMapper.updateEntityFromRequest(request, incident);
         incident = incidentRepository.save(incident);
-        
+
         return incidentMapper.toResponse(incident);
     }
 

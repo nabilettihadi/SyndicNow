@@ -55,9 +55,9 @@ public class RegisterRequest {
     private String societe;
 
     private LocalDateTime dateDebutActivite;
-    
+
     // Champs spécifiques au propriétaire
     private PreferenceCommunication preferencesCommunication;
-    
+
     private TypeProprietaire typeProprietaire;
 } 

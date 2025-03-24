@@ -79,7 +79,7 @@ public class SyndicController {
         log.info("Successfully deleted syndic with ID: {}", id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @PutMapping("/profile")
     @Operation(summary = "Update the current syndic's profile", description = "Allows a syndic to update their personal information")
     @ApiResponse(responseCode = "200", description = "Profile successfully updated")

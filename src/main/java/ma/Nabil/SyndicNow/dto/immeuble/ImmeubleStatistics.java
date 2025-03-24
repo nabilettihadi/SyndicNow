@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class ImmeubleStatistics {
     private Long totalImmeubles;
     private Long totalAppartements;
-    private Double totalRevenu;
     private Long totalProprietaires;
 } 

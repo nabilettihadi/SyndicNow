@@ -27,11 +27,11 @@ public class Proprietaire extends User {
     @OneToMany(mappedBy = "proprietaire", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Appartement> appartements = new ArrayList<>();
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "preferences_communication")
     private PreferenceCommunication preferencesCommunication;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type_proprietaire")
     private TypeProprietaire typeProprietaire;

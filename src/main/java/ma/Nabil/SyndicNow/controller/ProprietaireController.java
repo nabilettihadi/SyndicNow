@@ -79,7 +79,7 @@ public class ProprietaireController {
         log.info("Successfully deleted proprietaire with ID: {}", id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @PutMapping("/profile")
     @Operation(summary = "Update the current proprietaire's profile", description = "Allows a proprietaire to update their personal information")
     @ApiResponse(responseCode = "200", description = "Profile successfully updated")

@@ -13,6 +13,14 @@ export interface Immeuble {
   syndic?: {
     id: number;
     nom: string;
+    email: string;
+    telephone: string;
+    ville: string;
+    status: 'ACTIF' | 'INACTIF' | 'EN_ATTENTE';
+    dateCreation: Date;
+    immeubles: any[];
+    nombreImmeubles?: number;
+    adresse?: string;
   };
   description?: string;
   dateCreation?: Date;

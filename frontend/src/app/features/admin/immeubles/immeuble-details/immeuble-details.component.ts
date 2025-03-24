@@ -259,7 +259,7 @@ export class ImmeubleDetailsComponent implements OnInit {
   }
 
   // Gestion du syndic
-  assignerSyndic(): void {
+  changerSyndic(): void {
     this.isLoadingSyndics = true;
     this.syndicError = null;
     this.selectedSyndicId = null;
@@ -267,7 +267,10 @@ export class ImmeubleDetailsComponent implements OnInit {
 
     this.syndicService.getAllSyndics().subscribe({
       next: (data) => {
-        this.availableSyndics = data.filter(s => s.status === 'ACTIF');
+        // Filtrer pour exclure le syndic actuel et ne garder que les syndics actifs
+        this.availableSyndics = data.filter(s => 
+          s.status === 'ACTIF' && s.id !== this.immeuble?.syndic?.id
+        );
         this.isLoadingSyndics = false;
       },
       error: (err) => {
@@ -278,39 +281,43 @@ export class ImmeubleDetailsComponent implements OnInit {
     });
   }
 
-  confirmAssignerSyndic(): void {
-    if (!this.immeuble || !this.selectedSyndicId) return;
+  assignerSyndic(): void {
+    if (!this.selectedSyndicId || !this.immeuble?.id) return;
 
     this.isSavingSyndic = true;
+    this.syndicError = null;
 
     this.immeubleService.assignerSyndicImmeuble(this.immeuble.id, this.selectedSyndicId).subscribe({
-      next: (data) => {
-        this.immeuble = data;
-        this.toastr.success('Le syndic a été assigné avec succès à l\'immeuble.');
-        this.cancelSyndicModal();
+      next: (updatedImmeuble) => {
+        this.immeuble = updatedImmeuble;
+        this.showSyndicModal = false;
+        this.selectedSyndicId = null;
+        this.toastr.success('Le syndic a été changé avec succès');
+        this.isSavingSyndic = false;
       },
-      error: (err) => {
-        console.error('Erreur lors de l\'assignation du syndic', err);
-        this.syndicError = 'Impossible d\'assigner le syndic à l\'immeuble.';
+      error: (error) => {
+        console.error('Erreur lors du changement du syndic:', error);
+        this.syndicError = 'Impossible de changer le syndic';
         this.isSavingSyndic = false;
       }
     });
   }
 
   retirerSyndic(): void {
-    if (!this.immeuble || !this.immeuble.syndic) return;
+    if (!this.immeuble?.id) return;
 
     this.isSavingSyndic = true;
+    this.syndicError = null;
 
     this.immeubleService.retirerSyndicImmeuble(this.immeuble.id).subscribe({
-      next: (data) => {
-        this.immeuble = data;
-        this.toastr.success('Le syndic a été retiré avec succès de l\'immeuble.');
+      next: (updatedImmeuble) => {
+        this.immeuble = updatedImmeuble;
+        this.toastr.success('Le syndic a été retiré avec succès');
         this.isSavingSyndic = false;
       },
-      error: (err) => {
-        console.error('Erreur lors du retrait du syndic', err);
-        this.toastr.error('Impossible de retirer le syndic de l\'immeuble.');
+      error: (error) => {
+        console.error('Erreur lors du retrait du syndic:', error);
+        this.syndicError = 'Impossible de retirer le syndic';
         this.isSavingSyndic = false;
       }
     });

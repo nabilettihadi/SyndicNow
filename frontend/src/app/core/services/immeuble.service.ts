@@ -19,17 +19,8 @@ export class ImmeubleService {
   }
 
   getAllImmeubles(): Observable<Immeuble[]> {
-    console.log(`Tentative d'accès à l'endpoint standard: ${this.apiUrl}`);
-
-    const token = this.authService.getToken();
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-
-    return this.http.get<Immeuble[]>(this.apiUrl, {headers})
+    return this.http.get<Immeuble[]>(this.apiUrl)
       .pipe(
-        tap(data => console.log(`Données récupérées: ${data.length} immeubles`)),
         catchError(this.handleError)
       );
   }
@@ -96,9 +87,54 @@ export class ImmeubleService {
   }
 
   updateImmeuble(id: number, immeuble: Partial<Immeuble>): Observable<Immeuble> {
-    return this.http.put<Immeuble>(`${this.apiUrl}/${id}`, immeuble)
+    console.log("Préparation des données pour la mise à jour de l'immeuble:", immeuble);
+
+    // Calcul de l'année de construction à partir de la date si fournie
+    let anneeConstruction = immeuble.anneeConstruction;
+    if (immeuble.dateConstruction) {
+      if (typeof immeuble.dateConstruction === 'string') {
+        anneeConstruction = new Date(immeuble.dateConstruction).getFullYear();
+      } else if (immeuble.dateConstruction instanceof Date) {
+        anneeConstruction = immeuble.dateConstruction.getFullYear();
+      }
+    }
+
+    // Créer un objet qui respecte le format attendu par le backend
+    const immeubleRequest = {
+      ...immeuble,
+      nom: immeuble.nom?.trim(),
+      adresse: immeuble.adresse?.trim(),
+      codePostal: immeuble.codePostal?.trim(),
+      ville: immeuble.ville?.trim(),
+      anneeConstruction: anneeConstruction,
+      nombreAppartements: immeuble.nombreAppartements || 1,
+      syndicId: immeuble.syndicId
+    };
+
+    // Vérification des données obligatoires
+    if (!immeubleRequest.syndicId) {
+      return throwError(() => new Error('Le syndic est obligatoire'));
+    }
+    if (!immeubleRequest.anneeConstruction) {
+      return throwError(() => new Error("L'année de construction est obligatoire"));
+    }
+    if (!immeubleRequest.nombreAppartements) {
+      return throwError(() => new Error('Le nombre d\'appartements est obligatoire'));
+    }
+
+    console.log("Données formatées pour l'API:", immeubleRequest);
+
+    return this.http.put<Immeuble>(`${this.apiUrl}/${id}`, immeubleRequest)
       .pipe(
-        catchError(this.handleError)
+        catchError((error: HttpErrorResponse) => {
+          console.error('Une erreur est survenue:', error);
+
+          if (error.error && error.error.message) {
+            return throwError(() => new Error(error.error.message));
+          }
+
+          return this.handleError(error);
+        })
       );
   }
 
@@ -140,59 +176,13 @@ export class ImmeubleService {
   getAppartementsByImmeuble(immeubleId: number): Observable<any[]> {
     console.log(`Tentative d'accès aux appartements de l'immeuble ${immeubleId}`);
 
-    // L'API backend n'a pas d'endpoint /api/v1/immeubles/{id}/appartements
-    // Utiliser plutôt /api/appartements avec un filtre pour l'immeuble
     return this.http.get<any[]>(`${environment.apiUrl}/api/appartements/immeuble/${immeubleId}`)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error(`Erreur lors de la récupération des appartements pour l'immeuble ${immeubleId}:`, error);
-
-          if (error.status === 404) {
-            // Tenter un autre endpoint possible
-            console.log(`Endpoint /appartements/immeuble/${immeubleId} non trouvé, essai avec /api/appartements?immeubleId=${immeubleId}`);
-            return this.http.get<any[]>(`${environment.apiUrl}/api/appartements?immeubleId=${immeubleId}`)
-              .pipe(
-                catchError((innerError) => {
-                  console.error(`Échec également avec l'endpoint alternatif:`, innerError);
-                  return this.getMockAppartements(immeubleId);
-                })
-              );
-          } else if (error.status === 500) {
-            console.log(`Erreur serveur 500 pour les appartements de l'immeuble ${immeubleId}, génération de données fictives`);
-            return this.getMockAppartements(immeubleId);
-          }
-
           return this.handleError(error);
         })
       );
-  }
-
-  // Méthode pour générer des données fictives d'appartements en cas d'erreur d'API
-  private getMockAppartements(immeubleId: number): Observable<any[]> {
-    console.log(`Génération de données fictives pour les appartements de l'immeuble ${immeubleId}`);
-
-    // Générer entre 3 et 8 appartements fictifs
-    const nombreAppartements = Math.floor(Math.random() * 6) + 3;
-    const mockAppartements = Array(nombreAppartements).fill(0).map((_, index) => ({
-      id: (immeubleId * 100) + index + 1,
-      numero: `A${index + 101}`,
-      etage: Math.floor(index / 2) + 1,
-      surface: Math.floor(Math.random() * 50) + 30,
-      nombrePieces: Math.floor(Math.random() * 3) + 1,
-      status: index % 3 === 0 ? 'OCCUPÉ' : 'LIBRE',
-      immeubleId: immeubleId,
-      proprietaireId: index % 2 === 0 ? 1 : 2,
-      proprietaireNom: index % 2 === 0 ? 'John Doe' : 'Jane Smith',
-      mockData: true // Marqueur indiquant qu'il s'agit de données fictives
-    }));
-
-    // Simuler un délai réseau pour plus de réalisme
-    return new Observable(observer => {
-      setTimeout(() => {
-        observer.next(mockAppartements);
-        observer.complete();
-      }, 800);
-    });
   }
 
   // Ajouter un syndic à un immeuble
@@ -214,14 +204,6 @@ export class ImmeubleService {
   // Ajouter un appartement à un immeuble
   ajouterAppartement(immeubleId: number, appartement: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/${immeubleId}/appartements`, appartement)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  // Mettre à jour le statut d'un immeuble
-  updateStatus(immeubleId: number, status: string): Observable<Immeuble> {
-    return this.http.patch<Immeuble>(`${this.apiUrl}/${immeubleId}/status`, {status})
       .pipe(
         catchError(this.handleError)
       );

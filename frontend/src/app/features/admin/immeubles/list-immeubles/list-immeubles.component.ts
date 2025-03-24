@@ -22,7 +22,6 @@ export class ListImmeublesComponent implements OnInit {
   filteredImmeubles: Immeuble[] = [];
   stats: ImmeubleStats | null = null;
   searchTerm: string = '';
-  filterStatus: string = '';
   filterVille: string = '';
   villes: string[] = [];
   isLoading: boolean = true;
@@ -62,103 +61,6 @@ export class ListImmeublesComponent implements OnInit {
         this.handleLoadError(err);
       }
     });
-  }
-
-  // Méthode pour charger les données mockées
-  loadMockData(): void {
-    this.isLoading = true;
-    this.error = null;
-    console.log("Chargement des données de test");
-
-    // Création de données de test
-    const mockData: Immeuble[] = [
-      {
-        id: 1,
-        nom: "Résidence Al Andalous",
-        adresse: "123 Avenue Hassan II",
-        codePostal: "20000",
-        ville: "Casablanca",
-        dateConstruction: new Date("2018-05-12"),
-        nombreEtages: 8,
-        nombreAppartements: 32,
-        status: "ACTIF",
-        syndicId: 1,
-        syndic: {
-          id: 1,
-          nom: "Syndic Royal"
-        }
-      },
-      {
-        id: 2,
-        nom: "Tour Atlas",
-        adresse: "45 Boulevard Mohammed V",
-        codePostal: "10000",
-        ville: "Rabat",
-        dateConstruction: new Date("2019-07-23"),
-        nombreEtages: 12,
-        nombreAppartements: 48,
-        status: "ACTIF",
-        syndicId: 2,
-        syndic: {
-          id: 2,
-          nom: "GestImmo"
-        }
-      },
-      {
-        id: 3,
-        nom: "Résidence Les Orangers",
-        adresse: "78 Rue des Roses",
-        codePostal: "30000",
-        ville: "Fès",
-        dateConstruction: new Date("2020-02-10"),
-        nombreEtages: 6,
-        nombreAppartements: 24,
-        status: "EN_TRAVAUX",
-        syndicId: 1,
-        syndic: {
-          id: 1,
-          nom: "Syndic Royal"
-        }
-      },
-      {
-        id: 4,
-        nom: "Immeuble Majorelle",
-        adresse: "56 Avenue Mohammed VI",
-        codePostal: "40000",
-        ville: "Marrakech",
-        dateConstruction: new Date("2017-11-05"),
-        nombreEtages: 5,
-        nombreAppartements: 20,
-        status: "ACTIF",
-        syndicId: 3,
-        syndic: {
-          id: 3,
-          nom: "Marrakech Gestion"
-        }
-      },
-      {
-        id: 5,
-        nom: "Résidence Océan",
-        adresse: "89 Boulevard de la Corniche",
-        codePostal: "20000",
-        ville: "Casablanca",
-        dateConstruction: new Date("2019-03-17"),
-        nombreEtages: 10,
-        nombreAppartements: 40,
-        status: "INACTIF",
-        syndicId: 1,
-        syndic: {
-          id: 1,
-          nom: "Syndic Royal"
-        }
-      }
-    ];
-
-    // Simuler un délai de chargement pour une expérience plus réaliste
-    setTimeout(() => {
-      this.handleSuccessfulLoad(mockData);
-      this.toastr.info("Données de test chargées avec succès", "Mode démonstration");
-    }, 800);
   }
 
   // Méthode simplifiée pour tester un endpoint
@@ -232,31 +134,21 @@ export class ListImmeublesComponent implements OnInit {
 
   calculateStats(): void {
     if (this.immeubles.length > 0) {
-      const parStatus: { [key: string]: number } = {
-        'ACTIF': 0,
-        'EN_TRAVAUX': 0,
-        'INACTIF': 0
-      };
-
       const parVille: { [key: string]: number } = {};
       let totalEtages = 0;
       let totalAppartements = 0;
 
       this.immeubles.forEach(immeuble => {
-        // Comptage par status
-        parStatus[immeuble.status] = (parStatus[immeuble.status] || 0) + 1;
-
         // Comptage par ville
         parVille[immeuble.ville] = (parVille[immeuble.ville] || 0) + 1;
 
         // Calcul des moyennes
         totalEtages += immeuble.nombreEtages;
-        totalAppartements += immeuble.nombreAppartements || 0;
+        totalAppartements += immeuble.nombreAppartements;
       });
 
       this.stats = {
         total: this.immeubles.length,
-        parStatus,
         parVille,
         nombreEtagesMoyen: totalEtages / this.immeubles.length,
         nombreAppartementsMoyen: totalAppartements / this.immeubles.length
@@ -271,23 +163,31 @@ export class ListImmeublesComponent implements OnInit {
   }
 
   applyFilters(): void {
-    this.filteredImmeubles = this.immeubles.filter(immeuble => {
-      const matchSearch = !this.searchTerm ||
-        immeuble.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        immeuble.adresse.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        immeuble.codePostal.includes(this.searchTerm);
+    this.filteredImmeubles = this.immeubles;
 
-      const matchStatus = !this.filterStatus || immeuble.status === this.filterStatus;
+    // Appliquer le filtre de recherche
+    if (this.searchTerm.trim()) {
+      const searchLower = this.searchTerm.toLowerCase();
+      this.filteredImmeubles = this.filteredImmeubles.filter(immeuble =>
+        immeuble.nom?.toLowerCase().includes(searchLower) ||
+        immeuble.adresse?.toLowerCase().includes(searchLower) ||
+        immeuble.ville?.toLowerCase().includes(searchLower)
+      );
+    }
 
-      const matchVille = !this.filterVille || immeuble.ville === this.filterVille;
+    // Appliquer le filtre de ville
+    if (this.filterVille) {
+      this.filteredImmeubles = this.filteredImmeubles.filter(immeuble =>
+        immeuble.ville === this.filterVille
+      );
+    }
 
-      return matchSearch && matchStatus && matchVille;
-    });
+    // Recalculer les statistiques
+    this.calculateStats();
   }
 
   resetFilters(): void {
     this.searchTerm = '';
-    this.filterStatus = '';
     this.filterVille = '';
     this.filteredImmeubles = [...this.immeubles];
   }
@@ -295,13 +195,13 @@ export class ListImmeublesComponent implements OnInit {
   getStatusClass(status: string): string {
     switch (status) {
       case 'ACTIF':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-500 text-white px-3 py-1 rounded-full font-medium';
       case 'INACTIF':
-        return 'bg-red-100 text-red-800';
+        return 'bg-red-500 text-white px-3 py-1 rounded-full font-medium';
       case 'EN_TRAVAUX':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-yellow-500 text-white px-3 py-1 rounded-full font-medium';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-500 text-white px-3 py-1 rounded-full font-medium';
     }
   }
 

@@ -296,21 +296,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
       roles: ['SYNDIC']
     },
     {
-      label: 'Paiements',
-      route: '/syndic/paiements',
-      icon: 'fas fa-money-bill-wave',
-      roles: ['SYNDIC']
-    },
-    {
       label: 'Incidents',
       route: '/syndic/incidents',
       icon: 'fas fa-exclamation-triangle',
-      roles: ['SYNDIC']
-    },
-    {
-      label: 'Documents',
-      route: '/syndic/documents',
-      icon: 'fas fa-file-alt',
       roles: ['SYNDIC']
     },
     // Proprietaire navigation items
@@ -324,18 +312,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       label: 'Mes Appartements',
       route: '/proprietaire/mes-appartements',
       icon: 'fas fa-home',
-      roles: ['PROPRIETAIRE']
-    },
-    {
-      label: 'Mes Documents',
-      route: '/proprietaire/mes-documents',
-      icon: 'fas fa-file-alt',
-      roles: ['PROPRIETAIRE']
-    },
-    {
-      label: 'Mes Paiements',
-      route: '/proprietaire/mes-paiements',
-      icon: 'fas fa-money-bill-wave',
       roles: ['PROPRIETAIRE']
     },
     {

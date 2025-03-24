@@ -1,264 +1,136 @@
-<!-- En-tête -->
-<header class="bg-white shadow-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="md:flex md:items-center md:justify-between">
-      <div class="flex-1 min-w-0">
-        <h1 class="text-2xl font-bold text-gray-900">
-          Détails de l'immeuble
-        </h1>
-        <p class="mt-1 text-sm text-gray-500">
-          Informations et gestion de l'immeuble "{{ immeuble?.nom }}"
-        </p>
+<div class="container mx-auto px-4 py-8">
+  <!-- Header avec actions -->
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+    <div>
+      <div class="flex items-center gap-2">
+        <button routerLink="/admin/immeubles" class="text-blue-600 hover:text-blue-800">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="text-2xl font-bold">{{ immeuble?.nom }}</h1>
       </div>
-      <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
-        <button type="button" (click)="retour()"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-          <i class="fas fa-arrow-left -ml-1 mr-2"></i>
-          Retour
-        </button>
-        <button [routerLink]="['/admin/immeubles', immeuble?.id, 'edit']"
-                *ngIf="immeuble"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
-          <i class="fas fa-edit -ml-1 mr-2"></i>
-          Modifier
-        </button>
-        <button (click)="confirmDelete()"
-                *ngIf="immeuble"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-          <i class="fas fa-trash -ml-1 mr-2"></i>
-          Supprimer
-        </button>
-      </div>
+      <p class="text-gray-600 mt-1">{{ immeuble?.adresse }}, {{ immeuble?.ville }}</p>
     </div>
-  </div>
-</header>
 
-<!-- Contenu principal -->
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Chargement -->
-  <div *ngIf="isLoading" class="flex justify-center py-12">
-    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
-  </div>
-
-  <!-- Erreur de chargement -->
-  <div *ngIf="error && !isLoading" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mt-6">
-    {{ error }}
-    <div class="mt-2">
-      <button type="button" (click)="retour()"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-        Retour à la liste
+    <div class="flex gap-3">
+      <button *ngIf="immeuble?.id"
+              class="inline-flex items-center px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 shadow-sm"
+              (click)="modifierImmeuble()">
+        <i class="fas fa-edit mr-2"></i>
+        <span>Modifier</span>
+      </button>
+      <button *ngIf="immeuble?.id"
+              class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-sm"
+              (click)="gererAppartements()">
+        <i class="fas fa-home mr-2"></i>
+        <span>Gérer les appartements</span>
       </button>
     </div>
   </div>
 
-  <!-- Informations de l'immeuble -->
-  <div *ngIf="immeuble && !isLoading" class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
-    <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-      <div class="flex justify-between items-center">
-        <div>
-          <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Informations de l'immeuble
-          </h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Détails et caractéristiques de l'immeuble
-          </p>
-        </div>
-        <span [class]="getStatusClass(immeuble.status)"
-              class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full">
-          {{ formatStatus(immeuble.status) }}
-        </span>
-      </div>
-    </div>
-    <div class="border-t border-gray-200">
-      <dl>
-        <!-- Nom -->
-        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Nom de l'immeuble</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ immeuble.nom }}</dd>
-        </div>
+  <!-- Indicateur de chargement -->
+  <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
 
-        <!-- Adresse -->
-        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Adresse complète</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            {{ immeuble.adresse }}<br>
-            {{ immeuble.codePostal }} {{ immeuble.ville }}
-          </dd>
-        </div>
-
-        <!-- Nombre d'étages -->
-        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Nombre d'étages</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ immeuble.nombreEtages }}</dd>
-        </div>
-
-        <!-- Date de construction -->
-        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Date de construction</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            {{ immeuble.dateConstruction ? (immeuble.dateConstruction | date:'dd/MM/yyyy') : 'Non spécifiée' }}
-          </dd>
-        </div>
-
-        <!-- Date de création -->
-        <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Date de création</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            {{ formatDate(immeuble.createdAt) }}
-          </dd>
-        </div>
-
-        <!-- Dernière mise à jour -->
-        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Dernière mise à jour</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            {{ formatDate(immeuble.updatedAt) }}
-          </dd>
-        </div>
-
-        <!-- Syndic assigné -->
-        <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">Syndic assigné</dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            <div *ngIf="immeuble.syndic; else noSyndic" class="flex justify-between items-center">
-              <div>
-                <span class="font-medium">{{ immeuble.syndic.nom }}</span><br>
-                <span class="text-gray-500">
-                  {{ immeuble.syndic.email }} | {{ immeuble.syndic.telephone }}
-                </span>
-              </div>
-              <div class="flex space-x-2">
-                <span [class]="getSyndicStatusClass(immeuble.syndic.status)"
-                      class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                  {{ formatSyndicStatus(immeuble.syndic.status) }}
-                </span>
-                <button (click)="retirerSyndic()"
-                        [disabled]="isSavingSyndic"
-                        class="inline-flex items-center px-2 py-1 border border-gray-300 text-xs font-medium rounded text-red-700 bg-white hover:bg-red-50">
-                  <i *ngIf="isSavingSyndic" class="fas fa-spinner fa-spin mr-1"></i>
-                  <i *ngIf="!isSavingSyndic" class="fas fa-unlink mr-1"></i>
-                  Retirer
-                </button>
-              </div>
-            </div>
-            <ng-template #noSyndic>
-              <div class="flex justify-between items-center">
-                <span class="text-gray-500">Aucun syndic assigné</span>
-                <button (click)="assignerSyndic()"
-                        class="inline-flex items-center px-2 py-1 border border-gray-300 text-xs font-medium rounded text-primary-700 bg-white hover:bg-primary-50">
-                  <i class="fas fa-link mr-1"></i>
-                  Assigner
-                </button>
-              </div>
-            </ng-template>
-          </dd>
-        </div>
-      </dl>
+  <!-- Message d'erreur -->
+  <div *ngIf="error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
+    <div class="flex items-center">
+      <div class="py-1"><i class="fas fa-exclamation-circle mr-2"></i></div>
+      <div>{{ error }}</div>
     </div>
   </div>
 
-  <!-- Statistiques des appartements -->
-  <div *ngIf="immeuble && !isLoading" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-    <!-- Total Appartements -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="rounded-md p-3 bg-blue-50">
-              <i class="fas fa-door-closed text-blue-600 text-xl"></i>
+  <!-- Contenu principal -->
+  <div *ngIf="!isLoading && !error && immeuble" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Informations générales -->
+    <div class="lg:col-span-2">
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+          <h2 class="text-white text-lg font-semibold">Informations générales</h2>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <h3 class="text-gray-500 text-sm">Nom</h3>
+              <p class="font-medium">{{ immeuble.nom }}</p>
             </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">
-                Total Appartements
-              </dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
-                  {{ getTotalAppartements() }}
-                </div>
-            </dl>
+            <div>
+              <h3 class="text-gray-500 text-sm">ID</h3>
+              <p class="font-medium">{{ immeuble.id }}</p>
+            </div>
+            <div>
+              <h3 class="text-gray-500 text-sm">Année de construction</h3>
+              <p class="font-medium">{{ immeuble.dateConstruction || 'Non spécifiée' }}</p>
+            </div>
+            <div>
+              <h3 class="text-gray-500 text-sm">Nombre d'appartements</h3>
+              <p class="font-medium">{{ immeuble.nombreAppartements || 0 }}</p>
+            </div>
+            <div>
+              <h3 class="text-gray-500 text-sm">Adresse</h3>
+              <p class="font-medium">{{ immeuble.adresse }}</p>
+            </div>
+            <div>
+              <h3 class="text-gray-500 text-sm">Code postal et ville</h3>
+              <p class="font-medium">{{ immeuble.codePostal }} {{ immeuble.ville }}</p>
+            </div>
+            <div>
+              <h3 class="text-gray-500 text-sm">Date de création</h3>
+              <p class="font-medium">{{ immeuble.dateCreation || 'Non disponible' }}</p>
+            </div>
+            <div>
+              <h3 class="text-gray-500 text-sm">Dernière mise à jour</h3>
+              <p class="font-medium">{{ immeuble.dateModification || 'Non disponible' }}</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Occupés -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="rounded-md p-3 bg-green-50">
-              <i class="fas fa-home text-green-600 text-xl"></i>
+    <!-- Sidebar -->
+    <div class="space-y-8">
+      <!-- Syndic assigné -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-4">
+          <h2 class="text-white text-lg font-semibold">Syndic assigné</h2>
+        </div>
+        <div class="p-6">
+          <div *ngIf="!immeuble.syndic" class="text-center">
+            <div class="text-gray-400 mb-3">
+              <i class="fas fa-user-slash text-4xl"></i>
             </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">
-                Occupés
-              </dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
-                  {{ getOccupiedAppartements() }}
-                </div>
-                <div class="ml-2 text-sm font-medium text-gray-500">
-                  ({{ getOccupancyRate() }}%)
-                </div>
-            </dl>
+            <p class="text-gray-600">Aucun syndic assigné</p>
+            <button (click)="assignerSyndic()"
+                    class="mt-4 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg">
+              Assigner un syndic
+            </button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Disponibles -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="rounded-md p-3 bg-indigo-50">
-              <i class="fas fa-key text-indigo-600 text-xl"></i>
-            </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">
-                Disponibles
-              </dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
-                  {{ getFreeAppartements() }}
-                </div>
-                <div class="ml-2 text-sm font-medium text-gray-500">
-                  ({{ getAvailabilityRate() }}%)
-                </div>
-            </dl>
-          </div>
+      <!-- Statistiques -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 px-6 py-4">
+          <h2 class="text-white text-lg font-semibold">Statistiques des appartements</h2>
         </div>
-      </div>
-    </div>
-
-    <!-- En Maintenance -->
-    <div class="bg-white overflow-hidden shadow rounded-lg">
-      <div class="p-5">
-        <div class="flex items-center">
-          <div class="flex-shrink-0">
-            <div class="rounded-md p-3 bg-yellow-50">
-              <i class="fas fa-tools text-yellow-600 text-xl"></i>
+        <div class="p-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+              <div class="text-2xl font-bold text-blue-600">{{ appartements.length }}</div>
+              <div class="text-sm text-gray-500">Total</div>
             </div>
-          </div>
-          <div class="ml-5 w-0 flex-1">
-            <dl>
-              <dt class="text-sm font-medium text-gray-500 truncate">
-                En Maintenance
-              </dt>
-              <dd class="flex items-baseline">
-                <div class="text-2xl font-semibold text-gray-900">
-                  {{ getMaintenanceAppartements() }}
-                </div>
-                <div class="ml-2 text-sm font-medium text-gray-500">
-                  ({{ getMaintenanceRate() }}%)
-                </div>
-            </dl>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+              <div class="text-2xl font-bold text-green-600">{{ getOccupiedAppartements() }}</div>
+              <div class="text-sm text-gray-500">Occupés</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+              <div class="text-2xl font-bold text-yellow-600">{{ getFreeAppartements() }}</div>
+              <div class="text-sm text-gray-500">Disponibles</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+              <div class="text-2xl font-bold text-red-600">{{ getMaintenanceAppartements() }}</div>
+              <div class="text-sm text-gray-500">En maintenance</div>
+            </div>
           </div>
         </div>
       </div>
@@ -266,255 +138,64 @@
   </div>
 
   <!-- Liste des appartements -->
-  <div *ngIf="immeuble && !isLoading" class="bg-white shadow overflow-hidden sm:rounded-lg">
-    <div class="px-4 py-5 sm:px-6 flex justify-between items-center border-b border-gray-200">
-      <div>
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Appartements
-        </h3>
-        <p class="mt-1 text-sm text-gray-500">
-          Liste des appartements de l'immeuble
-        </p>
-      </div>
-      <button (click)="ajouterAppartement()"
-              class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-        <i class="fas fa-plus -ml-0.5 mr-2"></i>
-        Ajouter un appartement
-      </button>
-    </div>
-
-    <!-- État du chargement -->
-    <div *ngIf="isLoadingAppartements" class="flex justify-center my-8">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-    </div>
-
-    <!-- Message d'erreur -->
-    <div *ngIf="appartementsError && !isLoadingAppartements"
-         class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 m-4 rounded-md">
-      {{ appartementsError }}
-    </div>
-
-    <!-- Ajouter cet avertissement juste après le titre de la section des appartements et avant le tableau -->
-    <div *ngIf="usingMockData" class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-md mb-4">
-      <div class="flex">
-        <div class="flex-shrink-0">
-          <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clip-rule="evenodd"/>
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm">
-            <span class="font-medium">Attention!</span> Les données affichées sont fictives car le serveur a rencontré
-            un problème. Les modifications ne seront pas sauvegardées.
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tableau des appartements -->
-    <div *ngIf="!isLoadingAppartements && !appartementsError && appartements.length > 0" class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-        <tr>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            N° Appartement
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Étage
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Surface (m²)
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Chambres
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Statut
-          </th>
-          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Occupant
-          </th>
-          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Actions
-          </th>
-        </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-        <tr *ngFor="let appartement of appartements" class="hover:bg-gray-50">
-          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-            {{ appartement.numero }}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {{ appartement.etage }}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {{ appartement.superficie }}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {{ appartement.nombreChambres }}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap">
-              <span [class]="getAppartementStatusClass(appartement.status)"
-                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                {{ appartement.status }}
-              </span>
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-            {{ appartement.occupant?.nom || '—' }}
-          </td>
-          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Détails</a>
-            <a href="#" class="text-yellow-600 hover:text-yellow-900 mr-3">Modifier</a>
-            <a href="#" class="text-red-600 hover:text-red-900">Supprimer</a>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Aucun appartement -->
-    <div *ngIf="!isLoadingAppartements && !appartementsError && appartements.length === 0" class="text-center py-8">
-      <i class="fas fa-door-closed text-gray-400 text-5xl mb-4"></i>
-      <h3 class="text-lg font-medium text-gray-900">Aucun appartement</h3>
-      <p class="mt-1 text-gray-500">Cet immeuble ne contient aucun appartement pour le moment.</p>
-      <button (click)="ajouterAppartement()"
-              class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-        <i class="fas fa-plus -ml-0.5 mr-2"></i>
-        Ajouter un appartement
-      </button>
-    </div>
-  </div>
-</main>
-
-<!-- Modale de confirmation de suppression -->
-<div *ngIf="showDeleteModal"
-     class="fixed z-10 inset-0 overflow-y-auto"
-     aria-labelledby="modal-title"
-     role="dialog"
-     aria-modal="true">
-  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-         aria-hidden="true"
-         (click)="cancelDelete()"></div>
-
-    <span class="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true">&#8203;</span>
-
-    <div
-      class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-        <div class="sm:flex sm:items-start">
-          <div
-            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-            <i class="fas fa-exclamation-triangle text-red-600"></i>
-          </div>
-          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-              Supprimer l'immeuble
-            </h3>
-            <div class="mt-2">
-              <p class="text-sm text-gray-500">
-                Êtes-vous sûr de vouloir supprimer l'immeuble "{{ immeuble?.nom }}" ?
-                Cette action est irréversible et supprimera également tous les appartements associés.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-        <button type="button"
-                (click)="deleteImmeuble()"
-                [disabled]="isDeleting"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
-          <span *ngIf="isDeleting" class="mr-2">
-            <i class="fas fa-spinner fa-spin"></i>
-          </span>
-          Supprimer
-        </button>
-        <button type="button"
-                (click)="cancelDelete()"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-          Annuler
+  <div *ngIf="!isLoading && !error && immeuble" class="mt-8">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4 flex justify-between items-center">
+        <h2 class="text-white text-lg font-semibold">Appartements</h2>
+        <button *ngIf="immeuble.id"
+                (click)="ajouterAppartement()"
+                class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+          <i class="fas fa-plus"></i>
+          <span>Ajouter</span>
         </button>
       </div>
-    </div>
-  </div>
-</div>
 
-<!-- Modale d'assignation de syndic -->
-<div *ngIf="showSyndicModal"
-     class="fixed z-10 inset-0 overflow-y-auto"
-     aria-labelledby="modal-title"
-     role="dialog"
-     aria-modal="true">
-  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-         aria-hidden="true"
-         (click)="cancelSyndicModal()"></div>
-
-    <span class="hidden sm:inline-block sm:align-middle sm:h-screen"
-          aria-hidden="true">&#8203;</span>
-
-    <div
-      class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-        <div class="sm:flex sm:items-start">
-          <div
-            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-            <i class="fas fa-building text-blue-600"></i>
-          </div>
-          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-              Assigner un syndic
-            </h3>
-            <div class="mt-2">
-              <p class="text-sm text-gray-500 mb-4">
-                Sélectionnez un syndic à assigner à l'immeuble "{{ immeuble?.nom }}".
-              </p>
-
-              <!-- Chargement -->
-              <div *ngIf="isLoadingSyndics" class="flex justify-center py-4">
-                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
-              </div>
-
-              <!-- Erreur -->
-              <div *ngIf="syndicError" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
-                {{ syndicError }}
-              </div>
-
-              <!-- Liste des syndics -->
-              <div *ngIf="!isLoadingSyndics && !syndicError" class="mt-2">
-                <label for="syndic-select" class="block text-sm font-medium text-gray-700">Syndic</label>
-                <select id="syndic-select"
-                        [(ngModel)]="selectedSyndicId"
-                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md">
-                  <option [ngValue]="null">-- Sélectionnez un syndic --</option>
-                  <option *ngFor="let syndic of availableSyndics" [ngValue]="syndic.id">
-                    {{ syndic.nom }} - {{ syndic.ville }}
-                  </option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div *ngIf="isLoadingAppartements" class="flex justify-center items-center p-10">
+        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-500"></div>
       </div>
-      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-        <button type="button"
-                (click)="confirmAssignerSyndic()"
-                [disabled]="!selectedSyndicId || isSavingSyndic"
-                class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
-          <span *ngIf="isSavingSyndic" class="mr-2">
-            <i class="fas fa-spinner fa-spin"></i>
-          </span>
-          Assigner
-        </button>
-        <button type="button"
-                (click)="cancelSyndicModal()"
-                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-          Annuler
-        </button>
+
+      <div *ngIf="!isLoadingAppartements && appartements.length === 0" class="p-10 text-center">
+        <div class="text-gray-400 mb-3">
+          <i class="fas fa-home text-4xl"></i>
+        </div>
+        <p class="text-gray-600">Aucun appartement trouvé pour cet immeuble</p>
+      </div>
+
+      <div *ngIf="!isLoadingAppartements && appartements.length > 0" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Numéro</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Étage</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Surface</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+          </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngFor="let appartement of appartements">
+            <td class="px-6 py-4 whitespace-nowrap">{{ appartement.numero }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ appartement.etage }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">{{ appartement.surface }} m²</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <span [ngClass]="getAppartementStatusClass(appartement.status)"
+                      class="px-2 py-1 text-xs rounded-full">
+                  {{ appartement.status }}
+                </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button class="inline-flex items-center px-3 py-1.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 mr-2">
+                <i class="fas fa-eye mr-1"></i>
+                Détails
+              </button>
+              <button class="inline-flex items-center px-3 py-1.5 bg-amber-500 text-white rounded-md hover:bg-amber-600">
+                <i class="fas fa-edit mr-1"></i>
+                Modifier
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

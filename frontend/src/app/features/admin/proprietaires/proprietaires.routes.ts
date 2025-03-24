@@ -1,7 +1,7 @@
 import {Routes} from '@angular/router';
 import {ProprietairesComponent} from './proprietaires.component';
-import {ListProprietairesComponent} from './list-proprietaires.component';
-import {DetailProprietaireComponent} from './detail-proprietaire/detail-proprietaire.component';
+import {ListProprietairesComponent} from './components/list/list-proprietaires.component';
+import {DetailProprietaireComponent} from './components/detail/detail-proprietaire.component';
 
 export const PROPRIETAIRES_ROUTES: Routes = [
   {

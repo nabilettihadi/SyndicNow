@@ -1,0 +1,109 @@
+<div class="admin-page bg-gray-50 min-h-screen">
+  <header class="bg-gradient-to-r from-blue-900 to-blue-700 py-10 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-4xl font-bold mb-4">Détails du Propriétaire</h1>
+          <p class="text-lg text-blue-100">Consultez les informations détaillées du propriétaire</p>
+        </div>
+        <a routerLink="/admin/proprietaires"
+           class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-white hover:bg-blue-50">
+          <i class="fas fa-arrow-left mr-2"></i>
+          Retour à la liste
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Chargement -->
+    <div *ngIf="isLoading" class="flex justify-center py-16">
+      <div class="bg-white p-8 rounded-xl shadow-xl flex flex-col items-center gap-4">
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-900 border-t-transparent"></div>
+        <p class="text-blue-900 font-medium">Chargement des détails...</p>
+      </div>
+    </div>
+
+    <!-- Erreur -->
+    <div *ngIf="error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6 flex items-center gap-3">
+      <i class="fas fa-exclamation-circle text-xl"></i>
+      <span>{{ error }}</span>
+    </div>
+
+    <!-- Contenu principal -->
+    <div *ngIf="!isLoading && !error && proprietaire" class="space-y-8">
+      <!-- Informations générales -->
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+          <div>
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Informations du propriétaire</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Détails personnels et coordonnées</p>
+          </div>
+          <a [routerLink]="['/admin/proprietaires/edit', proprietaire.id]"
+             class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+            <i class="fas fa-edit -ml-1 mr-2"></i>
+            Modifier
+          </a>
+        </div>
+        <div class="border-t border-gray-200">
+          <dl>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Nom complet</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                {{ proprietaire.nom }} {{ proprietaire.prenom }}
+              </dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Email</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ proprietaire.email }}</dd>
+            </div>
+            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Téléphone</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                {{ proprietaire.telephone || 'Non renseigné' }}
+              </dd>
+            </div>
+            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+              <dt class="text-sm font-medium text-gray-500">Adresse</dt>
+              <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                {{ proprietaire.adresse || 'Non renseignée' }}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- Liste des appartements -->
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <div class="px-4 py-5 sm:px-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Appartements</h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">Liste des appartements possédés</p>
+        </div>
+        <div class="border-t border-gray-200">
+          <div class="px-4 py-5 sm:p-6">
+            <div *ngIf="proprietaire.appartements?.length" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div *ngFor="let appartement of proprietaire.appartements"
+                   class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400">
+                <div class="flex-1 min-w-0">
+                  <a [routerLink]="['/admin/appartements', appartement.id]" class="focus:outline-none">
+                    <span class="absolute inset-0" aria-hidden="true"></span>
+                    <p class="text-sm font-medium text-gray-900">
+                      Appartement {{ appartement.numero }}
+                    </p>
+                    <p class="text-sm text-gray-500 truncate">
+                      {{ appartement.immeuble?.nom }}
+                    </p>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="!proprietaire.appartements?.length" class="text-center py-8">
+              <i class="fas fa-home text-gray-400 text-4xl mb-4"></i>
+              <p class="text-sm text-gray-500">Aucun appartement associé à ce propriétaire</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

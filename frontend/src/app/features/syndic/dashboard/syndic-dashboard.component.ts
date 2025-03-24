@@ -22,6 +22,7 @@ export class SyndicDashboardComponent implements OnInit {
   isLoading = true;
   hasError = false;
   errorMessage = '';
+  isLoadingImmeubles = false;
 
   // Statistiques
   totalBuildings: number = 0;
@@ -122,7 +123,6 @@ export class SyndicDashboardComponent implements OnInit {
   private calculateStatistics(): void {
     // Calculer les statistiques des immeubles
     this.totalBuildings = this.immeubles.length;
-    this.activeBuildings = this.immeubles.filter(immeuble => immeuble.status === 'ACTIF').length;
 
     // Calculer les statistiques des incidents
     this.totalIncidents = this.incidents.length;
@@ -236,16 +236,19 @@ export class SyndicDashboardComponent implements OnInit {
     );
   }
 
-  getStatusClass(statut: string): string {
-    switch (statut) {
-      case 'ACTIF':
-        return 'bg-green-100 text-green-800';
-      case 'EN_CONSTRUCTION':
-        return 'bg-blue-100 text-blue-800';
-      case 'EN_MAINTENANCE':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
+  loadImmeubles(): void {
+    this.isLoadingImmeubles = true;
+    this.immeubleService.getAllImmeublesBySyndic().subscribe({
+      next: (data) => {
+        this.immeubles = data;
+        this.totalBuildings = this.immeubles.length;
+        this.activeBuildings = this.totalBuildings; // Tous les immeubles sont considérés comme actifs
+        this.isLoadingImmeubles = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des immeubles:', error);
+        this.isLoadingImmeubles = false;
+      }
+    });
   }
 }

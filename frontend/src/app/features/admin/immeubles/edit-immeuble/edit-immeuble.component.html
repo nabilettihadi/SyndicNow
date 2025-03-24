@@ -1,218 +1,187 @@
-<!-- En-tête -->
-<header class="bg-white shadow-sm">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <div class="md:flex md:items-center md:justify-between">
-      <div class="flex-1 min-w-0">
-        <h1 class="text-2xl font-bold text-gray-900">
-          Modifier l'immeuble
-        </h1>
-        <p class="mt-1 text-sm text-gray-500">
-          Modifiez les informations de l'immeuble "{{ immeuble?.nom }}"
-        </p>
-      </div>
-      <div class="mt-4 flex md:mt-0 md:ml-4">
-        <button type="button" (click)="retour()"
-                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-          <i class="fas fa-arrow-left -ml-1 mr-2"></i>
-          Retour
-        </button>
+<div class="min-h-screen bg-gray-50">
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="md:flex md:items-center md:justify-between">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-2xl font-bold text-gray-900">
+            Modifier l'immeuble
+          </h1>
+          <p class="mt-1 text-sm text-gray-500">
+            Modification des informations de l'immeuble
+          </p>
+        </div>
+        <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+          <button type="button" (click)="goBack()"
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            <i class="fas fa-arrow-left -ml-1 mr-2"></i>
+            Retour
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<!-- Contenu principal -->
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Chargement -->
-  <div *ngIf="isLoading" class="flex justify-center py-12">
-    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
-  </div>
-
-  <!-- Erreur de chargement -->
-  <div *ngIf="error && !immeubleForm" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mt-6">
-    {{ error }}
-    <div class="mt-2">
-      <button type="button" (click)="retour()"
-              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-        Retour à la liste
-      </button>
-    </div>
-  </div>
-
-  <!-- Formulaire d'édition -->
-  <div *ngIf="immeubleForm" class="bg-white shadow overflow-hidden sm:rounded-lg">
-    <form [formGroup]="immeubleForm" (ngSubmit)="onSubmit()">
-      <div class="border-b border-gray-200 px-4 py-5 sm:px-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Informations de l'immeuble
-        </h3>
-        <p class="mt-1 text-sm text-gray-500">
-          Tous les champs marqués d'un astérisque (*) sont obligatoires.
-        </p>
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Liste des syndics -->
+    <div class="mb-8 bg-white shadow overflow-hidden sm:rounded-lg">
+      <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+        <div>
+          <h3 class="text-lg leading-6 font-medium text-gray-900">Liste des Syndics</h3>
+          <p class="mt-1 text-sm text-gray-500">Sélectionnez un syndic pour l'assigner à l'immeuble</p>
+        </div>
       </div>
 
-      <div class="px-4 py-5 sm:p-6">
-        <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
-          <!-- Nom de l'immeuble -->
-          <div class="sm:col-span-3">
-            <label for="nom" class="block text-sm font-medium text-gray-700">
-              Nom de l'immeuble *
-            </label>
-            <div class="mt-1">
-              <input type="text"
-                     id="nom"
-                     formControlName="nom"
-                     class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md">
+      <div class="border-t border-gray-200">
+        <div *ngIf="isLoadingSyndics" class="flex justify-center py-6">
+          <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+        </div>
+
+        <div *ngIf="!isLoadingSyndics && syndics.length === 0" class="text-center py-6">
+          <p class="text-gray-500">Aucun syndic disponible</p>
+        </div>
+
+        <ul *ngIf="!isLoadingSyndics && syndics.length > 0" class="divide-y divide-gray-200">
+          <li *ngFor="let syndic of syndics" class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
+                    <span class="text-primary-600 font-medium">{{ syndic.nom.charAt(0) }}</span>
+                  </div>
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">{{ syndic.nom }}</div>
+                  <div class="text-sm text-gray-500">{{ syndic.email }}</div>
+                  <div class="text-sm text-gray-500">{{ syndic.telephone }}</div>
+                </div>
+              </div>
+              <div>
+                <button
+                  (click)="assignerSyndic(syndic.id)"
+                  [disabled]="isAssigning"
+                  [class.opacity-50]="isAssigning"
+                  class="inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <span *ngIf="isAssigning" class="mr-2">
+                    <i class="fas fa-spinner fa-spin"></i>
+                  </span>
+                  <i *ngIf="!isAssigning" class="fas fa-link mr-2"></i>
+                  Assigner
+                </button>
+              </div>
             </div>
-            <div *ngIf="f['nom'].touched && f['nom'].invalid" class="mt-1 text-sm text-red-600">
-              <div *ngIf="f['nom'].errors?.['required']">Le nom de l'immeuble est requis.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Informations de l'immeuble -->
+    <div *ngIf="isLoading" class="flex justify-center py-10">
+      <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
+    </div>
+
+    <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!isLoading && !error" class="bg-white shadow overflow-hidden sm:rounded-lg">
+      <div class="px-4 py-5 sm:p-6">
+        <form [formGroup]="immeubleForm" (ngSubmit)="onSubmit()">
+          <!-- Succès -->
+          <div *ngIf="success" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md mb-6">
+            {{ success }}
+          </div>
+
+          <!-- Nom de l'immeuble -->
+          <div class="mb-4">
+            <label for="nom" class="block text-sm font-medium text-gray-700">Nom de l'immeuble *</label>
+            <input type="text" id="nom" formControlName="nom"
+                   class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            <div *ngIf="submitted && f['nom'].errors" class="text-red-500 text-xs mt-1">
+              <span *ngIf="f['nom'].errors['required']">Le nom de l'immeuble est requis</span>
             </div>
           </div>
 
           <!-- Adresse -->
-          <div class="sm:col-span-6">
-            <label for="adresse" class="block text-sm font-medium text-gray-700">
-              Adresse *
-            </label>
-            <div class="mt-1">
-              <input type="text"
-                     id="adresse"
-                     formControlName="adresse"
-                     class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md">
-            </div>
-            <div *ngIf="f['adresse'].touched && f['adresse'].invalid" class="mt-1 text-sm text-red-600">
-              <div *ngIf="f['adresse'].errors?.['required']">L'adresse est requise.</div>
+          <div class="mb-4">
+            <label for="adresse" class="block text-sm font-medium text-gray-700">Adresse *</label>
+            <input type="text" id="adresse" formControlName="adresse"
+                   class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            <div *ngIf="submitted && f['adresse'].errors" class="text-red-500 text-xs mt-1">
+              <span *ngIf="f['adresse'].errors['required']">L'adresse est requise</span>
             </div>
           </div>
 
-          <!-- Code postal -->
-          <div class="sm:col-span-2">
-            <label for="codePostal" class="block text-sm font-medium text-gray-700">
-              Code postal *
-            </label>
-            <div class="mt-1">
-              <input type="text"
-                     id="codePostal"
-                     formControlName="codePostal"
-                     class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md">
+          <!-- Code postal et ville -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
+            <div>
+              <label for="codePostal" class="block text-sm font-medium text-gray-700">Code postal *</label>
+              <input type="text" id="codePostal" formControlName="codePostal"
+                     class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+              <div *ngIf="submitted && f['codePostal'].errors" class="text-red-500 text-xs mt-1">
+                <span *ngIf="f['codePostal'].errors['required']">Le code postal est requis</span>
+              </div>
             </div>
-            <div *ngIf="f['codePostal'].touched && f['codePostal'].invalid" class="mt-1 text-sm text-red-600">
-              <div *ngIf="f['codePostal'].errors?.['required']">Le code postal est requis.</div>
-            </div>
-          </div>
-
-          <!-- Ville -->
-          <div class="sm:col-span-4">
-            <label for="ville" class="block text-sm font-medium text-gray-700">
-              Ville *
-            </label>
-            <div class="mt-1">
-              <input type="text"
-                     id="ville"
-                     formControlName="ville"
-                     class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md">
-            </div>
-            <div *ngIf="f['ville'].touched && f['ville'].invalid" class="mt-1 text-sm text-red-600">
-              <div *ngIf="f['ville'].errors?.['required']">La ville est requise.</div>
+            <div>
+              <label for="ville" class="block text-sm font-medium text-gray-700">Ville *</label>
+              <input type="text" id="ville" formControlName="ville"
+                     class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+              <div *ngIf="submitted && f['ville'].errors" class="text-red-500 text-xs mt-1">
+                <span *ngIf="f['ville'].errors['required']">La ville est requise</span>
+              </div>
             </div>
           </div>
 
-          <!-- Date de construction -->
-          <div class="sm:col-span-3">
-            <label for="dateConstruction" class="block text-sm font-medium text-gray-700">
-              Date de construction
-            </label>
-            <div class="mt-1">
-              <input type="date"
-                     id="dateConstruction"
-                     formControlName="dateConstruction"
-                     class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md">
+          <!-- Date de construction et nombre d'étages -->
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
+            <div>
+              <label for="dateConstruction" class="block text-sm font-medium text-gray-700">Date de
+                construction</label>
+              <input type="date" id="dateConstruction" formControlName="dateConstruction"
+                     class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            </div>
+            <div>
+              <label for="anneeConstruction" class="block text-sm font-medium text-gray-700">Année de
+                construction</label>
+              <input type="number" id="anneeConstruction" formControlName="anneeConstruction" min="1900" max="2100"
+                     class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+              <div *ngIf="submitted && f['anneeConstruction'].errors" class="text-red-500 text-xs mt-1">
+                <span *ngIf="f['anneeConstruction'].errors['required']">L'année de construction est requise</span>
+                <span *ngIf="f['anneeConstruction'].errors['min']">L'année de construction doit être au moins 1900</span>
+                <span *ngIf="f['anneeConstruction'].errors['max']">L'année de construction doit être au plus 2100</span>
+              </div>
             </div>
           </div>
 
           <!-- Nombre d'étages -->
-          <div class="sm:col-span-3">
-            <label for="nombreEtages" class="block text-sm font-medium text-gray-700">
-              Nombre d'étages *
-            </label>
-            <div class="mt-1">
-              <input type="number"
-                     id="nombreEtages"
-                     formControlName="nombreEtages"
-                     min="0"
-                     class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md">
-            </div>
-            <div *ngIf="f['nombreEtages'].touched && f['nombreEtages'].invalid" class="mt-1 text-sm text-red-600">
-              <div *ngIf="f['nombreEtages'].errors?.['required']">Le nombre d'étages est requis.</div>
-              <div *ngIf="f['nombreEtages'].errors?.['min']">Le nombre d'étages doit être supérieur ou égal à 0.</div>
+          <div class="mb-4">
+            <label for="nombreEtages" class="block text-sm font-medium text-gray-700">Nombre d'étages *</label>
+            <input type="number" id="nombreEtages" formControlName="nombreEtages" min="1"
+                   class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+            <div *ngIf="submitted && f['nombreEtages'].errors" class="text-red-500 text-xs mt-1">
+              <span *ngIf="f['nombreEtages'].errors['required']">Le nombre d'étages est requis</span>
+              <span *ngIf="f['nombreEtages'].errors['min']">Le nombre d'étages doit être au moins 1</span>
             </div>
           </div>
 
-          <!-- Statut -->
-          <div class="sm:col-span-3">
-            <label for="status" class="block text-sm font-medium text-gray-700">
-              Statut *
-            </label>
-            <div class="mt-1">
-              <select id="status"
-                      formControlName="status"
-                      class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                <option value="ACTIF">Actif</option>
-                <option value="EN_TRAVAUX">En travaux</option>
-                <option value="INACTIF">Inactif</option>
-              </select>
-            </div>
-            <div *ngIf="f['status'].touched && f['status'].invalid" class="mt-1 text-sm text-red-600">
-              <div *ngIf="f['status'].errors?.['required']">Le statut est requis.</div>
-            </div>
+          <!-- Boutons de soumission -->
+          <div class="flex justify-end space-x-3">
+            <button type="button" (click)="resetForm()"
+                    class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 shadow-sm">
+              <i class="fas fa-times mr-2"></i>
+              Annuler
+            </button>
+            <button type="submit"
+                    [disabled]="isSubmitting"
+                    class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 shadow-sm disabled:opacity-50">
+              <span *ngIf="isSubmitting" class="mr-2">
+                <i class="fas fa-spinner fa-spin"></i>
+              </span>
+              <i *ngIf="!isSubmitting" class="fas fa-save mr-2"></i>
+              Enregistrer
+            </button>
           </div>
-
-          <!-- Syndic -->
-          <div class="sm:col-span-6">
-            <label for="syndicId" class="block text-sm font-medium text-gray-700">
-              Syndic
-            </label>
-            <div class="mt-1">
-              <select id="syndicId"
-                      formControlName="syndicId"
-                      class="shadow-sm focus:ring-primary-500 focus:border-primary-500 block w-full sm:text-sm border-gray-300 rounded-md">
-                <option [ngValue]="null">-- Aucun syndic assigné --</option>
-                <option *ngFor="let syndic of syndics" [value]="syndic.id">
-                  {{ syndic.nom }} - {{ syndic.ville }}
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
-
-      <!-- Message d'erreur -->
-      <div *ngIf="error && immeubleForm"
-           class="bg-red-50 border border-red-200 text-sm text-red-700 px-4 py-3 rounded-md mx-4 mb-4">
-        {{ error }}
-      </div>
-
-      <!-- Message de succès -->
-      <div *ngIf="success"
-           class="bg-green-50 border border-green-200 text-sm text-green-700 px-4 py-3 rounded-md mx-4 mb-4">
-        {{ success }}
-      </div>
-
-      <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 flex justify-end space-x-3">
-        <button type="button"
-                (click)="resetForm()"
-                class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-          Réinitialiser
-        </button>
-        <button type="submit"
-                [disabled]="immeubleForm.invalid || isSubmitting"
-                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed">
-          <span *ngIf="isSubmitting" class="mr-2">
-            <i class="fas fa-spinner fa-spin"></i>
-          </span>
-          Enregistrer les modifications
-        </button>
-      </div>
-    </form>
-  </div>
-</main>
+    </div>
+  </main>
+</div>

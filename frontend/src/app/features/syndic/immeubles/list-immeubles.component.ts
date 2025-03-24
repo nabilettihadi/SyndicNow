@@ -106,54 +106,8 @@ export class ListImmeublesComponent implements OnInit {
     return Math.ceil(this.totalItems / this.pageSize);
   }
 
-  getStatusClass(statut: string): string {
-    switch (statut) {
-      case 'ACTIF':
-        return 'syndic-badge syndic-badge-success';
-      case 'EN_TRAVAUX':
-        return 'syndic-badge syndic-badge-info';
-      case 'EN_MAINTENANCE':
-        return 'syndic-badge syndic-badge-warning';
-      case 'INACTIF':
-        return 'syndic-badge syndic-badge-danger';
-      default:
-        return 'syndic-badge';
-    }
-  }
-
-  getTailwindStatusClass(statut: string): string {
-    switch (statut) {
-      case 'ACTIF':
-        return 'bg-green-100 text-green-800';
-      case 'EN_TRAVAUX':
-        return 'bg-blue-100 text-blue-800';
-      case 'EN_MAINTENANCE':
-        return 'bg-amber-100 text-amber-800';
-      case 'INACTIF':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  }
-
   getImmeublesCount(): number {
     return this.immeubles.length;
-  }
-
-  getActiveImmeublesCount(): number {
-    return this.immeubles.filter(immeuble => immeuble.status === 'ACTIF').length;
-  }
-
-  getInactiveImmeublesCount(): number {
-    return this.immeubles.filter(immeuble => immeuble.status === 'INACTIF').length;
-  }
-
-  getUnderConstructionImmeublesCount(): number {
-    return this.immeubles.filter(immeuble => immeuble.status === 'EN_TRAVAUX').length;
-  }
-
-  getImmeublesCountByStatus(status: string): number {
-    return this.immeubles.filter(immeuble => immeuble.status === status).length;
   }
 
   getTotalAppartementsCount(): number {

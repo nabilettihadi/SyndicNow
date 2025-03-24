@@ -47,7 +47,7 @@ public class Immeuble {
     @JoinColumn(name = "syndic_id", nullable = false)
     private Syndic syndic;
 
-    @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Appartement> appartements = new ArrayList<>();
 
     @Column(name = "created_at")

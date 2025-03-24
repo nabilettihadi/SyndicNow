@@ -9,7 +9,6 @@ export interface Immeuble {
   nombreEtages: number;
   nombreAppartements: number;
   appartmentsOccupes?: number;
-  status: 'ACTIF' | 'EN_TRAVAUX' | 'INACTIF';
   syndicId: number;
   syndic?: {
     id: number;
@@ -22,12 +21,9 @@ export interface Immeuble {
 
 export interface ImmeubleStats {
   total: number;
-  parStatus: {
-    [key: string]: number;
-  };
   parVille: {
     [key: string]: number;
   };
-  nombreAppartementsMoyen: number;
   nombreEtagesMoyen: number;
+  nombreAppartementsMoyen: number;
 } 

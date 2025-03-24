@@ -5,12 +5,9 @@ export interface Appartement {
   surface: number;
   superficie: number;
   nombrePieces: number;
-  loyer: number;
-  charges: number;
+  description?: string;
   status: 'OCCUPE' | 'LIBRE' | 'EN_TRAVAUX';
   immeubleId: number;
-  proprietaireId?: number;
-  dateCreation: Date;
   immeuble?: {
     id: number;
     nom: string;
@@ -27,37 +24,12 @@ export interface AppartementStats {
   surfaceMoyenne: number;
 }
 
-export interface AppartementDetails {
-  id: number;
-  numero: string;
-  etage: number;
-  surface: number;
-  nombrePieces: number;
-  loyer: number;
-  charges: number;
-  status: 'OCCUPE' | 'LIBRE' | 'EN_TRAVAUX';
-  immeubleId: number;
-  proprietaireId?: number;
-  dateCreation: Date;
-  type: string;
-  immeuble?: {
-    id: number;
-    nom: string;
-    adresse: string;
-  };
+export interface AppartementDetails extends Appartement {
   proprietaire?: {
     id: number;
     nom: string;
     prenom: string;
   };
-  caracteristiques: {
-    nbChambres: number;
-    nbSallesDeBain: number;
-    balcon: boolean;
-    parking: boolean;
-    meuble: boolean;
-  };
-  description?: string;
   createdAt?: Date;
   updatedAt?: Date;
 } 

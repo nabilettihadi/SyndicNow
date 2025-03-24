@@ -361,7 +361,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   getProfilRoute(): string {
     if (!this.currentUser) return '/';
-    
+
     switch (this.currentUser.role) {
       case 'ADMIN':
         return '/admin/profil';
@@ -395,18 +395,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
         roles: ['ROLE_SYNDIC']
       },
       {
-        label: 'Paiements',
-        route: '/syndic/paiements',
-        icon: 'fas fa-money-bill-wave',
-        roles: ['ROLE_SYNDIC']
-      },
-      {
-        label: 'Incidents',
-        route: '/syndic/incidents',
-        icon: 'fas fa-exclamation-triangle',
-        roles: ['ROLE_SYNDIC']
-      },
-      {
         label: 'Propriétaires',
         route: '/syndic/proprietaires',
         icon: 'fas fa-users',
@@ -425,12 +413,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
         label: 'Mes Appartements',
         route: '/proprietaire/mes-appartements',
         icon: 'fas fa-home',
-        roles: ['ROLE_PROPRIETAIRE']
-      },
-      {
-        label: 'Mes Paiements',
-        route: '/proprietaire/mes-paiements',
-        icon: 'fas fa-money-bill-wave',
         roles: ['ROLE_PROPRIETAIRE']
       },
       {

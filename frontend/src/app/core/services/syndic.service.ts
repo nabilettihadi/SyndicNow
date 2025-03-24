@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {Observable, of, catchError, throwError} from 'rxjs';
+import {catchError, Observable, throwError} from 'rxjs';
 import {environment} from '@env/environment';
 import {Syndic, SyndicStats} from '@core/models/syndic.model';
 
@@ -117,7 +117,7 @@ export class SyndicService {
 
   // Terminer le mandat d'un syndic
   terminerMandat(id: number, dateFin: Date): Observable<Syndic> {
-    return this.http.post<Syndic>(`${this.apiUrl}/${id}/terminer`, { dateFin })
+    return this.http.post<Syndic>(`${this.apiUrl}/${id}/terminer`, {dateFin})
       .pipe(
         catchError(this.handleError)
       );

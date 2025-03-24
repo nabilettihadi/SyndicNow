@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { ImmeubleService } from '@core/services/immeuble.service';
-import { SyndicService } from '@core/services/syndic.service';
-import { Syndic } from '@core/models/syndic.model';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {Router, RouterModule} from '@angular/router';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {SyndicService} from '@core/services/syndic.service';
+import {Syndic} from '@core/models/syndic.model';
 
 @Component({
   selector: 'app-create-immeuble',
@@ -20,7 +20,7 @@ export class CreateImmeubleComponent implements OnInit {
   isLoadingSyndics: boolean = false;
   error: string = '';
   success: string = '';
-  
+
   constructor(
     private fb: FormBuilder,
     private immeubleService: ImmeubleService,
@@ -61,7 +61,7 @@ export class CreateImmeubleComponent implements OnInit {
         this.syndics = syndics.filter(syndic => !syndic.status || syndic.status === 'ACTIF');
         console.log('Syndics filtrés (actifs):', this.syndics);
         this.isLoadingSyndics = false;
-        
+
         if (this.syndics.length === 0) {
           this.error = 'Aucun syndic actif n\'est disponible.';
         }
@@ -82,8 +82,8 @@ export class CreateImmeubleComponent implements OnInit {
     });
   }
 
-  get f() { 
-    return this.immeubleForm.controls; 
+  get f() {
+    return this.immeubleForm.controls;
   }
 
   onSubmit(): void {
@@ -97,10 +97,10 @@ export class CreateImmeubleComponent implements OnInit {
     }
 
     this.isSubmitting = true;
-    
+
     // Créer une copie des données du formulaire
-    const immeubleData = { ...this.immeubleForm.value };
-    
+    const immeubleData = {...this.immeubleForm.value};
+
     // Conversion de syndicId en nombre
     if (immeubleData.syndicId) {
       immeubleData.syndicId = Number(immeubleData.syndicId);
@@ -118,7 +118,7 @@ export class CreateImmeubleComponent implements OnInit {
         console.log('Immeuble créé:', result);
         this.isSubmitting = false;
         this.success = `L'immeuble ${result.nom} a été créé avec succès.`;
-        
+
         // Redirection après 2 secondes
         setTimeout(() => {
           this.router.navigate(['/admin/immeubles', result.id]);
@@ -150,4 +150,4 @@ export class CreateImmeubleComponent implements OnInit {
   goBack(): void {
     this.router.navigate(['/admin/immeubles']);
   }
-} 
+}

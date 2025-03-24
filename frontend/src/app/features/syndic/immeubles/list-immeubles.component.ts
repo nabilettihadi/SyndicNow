@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { FooterComponent } from '@shared/components/footer/footer.component';
-import { ImmeubleService } from '@core/services/immeuble.service';
-import { Immeuble } from '@core/models/immeuble.model';
-import { AuthService } from '@core/services/auth.service';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {FormsModule} from '@angular/forms';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {Immeuble} from '@core/models/immeuble.model';
+import {AuthService} from '@core/services/auth.service';
 
 @Component({
   selector: 'app-list-immeubles',
@@ -19,11 +19,11 @@ export class ListImmeublesComponent implements OnInit {
   isLoading = true;
   hasError = false;
   errorMessage = '';
-  
+
   immeubles: Immeuble[] = [];
   filteredImmeubles: Immeuble[] = [];
   searchTerm: string = '';
-  
+
   // Pagination
   currentPage: number = 1;
   pageSize: number = 9;
@@ -32,7 +32,8 @@ export class ListImmeublesComponent implements OnInit {
   constructor(
     private immeubleService: ImmeubleService,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.syndicId = this.authService.getCurrentUser()?.userId || null;
@@ -69,38 +70,38 @@ export class ListImmeublesComponent implements OnInit {
       this.filteredImmeubles = [...this.immeubles];
     } else {
       const searchLower = this.searchTerm.toLowerCase();
-      this.filteredImmeubles = this.immeubles.filter(immeuble => 
-        immeuble.nom?.toLowerCase().includes(searchLower) || 
+      this.filteredImmeubles = this.immeubles.filter(immeuble =>
+        immeuble.nom?.toLowerCase().includes(searchLower) ||
         immeuble.adresse?.toLowerCase().includes(searchLower) ||
         immeuble.ville?.toLowerCase().includes(searchLower)
       );
     }
-    
+
     this.totalItems = this.filteredImmeubles.length;
     this.currentPage = 1;
     this.applyPagination();
   }
-  
+
   applyPagination(): void {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = Math.min(startIndex + this.pageSize, this.filteredImmeubles.length);
     this.filteredImmeubles = [...this.immeubles.slice(startIndex, endIndex)];
   }
-  
+
   nextPage(): void {
     if (this.currentPage < this.getTotalPages()) {
       this.currentPage++;
       this.applyPagination();
     }
   }
-  
+
   prevPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.applyPagination();
     }
   }
-  
+
   getTotalPages(): number {
     return Math.ceil(this.totalItems / this.pageSize);
   }
@@ -119,7 +120,7 @@ export class ListImmeublesComponent implements OnInit {
         return 'syndic-badge';
     }
   }
-  
+
   getTailwindStatusClass(statut: string): string {
     switch (statut) {
       case 'ACTIF':
@@ -134,28 +135,28 @@ export class ListImmeublesComponent implements OnInit {
         return 'bg-gray-100 text-gray-800';
     }
   }
-  
+
   getImmeublesCount(): number {
     return this.immeubles.length;
   }
-  
+
   getActiveImmeublesCount(): number {
     return this.immeubles.filter(immeuble => immeuble.status === 'ACTIF').length;
   }
-  
+
   getInactiveImmeublesCount(): number {
     return this.immeubles.filter(immeuble => immeuble.status === 'INACTIF').length;
   }
-  
+
   getUnderConstructionImmeublesCount(): number {
     return this.immeubles.filter(immeuble => immeuble.status === 'EN_TRAVAUX').length;
   }
-  
+
   getImmeublesCountByStatus(status: string): number {
     return this.immeubles.filter(immeuble => immeuble.status === status).length;
   }
-  
+
   getTotalAppartementsCount(): number {
     return this.immeubles.reduce((total, immeuble) => total + (immeuble.nombreAppartements || 0), 0);
   }
-} 
+}

@@ -1,244 +1,166 @@
-<div class="syndic-page bg-gray-50 min-h-screen">
-  <header class="bg-gradient-to-r from-blue-900 to-blue-700 py-10 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 class="text-4xl font-bold mb-4">Tableau de bord Syndic</h1>
-      <p class="text-lg text-blue-100">Gérez vos immeubles et suivez les activités en temps réel</p>
-    </div>
-  </header>
+<!-- En-tête -->
+<div class="bg-white shadow">
+  <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-3xl font-bold text-gray-900">Tableau de bord</h1>
+  </div>
+</div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Chargement -->
-    <div *ngIf="isLoading" class="flex justify-center py-16">
-      <div class="bg-white p-8 rounded-xl shadow-xl flex flex-col items-center gap-4">
-        <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-900 border-t-transparent"></div>
-        <p class="text-blue-900 font-medium">Chargement des données...</p>
+<!-- Contenu principal -->
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+  <!-- État de chargement -->
+  <div *ngIf="isLoading" class="flex justify-center items-center h-64">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+  </div>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="hasError" class="rounded-md bg-red-50 p-4 mb-6">
+    <div class="flex">
+      <div class="flex-shrink-0">
+        <i class="fas fa-exclamation-circle text-red-400 text-xl"></i>
       </div>
-    </div>
-
-    <!-- Erreur -->
-    <div *ngIf="hasError" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded mb-6 flex items-center gap-3">
-      <i class="fas fa-exclamation-circle text-xl"></i>
-      <span>{{ errorMessage }}</span>
-    </div>
-
-    <!-- Contenu principal -->
-    <div *ngIf="!isLoading && !hasError" class="space-y-8">
-      <!-- Cartes statistiques -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-blue-500">
-          <div class="bg-blue-100 p-3 rounded-lg">
-            <i class="fas fa-building text-blue-700 text-xl"></i>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Immeubles gérés</p>
-            <p class="text-2xl font-bold text-gray-800">{{ totalBuildings }}</p>
-          </div>
+      <div class="ml-3">
+        <h3 class="text-sm font-medium text-red-800">
+          Une erreur est survenue
+        </h3>
+        <div class="mt-2 text-sm text-red-700">
+          <p>{{ errorMessage }}</p>
         </div>
-        
-        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-green-500">
-          <div class="bg-green-100 p-3 rounded-lg">
-            <i class="fas fa-check-circle text-green-700 text-xl"></i>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Immeubles actifs</p>
-            <p class="text-2xl font-bold text-gray-800">
-              {{ activeBuildings }}
-              <span class="ml-1 text-sm font-medium text-green-600">
-                {{ (activeBuildings / totalBuildings * 100) | number:'1.0-0' }}%
-              </span>
-            </p>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-yellow-500">
-          <div class="bg-yellow-100 p-3 rounded-lg">
-            <i class="fas fa-clock text-yellow-700 text-xl"></i>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Paiements en attente</p>
-            <p class="text-2xl font-bold text-gray-800">{{ pendingPayments }}</p>
-          </div>
-        </div>
-        
-        <div class="bg-white rounded-xl shadow-sm p-6 flex items-center space-x-4 border-l-4 border-purple-500">
-          <div class="bg-purple-100 p-3 rounded-lg">
-            <i class="fas fa-wallet text-purple-700 text-xl"></i>
-          </div>
-          <div>
-            <p class="text-sm text-gray-500">Revenus totaux</p>
-            <p class="text-2xl font-bold text-gray-800">{{ totalRevenue | currency:'MAD' }}</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section des immeubles -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <!-- Liste des immeubles -->
-        <div class="lg:col-span-2 bg-white shadow rounded-lg overflow-hidden">
-          <div class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50">
-            <div class="flex justify-between items-center">
-              <h3 class="text-lg font-medium leading-6 text-gray-900">
-                <span class="flex items-center">
-                  <svg class="h-5 w-5 text-blue-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                  Immeubles gérés
-                </span>
-              </h3>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                  </svg>
-                </div>
-                <input 
-                  type="text" 
-                  [(ngModel)]="searchTerm"
-                  (ngModelChange)="applyFilter()"
-                  placeholder="Rechercher..." 
-                  class="pl-10 py-2 pr-4 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                >
-              </div>
-            </div>
-          </div>
-
-          <div class="divide-y divide-gray-200 overflow-y-auto max-h-96">
-            <div *ngFor="let immeuble of filteredBuildings" class="p-4 hover:bg-gray-50 transition-colors">
-              <div class="flex items-center justify-between">
-                <div>
-                  <h4 class="text-lg font-medium text-gray-900">{{ immeuble.nom }}</h4>
-                  <div class="flex items-center mt-1 text-sm text-gray-500">
-                    <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    {{ immeuble.adresse }}, {{ immeuble.ville }}
-                  </div>
-                </div>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getStatusClass(immeuble.status)">
-                  {{ immeuble.status }}
-                </span>
-              </div>
-              <div class="mt-4 flex justify-between">
-                <div class="flex -space-x-1 overflow-hidden">
-                  <img *ngFor="let i of [1, 2, 3]" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://via.placeholder.com/150" alt="Photo de profil">
-                  <span class="flex items-center justify-center h-8 w-8 rounded-full bg-gray-200 text-xs font-medium text-gray-500">+{{ immeuble.nombreAppartements || 0 }}</span>
-                </div>
-                <div class="flex space-x-2">
-                  <a [routerLink]="['/syndic/immeubles', immeuble.id]" class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-5 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:border-blue-700 focus:shadow-outline-blue">
-                    Détails
-                  </a>
-                  <a [routerLink]="['/syndic/immeubles', immeuble.id, 'paiements']" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm leading-5 font-medium rounded-md text-gray-700 bg-white hover:text-gray-500 focus:outline-none focus:border-blue-300 focus:shadow-outline-blue">
-                    Paiements
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="filteredBuildings.length === 0" class="p-8 text-center">
-              <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-              </svg>
-              <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun immeuble trouvé</h3>
-              <p class="mt-1 text-sm text-gray-500">Vous n'avez aucun immeuble ou votre recherche ne correspond à aucun résultat.</p>
-              <div class="mt-6">
-                <a routerLink="/syndic/immeubles/ajouter" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                  </svg>
-                  Ajouter un immeuble
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Incidents récents -->
-        <div class="bg-white shadow rounded-lg overflow-hidden">
-          <div class="px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200">
-            <div class="flex justify-between items-center">
-              <h3 class="text-lg font-medium leading-6 text-gray-900">
-                <span class="flex items-center">
-                  <svg class="h-5 w-5 text-red-600 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                  Incidents récents
-                </span>
-              </h3>
-              <a routerLink="/syndic/incidents" class="text-sm font-medium text-blue-600 hover:text-blue-500">Voir tous</a>
-            </div>
-          </div>
-          <div class="p-4 divide-y divide-gray-200 overflow-y-auto max-h-96">
-            <div *ngFor="let incident of incidents.slice(0, 5)" class="py-3 first:pt-0 last:pb-0">
-              <div class="flex justify-between">
-                <h4 class="text-sm font-medium text-gray-900">{{ incident.titre }}</h4>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" [ngClass]="getStatusClass(incident.statut)">
-                  {{ incident.statut }}
-                </span>
-              </div>
-              <p class="mt-1 text-sm text-gray-500 line-clamp-2">{{ incident.description }}</p>
-              <div class="mt-2 flex justify-between items-center">
-                <span class="inline-flex items-center text-xs text-gray-500">
-                  <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  {{ incident.reportedDate | date:'dd/MM/yyyy' }}
-                </span>
-                <a [routerLink]="['/syndic/incidents', incident.id]" class="text-xs font-medium text-blue-600 hover:text-blue-500">
-                  Voir détails
-                </a>
-              </div>
-            </div>
-            <div *ngIf="incidents.length === 0" class="py-8 text-center">
-              <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun incident récent</h3>
-              <p class="mt-1 text-sm text-gray-500">Tout est en ordre pour le moment.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Boutons d'action rapide -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <a routerLink="/syndic/appartements/ajouter" class="bg-white shadow rounded-lg p-6 hover:shadow-md transition-all duration-300 flex items-center space-x-4">
-          <div class="flex-shrink-0 h-12 w-12 rounded-md bg-blue-100 flex items-center justify-center">
-            <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="text-lg font-medium text-gray-900">Ajouter un appartement</h3>
-            <p class="text-sm text-gray-500">Enregistrer un nouveau appartement dans le système</p>
-          </div>
-        </a>
-        
-        <a routerLink="/syndic/incidents/signaler" class="bg-white shadow rounded-lg p-6 hover:shadow-md transition-all duration-300 flex items-center space-x-4">
-          <div class="flex-shrink-0 h-12 w-12 rounded-md bg-red-100 flex items-center justify-center">
-            <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="text-lg font-medium text-gray-900">Signaler un incident</h3>
-            <p class="text-sm text-gray-500">Déclarer un nouveau problème ou incident</p>
-          </div>
-        </a>
-        
-        <a routerLink="/syndic/paiements/ajouter" class="bg-white shadow rounded-lg p-6 hover:shadow-md transition-all duration-300 flex items-center space-x-4">
-          <div class="flex-shrink-0 h-12 w-12 rounded-md bg-green-100 flex items-center justify-center">
-            <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <div>
-            <h3 class="text-lg font-medium text-gray-900">Enregistrer un paiement</h3>
-            <p class="text-sm text-gray-500">Saisir un nouveau paiement dans le système</p>
-          </div>
-        </a>
       </div>
     </div>
   </div>
 
-  <app-footer></app-footer>
+  <!-- Statistiques -->
+  <div *ngIf="!isLoading && !hasError" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Total des immeubles -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="rounded-md bg-blue-50 p-3">
+              <i class="fas fa-building text-blue-600 text-xl"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Total des immeubles
+              </dt>
+              <dd>
+                <p class="text-2xl font-bold text-gray-800">{{ totalBuildings }}</p>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Immeubles actifs -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="rounded-md bg-green-50 p-3">
+              <i class="fas fa-check-circle text-green-600 text-xl"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Immeubles actifs
+              </dt>
+              <dd>
+                <p class="text-2xl font-bold text-gray-800">{{ activeBuildings }}</p>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Incidents en cours -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <div class="rounded-md bg-orange-50 p-3">
+              <i class="fas fa-exclamation-triangle text-orange-600 text-xl"></i>
+            </div>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 truncate">
+                Incidents en cours
+              </dt>
+              <dd>
+                <p class="text-2xl font-bold text-gray-800">{{ incidentsEnCours }}</p>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Graphiques -->
+  <div *ngIf="!isLoading && !hasError" class="mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2">
+    <!-- Statut des immeubles -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <h3 class="text-lg font-medium text-gray-900">Statut des immeubles</h3>
+        <div class="mt-4">
+          <div *ngFor="let item of buildingStatusData" class="flex items-center justify-between mb-2">
+            <span class="text-sm text-gray-600">{{ item.name }}</span>
+            <span class="text-sm font-medium text-gray-900">{{ item.value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statut des incidents -->
+    <div class="bg-white overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <h3 class="text-lg font-medium text-gray-900">Statut des incidents</h3>
+        <div class="mt-4">
+          <div *ngFor="let item of incidentStatusData" class="flex items-center justify-between mb-2">
+            <span class="text-sm text-gray-600">{{ item.name }}</span>
+            <span class="text-sm font-medium text-gray-900">{{ item.value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des incidents récents -->
+  <div *ngIf="!isLoading && !hasError" class="mt-8">
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg font-medium text-gray-900">Incidents récents</h3>
+      </div>
+      <ul role="list" class="divide-y divide-gray-200">
+        <li *ngFor="let incident of incidents.slice(0, 5)">
+          <div class="px-4 py-4 sm:px-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-exclamation-circle text-orange-400 text-xl"></i>
+                </div>
+                <div class="ml-4">
+                  <h4 class="text-sm font-medium text-gray-900">{{ incident.title }}</h4>
+                  <p class="text-sm text-gray-500">{{ incident.description }}</p>
+                </div>
+              </div>
+              <div class="ml-4 flex-shrink-0">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                      [ngClass]="getStatusClass(incident.status)">
+                  {{ incident.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
+
+<app-footer></app-footer>

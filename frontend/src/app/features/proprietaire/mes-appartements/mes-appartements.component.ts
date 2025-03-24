@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
-import {FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {NavbarComponent} from '@shared/components/navbar/navbar.component';
 import {FooterComponent} from '@shared/components/footer/footer.component';
 import {AppartementService} from '@core/services/appartement.service';
@@ -80,7 +80,7 @@ export class MesAppartementsComponent implements OnInit {
 
     this.loading = true;
     this.error = null;
-    
+
     this.appartementService.getAppartementsProprietaire(currentUser.userId).subscribe({
       next: (data: AppartementDetails[]) => {
         // Mapper les données pour ajouter les propriétés UI
@@ -108,7 +108,7 @@ export class MesAppartementsComponent implements OnInit {
   private loadImmeubles(): void {
     this.loading = true;
     this.error = null;
-    
+
     this.immeubleService.getAllImmeubles().subscribe({
       next: (data) => {
         this.immeubles = data;
@@ -126,11 +126,11 @@ export class MesAppartementsComponent implements OnInit {
       this.filteredAppartements = [...this.appartements];
       return;
     }
-    
+
     const searchLower = this.searchTerm.toLowerCase();
-    this.filteredAppartements = this.appartements.filter(appartement => 
-      appartement.numero.toLowerCase().includes(searchLower) || 
-      appartement.immeubleName?.toLowerCase().includes(searchLower) || 
+    this.filteredAppartements = this.appartements.filter(appartement =>
+      appartement.numero.toLowerCase().includes(searchLower) ||
+      appartement.immeubleName?.toLowerCase().includes(searchLower) ||
       appartement.description?.toLowerCase().includes(searchLower) ||
       this.getEtageLabel(appartement.etage).toLowerCase().includes(searchLower)
     );
@@ -159,18 +159,18 @@ export class MesAppartementsComponent implements OnInit {
     if (etage === 0) return 'RDC';
     return `Étage ${etage}`;
   }
-  
+
   // Fonctions pour gérer le formulaire
   toggleAddForm(): void {
     this.showAddForm = !this.showAddForm;
     this.editingAppartementId = null;
     this.resetForm();
   }
-  
+
   editAppartement(appartement: AppartementUI): void {
     this.editingAppartementId = appartement.id;
     this.showAddForm = true;
-    
+
     this.appartementForm.patchValue({
       numero: appartement.numero,
       etage: appartement.etage,
@@ -179,13 +179,13 @@ export class MesAppartementsComponent implements OnInit {
       immeubleId: appartement.immeubleId
     });
   }
-  
+
   cancelEdit(): void {
     this.showAddForm = false;
     this.editingAppartementId = null;
     this.resetForm();
   }
-  
+
   resetForm(): void {
     this.appartementForm.reset({
       numero: '',
@@ -195,26 +195,26 @@ export class MesAppartementsComponent implements OnInit {
       immeubleId: null
     });
   }
-  
+
   saveAppartement(): void {
     if (this.appartementForm.invalid) {
       this.appartementForm.markAllAsTouched();
       return;
     }
-    
+
     const currentUser = this.authService.getCurrentUser();
     if (!currentUser?.userId) {
       this.error = "Erreur d'identification de l'utilisateur";
       return;
     }
-    
+
     const appartementData = {
       ...this.appartementForm.value
     };
-    
+
     this.loading = true;
     this.error = null;
-    
+
     if (this.editingAppartementId) {
       // Mise à jour d'un appartement existant
       this.appartementService.updateAppartement(this.editingAppartementId, appartementData)
@@ -243,24 +243,24 @@ export class MesAppartementsComponent implements OnInit {
         });
     }
   }
-  
+
   // Fonctions pour gérer la suppression
   confirmDelete(appartement: AppartementUI): void {
     this.selectedAppartement = appartement;
     this.showDeleteConfirmation = true;
   }
-  
+
   cancelDelete(): void {
     this.selectedAppartement = null;
     this.showDeleteConfirmation = false;
   }
-  
+
   deleteAppartement(): void {
     if (!this.selectedAppartement) return;
-    
+
     this.loading = true;
     this.error = null;
-    
+
     this.appartementService.deleteAppartement(this.selectedAppartement.id)
       .pipe(finalize(() => {
         this.loading = false;

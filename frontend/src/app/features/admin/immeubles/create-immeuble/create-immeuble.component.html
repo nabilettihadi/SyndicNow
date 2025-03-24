@@ -11,7 +11,7 @@
           </p>
         </div>
         <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
-          <button type="button" (click)="goBack()" 
+          <button type="button" (click)="goBack()"
                   class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <i class="fas fa-arrow-left -ml-1 mr-2"></i>
             Retour
@@ -29,7 +29,7 @@
           <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
             {{ error }}
           </div>
-          
+
           <!-- Succès -->
           <div *ngIf="success" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-md mb-6">
             {{ success }}
@@ -92,7 +92,8 @@
               </div>
             </div>
             <div>
-              <label for="nombreAppartements" class="block text-sm font-medium text-gray-700">Nombre d'appartements *</label>
+              <label for="nombreAppartements" class="block text-sm font-medium text-gray-700">Nombre d'appartements
+                *</label>
               <input type="number" id="nombreAppartements" formControlName="nombreAppartements" min="1"
                      class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                      placeholder="Ex: 10">
@@ -106,7 +107,8 @@
           <!-- Année de construction et Description -->
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
             <div>
-              <label for="anneeConstruction" class="block text-sm font-medium text-gray-700">Année de construction</label>
+              <label for="anneeConstruction" class="block text-sm font-medium text-gray-700">Année de
+                construction</label>
               <input type="number" id="anneeConstruction" formControlName="anneeConstruction"
                      class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                      placeholder="Ex: 2000">
@@ -123,11 +125,13 @@
           <div class="mb-6">
             <label for="syndicId" class="block text-sm font-medium text-gray-700">Syndic *</label>
             <div class="relative">
-              <select id="syndicId" 
+              <select id="syndicId"
                       formControlName="syndicId"
                       [attr.disabled]="isLoadingSyndics"
                       class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-                <option [ngValue]="null">{{ isLoadingSyndics ? 'Chargement des syndics...' : '-- Sélectionnez un syndic --' }}</option>
+                <option
+                  [ngValue]="null">{{ isLoadingSyndics ? 'Chargement des syndics...' : '-- Sélectionnez un syndic --' }}
+                </option>
                 <option *ngFor="let syndic of syndics" [ngValue]="syndic.id">
                   {{ syndic.nom }} - {{ syndic.ville }} ({{ syndic.email || 'Email non disponible' }})
                 </option>
@@ -167,4 +171,4 @@
       </div>
     </div>
   </main>
-</div> 
+</div>

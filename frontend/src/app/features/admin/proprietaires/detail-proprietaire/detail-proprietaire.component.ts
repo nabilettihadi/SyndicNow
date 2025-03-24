@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ProprietaireService } from '@core/services/proprietaire.service';
-import { Proprietaire } from '@core/models/proprietaire.model';
-import { FormsModule } from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {ProprietaireService} from '@core/services/proprietaire.service';
+import {Proprietaire} from '@core/models/proprietaire.model';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-detail-proprietaire',
@@ -59,7 +59,7 @@ import { FormsModule } from '@angular/forms';
             </div>
             <span [class]="getStatusClass(proprietaire.status)"
                   class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
-              {{formatStatus(proprietaire.status)}}
+              {{ formatStatus(proprietaire.status) }}
             </span>
           </div>
           <div class="border-t border-gray-200">
@@ -69,7 +69,7 @@ import { FormsModule } from '@angular/forms';
                   Nom complet
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {{proprietaire.prenom}} {{proprietaire.nom}}
+                  {{ proprietaire.prenom }} {{ proprietaire.nom }}
                 </dd>
               </div>
               <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -77,7 +77,7 @@ import { FormsModule } from '@angular/forms';
                   Email
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {{proprietaire.email}}
+                  {{ proprietaire.email }}
                 </dd>
               </div>
               <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -85,7 +85,7 @@ import { FormsModule } from '@angular/forms';
                   Téléphone
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {{proprietaire.telephone}}
+                  {{ proprietaire.telephone }}
                 </dd>
               </div>
               <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -93,7 +93,7 @@ import { FormsModule } from '@angular/forms';
                   Date d'inscription
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {{formatDate(proprietaire.dateCreation)}}
+                  {{ formatDate(proprietaire.dateCreation) }}
                 </dd>
               </div>
               <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -101,7 +101,7 @@ import { FormsModule } from '@angular/forms';
                   Adresse
                 </dt>
                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                  {{proprietaire.adresse || 'Non spécifiée'}}
+                  {{ proprietaire.adresse || 'Non spécifiée' }}
                 </dd>
               </div>
             </dl>
@@ -122,50 +122,50 @@ import { FormsModule } from '@angular/forms';
             <div *ngIf="proprietaire.appartements && proprietaire.appartements.length > 0" class="overflow-x-auto">
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Numéro
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Immeuble
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Étage
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Surface
-                    </th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Numéro
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Immeuble
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Étage
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Surface
+                  </th>
+                  <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  <tr *ngFor="let appartement of proprietaire.appartements" class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {{appartement.numero}}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{appartement.immeuble?.nom || 'Non spécifié'}}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{appartement.etage || 'Non spécifié'}}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{appartement.surface ? appartement.surface + ' m²' : 'Non spécifiée'}}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <a [routerLink]="['/appartements', appartement.id]"
-                         class="text-indigo-600 hover:text-indigo-900">
-                        Détails
-                      </a>
-                    </td>
-                  </tr>
+                <tr *ngFor="let appartement of proprietaire.appartements" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {{ appartement.numero }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ appartement.immeuble?.nom || 'Non spécifié' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ appartement.etage || 'Non spécifié' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ appartement.surface ? appartement.surface + ' m²' : 'Non spécifiée' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a [routerLink]="['/appartements', appartement.id]"
+                       class="text-indigo-600 hover:text-indigo-900">
+                      Détails
+                    </a>
+                  </td>
+                </tr>
                 </tbody>
               </table>
             </div>
-            <div *ngIf="!proprietaire.appartements || proprietaire.appartements.length === 0" 
-                class="text-center py-8">
+            <div *ngIf="!proprietaire.appartements || proprietaire.appartements.length === 0"
+                 class="text-center py-8">
               <i class="fas fa-home text-gray-400 text-4xl mb-2"></i>
               <p class="text-sm text-gray-500">Ce propriétaire ne possède aucun appartement</p>
             </div>
@@ -185,7 +185,8 @@ export class DetailProprietaireComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private proprietaireService: ProprietaireService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -200,7 +201,7 @@ export class DetailProprietaireComponent implements OnInit {
   loadProprietaire(): void {
     this.isLoading = true;
     this.error = null;
-    
+
     this.proprietaireService.getProprietaireById(this.proprietaireId)
       .subscribe({
         next: (data) => {
@@ -227,7 +228,7 @@ export class DetailProprietaireComponent implements OnInit {
 
   formatStatus(status: string | undefined): string {
     if (!status) return 'Inconnu';
-    
+
     switch (status.toUpperCase()) {
       case 'ACTIF':
         return 'Actif';
@@ -240,7 +241,7 @@ export class DetailProprietaireComponent implements OnInit {
 
   getStatusClass(status: string | undefined): string {
     if (!status) return 'bg-gray-100 text-gray-800';
-    
+
     switch (status.toUpperCase()) {
       case 'ACTIF':
         return 'bg-green-100 text-green-800';

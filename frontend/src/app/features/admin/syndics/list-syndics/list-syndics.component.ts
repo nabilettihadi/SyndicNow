@@ -27,7 +27,7 @@ import { ToastrService } from 'ngx-toastr';
               <i class="fas fa-exclamation-circle text-red-400"></i>
             </div>
             <div class="ml-3">
-              <p class="text-sm text-red-700">{{error}}</p>
+              <p class="text-sm text-red-700">{{ error }}</p>
             </div>
           </div>
         </div>
@@ -41,39 +41,39 @@ import { ToastrService } from 'ngx-toastr';
         <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Immeubles</th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Immeubles</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr *ngFor="let syndic of syndics">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{syndic.nom}}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{syndic.email}}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{syndic.telephone}}</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-500">{{syndic.nombreImmeubles || 0}} immeubles</div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
-                  <button [routerLink]="['/admin/syndics', syndic.id]"
-                          class="text-blue-600 hover:text-blue-900">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  <button (click)="supprimerSyndic(syndic)" 
-                          class="text-red-600 hover:text-red-900">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </td>
-              </tr>
+            <tr *ngFor="let syndic of syndics">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-900">{{ syndic.nom }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-500">{{ syndic.email }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-500">{{ syndic.telephone }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-500">{{ syndic.nombreImmeubles || 0 }} immeubles</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                <button [routerLink]="['/admin/syndics', syndic.id]"
+                        class="text-blue-600 hover:text-blue-900">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button (click)="supprimerSyndic(syndic)"
+                        class="text-red-600 hover:text-red-900">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
             </tbody>
           </table>
         </div>
@@ -130,4 +130,4 @@ export class ListSyndicsComponent implements OnInit {
       });
     }
   }
-} 
+}

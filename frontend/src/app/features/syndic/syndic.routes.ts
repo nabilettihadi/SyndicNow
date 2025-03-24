@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
 export const SYNDIC_ROUTES: Routes = [
   {
@@ -29,4 +29,4 @@ export const SYNDIC_ROUTES: Routes = [
     path: '**',
     redirectTo: ''
   }
-]; 
+];

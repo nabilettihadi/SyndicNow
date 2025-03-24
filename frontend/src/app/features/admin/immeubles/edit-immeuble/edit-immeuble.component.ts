@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ImmeubleService } from '@core/services/immeuble.service';
-import { SyndicService } from '@core/services/syndic.service';
-import { Immeuble } from '@core/models/immeuble.model';
-import { Syndic } from '@core/models/syndic.model';
-import { ToastrService } from 'ngx-toastr';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ActivatedRoute, Router, RouterModule} from '@angular/router';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {SyndicService} from '@core/services/syndic.service';
+import {Immeuble} from '@core/models/immeuble.model';
+import {Syndic} from '@core/models/syndic.model';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'app-edit-immeuble',
@@ -26,7 +26,7 @@ import { ToastrService } from 'ngx-toastr';
               </p>
             </div>
             <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
-              <button type="button" (click)="goBack()" 
+              <button type="button" (click)="goBack()"
                       class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                 <i class="fas fa-arrow-left -ml-1 mr-2"></i>
                 Retour
@@ -61,17 +61,17 @@ import { ToastrService } from 'ngx-toastr';
                   <div class="flex items-center">
                     <div class="flex-shrink-0">
                       <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
-                        <span class="text-primary-600 font-medium">{{syndic.nom.charAt(0)}}</span>
+                        <span class="text-primary-600 font-medium">{{ syndic.nom.charAt(0) }}</span>
                       </div>
                     </div>
                     <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900">{{syndic.nom}}</div>
-                      <div class="text-sm text-gray-500">{{syndic.email}}</div>
-                      <div class="text-sm text-gray-500">{{syndic.telephone}}</div>
+                      <div class="text-sm font-medium text-gray-900">{{ syndic.nom }}</div>
+                      <div class="text-sm text-gray-500">{{ syndic.email }}</div>
+                      <div class="text-sm text-gray-500">{{ syndic.telephone }}</div>
                     </div>
                   </div>
                   <div>
-                    <button 
+                    <button
                       (click)="assignerSyndic(syndic.id)"
                       [disabled]="isAssigning"
                       [class.opacity-50]="isAssigning"
@@ -92,7 +92,7 @@ import { ToastrService } from 'ngx-toastr';
         <div *ngIf="isLoading" class="flex justify-center py-10">
           <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary-600"></div>
         </div>
-        
+
         <div *ngIf="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-6">
           {{ error }}
         </div>
@@ -148,7 +148,8 @@ import { ToastrService } from 'ngx-toastr';
               <!-- Date de construction et nombre d'étages -->
               <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
                 <div>
-                  <label for="dateConstruction" class="block text-sm font-medium text-gray-700">Date de construction</label>
+                  <label for="dateConstruction" class="block text-sm font-medium text-gray-700">Date de
+                    construction</label>
                   <input type="date" id="dateConstruction" formControlName="dateConstruction"
                          class="mt-1 focus:ring-primary-500 focus:border-primary-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                 </div>
@@ -211,7 +212,7 @@ export class EditImmeubleComponent implements OnInit {
   isAssigning: boolean = false;
   error: string = '';
   success: string = '';
-  
+
   constructor(
     private fb: FormBuilder,
     private immeubleService: ImmeubleService,
@@ -294,7 +295,9 @@ export class EditImmeubleComponent implements OnInit {
     });
   }
 
-  get f() { return this.immeubleForm.controls; }
+  get f() {
+    return this.immeubleForm.controls;
+  }
 
   onSubmit(): void {
     this.submitted = true;
@@ -306,9 +309,9 @@ export class EditImmeubleComponent implements OnInit {
     }
 
     this.isSubmitting = true;
-    
-    const immeubleData = { ...this.immeubleForm.value };
-    
+
+    const immeubleData = {...this.immeubleForm.value};
+
     // Transformation de la date si nécessaire
     if (immeubleData.dateConstruction) {
       immeubleData.dateConstruction = new Date(immeubleData.dateConstruction);
@@ -343,7 +346,7 @@ export class EditImmeubleComponent implements OnInit {
 
   assignerSyndic(syndicId: number): void {
     if (!this.immeubleId) return;
-    
+
     this.isAssigning = true;
     this.immeubleService.assignerSyndicImmeuble(this.immeubleId, syndicId).subscribe({
       next: (result) => {
@@ -359,4 +362,4 @@ export class EditImmeubleComponent implements OnInit {
       }
     });
   }
-} 
+}

@@ -2,17 +2,19 @@ import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import {FormsModule} from '@angular/forms';
-import {catchError, forkJoin, of} from 'rxjs';
+import {catchError, of} from 'rxjs';
 import {ActivityItem, UserService} from '@core/services/user.service';
 import {SyndicService} from '@core/services/syndic.service';
 import {ImmeubleService} from '@core/services/immeuble.service';
-import {PaiementService} from '@core/services/paiement.service';
+import {ProprietaireService} from '@core/services/proprietaire.service';
+import {Immeuble} from '@core/models/immeuble.model';
+import {Syndic} from '@core/models/syndic.model';
+import {Proprietaire} from '@core/models/proprietaire.model';
 
 interface DashboardStats {
   usersCount: number;
   syndicsCount: number;
   immeublesCount: number;
-  revenueTotal: number;
   recentActivity: ActivityItem[];
 }
 
@@ -54,7 +56,7 @@ interface DashboardStats {
         </div>
 
         <!-- Statistiques générales -->
-        <div *ngIf="!isLoading && !error" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div *ngIf="!isLoading && !error" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <!-- Utilisateurs -->
           <div class="bg-white overflow-hidden shadow rounded-lg">
             <div class="p-5">
@@ -150,31 +152,6 @@ interface DashboardStats {
               </div>
             </div>
           </div>
-
-          <!-- Revenus -->
-          <div class="bg-white overflow-hidden shadow rounded-lg">
-            <div class="p-5">
-              <div class="flex items-center">
-                <div class="flex-shrink-0">
-                  <div class="rounded-md bg-purple-50 p-3">
-                    <i class="fas fa-money-bill-wave text-purple-600 text-xl"></i>
-                  </div>
-                </div>
-                <div class="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt class="text-sm font-medium text-gray-500 truncate">
-                      Revenus totaux
-                    </dt>
-                    <dd class="flex items-baseline">
-                      <div class="text-2xl font-semibold text-gray-900">
-                        {{ stats.revenueTotal | currency:'MAD':'symbol':'1.0-0' }}
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Activité récente -->
@@ -252,11 +229,17 @@ interface DashboardStats {
   styleUrls: []
 })
 export class AdminDashboardComponent implements OnInit {
+  immeubles: Immeuble[] = [];
+  syndics: Syndic[] = [];
+  proprietaires: Proprietaire[] = [];
+  totalImmeubles = 0;
+  totalSyndics = 0;
+  totalProprietaires = 0;
+
   stats: DashboardStats = {
     usersCount: 0,
     syndicsCount: 0,
     immeublesCount: 0,
-    revenueTotal: 0,
     recentActivity: []
   };
 
@@ -267,7 +250,7 @@ export class AdminDashboardComponent implements OnInit {
     private userService: UserService,
     private syndicService: SyndicService,
     private immeubleService: ImmeubleService,
-    private paiementService: PaiementService
+    private proprietaireService: ProprietaireService
   ) {
   }
 
@@ -279,43 +262,33 @@ export class AdminDashboardComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    forkJoin({
-      users: this.userService.getAllUsers().pipe(catchError(err => {
-        console.error('Erreur lors de la récupération des utilisateurs', err);
-        return of([]);
-      })),
-      syndics: this.syndicService.getAllSyndics().pipe(catchError(err => {
-        console.error('Erreur lors de la récupération des syndics', err);
-        return of([]);
-      })),
-      immeubles: this.immeubleService.getAllImmeubles().pipe(catchError(err => {
-        console.error('Erreur lors de la récupération des immeubles', err);
-        return of([]);
-      })),
-      paiements: this.paiementService.getAllPaiements().pipe(catchError(err => {
-        console.error('Erreur lors de la récupération des paiements', err);
-        return of([]);
-      })),
-      activites: this.userService.getRecentActivities().pipe(catchError(err => {
-        console.error('Erreur lors de la récupération des activités récentes', err);
-        return of([]);
-      }))
-    }).subscribe({
-      next: (results) => {
-        console.log('Résultats reçus:', results);
-        let revenueTotal = 0;
-        if (Array.isArray(results.paiements)) {
-          revenueTotal = results.paiements.reduce((sum, paiement) => sum + (paiement.montant || 0), 0);
-        } else {
-          console.warn('Les paiements ne sont pas un tableau:', results.paiements);
-        }
-        
+    this.immeubleService.getAllImmeubles().subscribe(immeubles => {
+      this.immeubles = immeubles;
+      this.totalImmeubles = immeubles.length;
+    });
+
+    this.syndicService.getAllSyndics().subscribe(syndics => {
+      this.syndics = syndics;
+      this.totalSyndics = syndics.length;
+    });
+
+    this.proprietaireService.getAllProprietaires().subscribe(proprietaires => {
+      this.proprietaires = proprietaires;
+      this.totalProprietaires = proprietaires.length;
+    });
+
+    this.userService.getRecentActivities().pipe(catchError(err => {
+      console.error('Erreur lors de la récupération des activités récentes', err);
+      return of([]);
+    })).subscribe({
+      next: (activites) => {
+        console.log('Résultats reçus:', activites);
+
         this.stats = {
-          usersCount: Array.isArray(results.users) ? results.users.length : 0,
-          syndicsCount: Array.isArray(results.syndics) ? results.syndics.length : 0,
-          immeublesCount: Array.isArray(results.immeubles) ? results.immeubles.length : 0,
-          revenueTotal: revenueTotal,
-          recentActivity: Array.isArray(results.activites) ? results.activites : []
+          usersCount: Array.isArray(activites) ? activites.length : 0,
+          syndicsCount: this.syndics.length,
+          immeublesCount: this.immeubles.length,
+          recentActivity: Array.isArray(activites) ? activites : []
         };
         this.isLoading = false;
       },

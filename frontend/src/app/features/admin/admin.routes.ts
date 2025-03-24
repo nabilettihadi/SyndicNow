@@ -1,6 +1,4 @@
-import { Routes } from '@angular/router';
-import { roleGuard } from '../../core/guards/auth.guard';
-import { UserRole } from '../../core/models/user.model';
+import {Routes} from '@angular/router';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -28,4 +26,4 @@ export const ADMIN_ROUTES: Routes = [
       }
     ]
   }
-]; 
+];

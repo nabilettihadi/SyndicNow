@@ -12,7 +12,7 @@
           </p>
         </div>
         <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
-          <button type="button" 
+          <button type="button"
                   class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <i class="fas fa-plus -ml-1 mr-2"></i>
             Nouveau Syndic
@@ -34,10 +34,10 @@
             Une erreur est survenue
           </h3>
           <div class="mt-2 text-sm text-red-700">
-            <p>{{error}}</p>
+            <p>{{ error }}</p>
           </div>
           <div class="mt-4">
-            <button type="button" 
+            <button type="button"
                     (click)="loadSyndics()"
                     class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
               Réessayer
@@ -70,7 +70,7 @@
                 </dt>
                 <dd class="flex items-baseline">
                   <div class="text-2xl font-semibold text-gray-900">
-                    {{stats.totalSyndics}}
+                    {{ stats.totalSyndics }}
                   </div>
                 </dd>
               </dl>
@@ -95,7 +95,7 @@
                 </dt>
                 <dd class="flex items-baseline">
                   <div class="text-2xl font-semibold text-gray-900">
-                    {{stats.activeSyndics}}
+                    {{ stats.activeSyndics }}
                   </div>
                 </dd>
               </dl>
@@ -120,7 +120,7 @@
                 </dt>
                 <dd class="flex items-baseline">
                   <div class="text-2xl font-semibold text-gray-900">
-                    {{stats.pendingSyndics}}
+                    {{ stats.pendingSyndics }}
                   </div>
                 </dd>
               </dl>
@@ -145,7 +145,7 @@
                 </dt>
                 <dd class="flex items-baseline">
                   <div class="text-2xl font-semibold text-gray-900">
-                    {{stats.totalBuildings}}
+                    {{ stats.totalBuildings }}
                   </div>
                 </dd>
               </dl>
@@ -191,25 +191,25 @@
                 </div>
                 <div class="ml-4">
                   <div class="text-sm font-medium text-gray-900">
-                    {{syndic.nom}}
+                    {{ syndic.nom }}
                   </div>
                   <div class="text-sm text-gray-500">
-                    {{syndic.email}}
+                    {{ syndic.email }}
                   </div>
                 </div>
               </div>
               <div class="flex items-center">
                 <div class="mr-6 text-right">
                   <div class="text-sm font-medium text-gray-900">
-                    {{syndic.immeubles && syndic.immeubles.length || syndic.nombreImmeubles || 0}} immeubles
+                    {{ syndic.immeubles && syndic.immeubles.length || syndic.nombreImmeubles || 0 }} immeubles
                   </div>
                   <div class="text-sm text-gray-500">
-                    {{syndic.ville}}
+                    {{ syndic.ville }}
                   </div>
                 </div>
                 <span [class]="getStatusClass(syndic.status)"
                       class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                  {{syndic.status}}
+                  {{ syndic.status }}
                 </span>
               </div>
             </div>
@@ -217,15 +217,15 @@
               <div class="sm:flex">
                 <div class="flex items-center text-sm text-gray-500">
                   <i class="fas fa-phone mr-1.5 text-gray-400"></i>
-                  {{syndic.telephone}}
+                  {{ syndic.telephone }}
                 </div>
                 <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0 sm:ml-6">
                   <i class="fas fa-calendar mr-1.5 text-gray-400"></i>
-                  Créé le {{formatDate(syndic.dateCreation)}}
+                  Créé le {{ formatDate(syndic.dateCreation) }}
                 </div>
               </div>
               <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
-                <button type="button" 
+                <button type="button"
                         class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                   <i class="fas fa-edit mr-2"></i>
                   Modifier
@@ -238,7 +238,7 @@
     </div>
 
     <!-- Message si aucun syndic -->
-    <div *ngIf="filteredSyndics.length === 0" 
+    <div *ngIf="filteredSyndics.length === 0"
          class="text-center py-12">
       <i class="fas fa-users text-gray-400 text-5xl mb-4"></i>
       <h3 class="text-lg font-medium text-gray-900">Aucun syndic trouvé</h3>
@@ -256,9 +256,9 @@
                 [class.border-primary-500]="currentPage === i + 1"
                 [class.text-primary-600]="currentPage === i + 1"
                 class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-          {{i + 1}}
+          {{ i + 1 }}
         </button>
       </nav>
     </div>
   </main>
-</div> 
+</div>

@@ -15,18 +15,19 @@ export class ImmeubleService {
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   getAllImmeubles(): Observable<Immeuble[]> {
     console.log(`Tentative d'accès à l'endpoint standard: ${this.apiUrl}`);
-    
+
     const token = this.authService.getToken();
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
-    
-    return this.http.get<Immeuble[]>(this.apiUrl, { headers })
+
+    return this.http.get<Immeuble[]>(this.apiUrl, {headers})
       .pipe(
         tap(data => console.log(`Données récupérées: ${data.length} immeubles`)),
         catchError(this.handleError)
@@ -49,7 +50,7 @@ export class ImmeubleService {
 
   createImmeuble(immeuble: Partial<Immeuble>): Observable<Immeuble> {
     console.log("Préparation des données pour la création d'un immeuble:", immeuble);
-    
+
     // Calcul de l'année de construction à partir de la date
     let anneeConstruction = new Date().getFullYear(); // Année par défaut
     if (immeuble.dateConstruction) {
@@ -59,7 +60,7 @@ export class ImmeubleService {
         anneeConstruction = immeuble.dateConstruction.getFullYear();
       }
     }
-    
+
     // Créer un objet qui respecte le format attendu par le backend
     const immeubleRequest = {
       nom: immeuble.nom?.trim(),
@@ -67,28 +68,28 @@ export class ImmeubleService {
       codePostal: immeuble.codePostal?.trim(),
       ville: immeuble.ville?.trim(),
       nombreEtages: immeuble.nombreEtages || 1,
-      nombreAppartements: immeuble.nombreAppartements || 1, 
+      nombreAppartements: immeuble.nombreAppartements || 1,
       anneeConstruction: anneeConstruction,
       description: immeuble.description || "Nouvel immeuble créé depuis l'interface",
       syndicId: immeuble.syndicId
     };
-    
+
     console.log("Données formatées pour l'API:", immeubleRequest);
-    
+
     // Vérification des données
     if (!immeubleRequest.syndicId) {
       return throwError(() => new Error('Le syndic est obligatoire'));
     }
-    
+
     return this.http.post<Immeuble>(this.apiUrl, immeubleRequest)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error('Une erreur est survenue:', error);
-          
+
           if (error.error && error.error.message) {
             return throwError(() => new Error(error.error.message));
           }
-          
+
           return this.handleError(error);
         })
       );
@@ -138,14 +139,14 @@ export class ImmeubleService {
 
   getAppartementsByImmeuble(immeubleId: number): Observable<any[]> {
     console.log(`Tentative d'accès aux appartements de l'immeuble ${immeubleId}`);
-    
+
     // L'API backend n'a pas d'endpoint /api/v1/immeubles/{id}/appartements
     // Utiliser plutôt /api/appartements avec un filtre pour l'immeuble
     return this.http.get<any[]>(`${environment.apiUrl}/api/appartements/immeuble/${immeubleId}`)
       .pipe(
         catchError((error: HttpErrorResponse) => {
           console.error(`Erreur lors de la récupération des appartements pour l'immeuble ${immeubleId}:`, error);
-          
+
           if (error.status === 404) {
             // Tenter un autre endpoint possible
             console.log(`Endpoint /appartements/immeuble/${immeubleId} non trouvé, essai avec /api/appartements?immeubleId=${immeubleId}`);
@@ -160,16 +161,16 @@ export class ImmeubleService {
             console.log(`Erreur serveur 500 pour les appartements de l'immeuble ${immeubleId}, génération de données fictives`);
             return this.getMockAppartements(immeubleId);
           }
-          
+
           return this.handleError(error);
         })
       );
   }
-  
+
   // Méthode pour générer des données fictives d'appartements en cas d'erreur d'API
   private getMockAppartements(immeubleId: number): Observable<any[]> {
     console.log(`Génération de données fictives pour les appartements de l'immeuble ${immeubleId}`);
-    
+
     // Générer entre 3 et 8 appartements fictifs
     const nombreAppartements = Math.floor(Math.random() * 6) + 3;
     const mockAppartements = Array(nombreAppartements).fill(0).map((_, index) => ({
@@ -184,7 +185,7 @@ export class ImmeubleService {
       proprietaireNom: index % 2 === 0 ? 'John Doe' : 'Jane Smith',
       mockData: true // Marqueur indiquant qu'il s'agit de données fictives
     }));
-    
+
     // Simuler un délai réseau pour plus de réalisme
     return new Observable(observer => {
       setTimeout(() => {
@@ -217,10 +218,10 @@ export class ImmeubleService {
         catchError(this.handleError)
       );
   }
-  
+
   // Mettre à jour le statut d'un immeuble
   updateStatus(immeubleId: number, status: string): Observable<Immeuble> {
-    return this.http.patch<Immeuble>(`${this.apiUrl}/${immeubleId}/status`, { status })
+    return this.http.patch<Immeuble>(`${this.apiUrl}/${immeubleId}/status`, {status})
       .pipe(
         catchError(this.handleError)
       );
@@ -233,7 +234,7 @@ export class ImmeubleService {
 
   private handleError(error: HttpErrorResponse) {
     console.error('Une erreur est survenue:', error);
-    
+
     if (error.status === 403) {
       return throwError(() => new Error('Vous n\'avez pas les droits nécessaires pour accéder à ces données'));
     } else if (error.status === 404) {
@@ -241,7 +242,7 @@ export class ImmeubleService {
     } else if (error.status === 500) {
       return throwError(() => new Error('Erreur serveur, veuillez réessayer plus tard'));
     }
-    
+
     return throwError(() => new Error('Erreur lors de la récupération des données'));
   }
 }

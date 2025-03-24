@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
-import { AppartementService } from '@core/services/appartement.service';
-import { Appartement } from '@core/models/appartement.model';
-import { AuthService } from '@core/services/auth.service';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {FormsModule} from '@angular/forms';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {AppartementService} from '@core/services/appartement.service';
+import {Appartement} from '@core/models/appartement.model';
+import {AuthService} from '@core/services/auth.service';
 
 @Component({
   selector: 'app-list-appartements',
@@ -20,7 +20,7 @@ export class ListAppartementsComponent implements OnInit {
   isLoading = true;
   hasError = false;
   errorMessage = '';
-  
+
   appartements: Appartement[] = [];
   filteredAppartements: Appartement[] = [];
   searchTerm: string = '';
@@ -28,7 +28,8 @@ export class ListAppartementsComponent implements OnInit {
   constructor(
     private appartementService: AppartementService,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     // Récupérer l'ID du syndic connecté
@@ -36,7 +37,7 @@ export class ListAppartementsComponent implements OnInit {
     if (currentUser?.userId) {
       this.syndicId = currentUser.userId;
     }
-    
+
     this.loadAppartements();
   }
 
@@ -61,10 +62,10 @@ export class ListAppartementsComponent implements OnInit {
       this.filteredAppartements = [...this.appartements];
       return;
     }
-    
+
     const searchLower = this.searchTerm.toLowerCase();
-    this.filteredAppartements = this.appartements.filter(appartement => 
-      appartement.numero.toLowerCase().includes(searchLower) || 
+    this.filteredAppartements = this.appartements.filter(appartement =>
+      appartement.numero.toLowerCase().includes(searchLower) ||
       appartement.etage.toString().includes(searchLower) ||
       appartement.immeuble?.nom?.toLowerCase().includes(searchLower) ||
       appartement.status?.toLowerCase().includes(searchLower)
@@ -83,7 +84,7 @@ export class ListAppartementsComponent implements OnInit {
         return 'syndic-badge';
     }
   }
-  
+
   getStatusBadgeClass(statut: string): string {
     switch (statut) {
       case 'OCCUPE':
@@ -111,4 +112,4 @@ export class ListAppartementsComponent implements OnInit {
   get freeAppartements(): number {
     return this.appartements.filter(a => a.status === 'LIBRE').length;
   }
-} 
+}

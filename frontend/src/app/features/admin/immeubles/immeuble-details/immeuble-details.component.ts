@@ -1,14 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute, Router } from '@angular/router';
-import { ImmeubleService } from '@core/services/immeuble.service';
-import { AppartementService } from '@core/services/appartement.service';
-import { Immeuble } from '@core/models/immeuble.model';
-import { Appartement } from '@core/models/appartement.model';
-import { SyndicService } from '@core/services/syndic.service';
-import { Syndic } from '@core/models/syndic.model';
-import { ToastrService } from 'ngx-toastr';
-import { FormBuilder } from '@angular/forms';
+import {Component, inject, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {AppartementService} from '@core/services/appartement.service';
+import {Immeuble} from '@core/models/immeuble.model';
+import {Appartement} from '@core/models/appartement.model';
+import {SyndicService} from '@core/services/syndic.service';
+import {Syndic} from '@core/models/syndic.model';
+import {ToastrService} from 'ngx-toastr';
+import {FormBuilder} from '@angular/forms';
 
 interface ImmeubleStats {
   total: number;
@@ -39,13 +39,13 @@ interface ImmeubleStats {
         </div>
 
         <div class="flex gap-3">
-          <button *ngIf="immeuble?.id" 
+          <button *ngIf="immeuble?.id"
                   class="bg-amber-500 hover:bg-amber-600 text-white py-2 px-4 rounded-lg flex items-center gap-2"
                   (click)="modifierImmeuble()">
             <i class="fas fa-edit"></i>
             <span>Modifier</span>
           </button>
-          <button *ngIf="immeuble?.id" 
+          <button *ngIf="immeuble?.id"
                   class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center gap-2"
                   (click)="gererAppartements()">
             <i class="fas fa-home"></i>
@@ -169,7 +169,7 @@ interface ImmeubleStats {
         <div class="bg-white rounded-lg shadow-lg overflow-hidden">
           <div class="bg-gradient-to-r from-green-600 to-green-800 px-6 py-4 flex justify-between items-center">
             <h2 class="text-white text-lg font-semibold">Appartements</h2>
-            <button *ngIf="immeuble.id" 
+            <button *ngIf="immeuble.id"
                     (click)="ajouterAppartement()"
                     class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-lg flex items-center gap-2">
               <i class="fas fa-plus"></i>
@@ -191,34 +191,34 @@ interface ImmeubleStats {
           <div *ngIf="!isLoadingAppartements && appartements.length > 0" class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Numéro</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Étage</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Surface</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Numéro</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Étage</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Surface</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr *ngFor="let appartement of appartements">
-                  <td class="px-6 py-4 whitespace-nowrap">{{ appartement.numero }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ appartement.etage }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">{{ appartement.surface }} m²</td>
-                  <td class="px-6 py-4 whitespace-nowrap">
+              <tr *ngFor="let appartement of appartements">
+                <td class="px-6 py-4 whitespace-nowrap">{{ appartement.numero }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ appartement.etage }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">{{ appartement.surface }} m²</td>
+                <td class="px-6 py-4 whitespace-nowrap">
                     <span [ngClass]="getAppartementStatusClass(appartement.status)"
                           class="px-2 py-1 text-xs rounded-full">
                       {{ appartement.status }}
                     </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button class="text-blue-600 hover:text-blue-900 mr-3">
-                      <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="text-amber-600 hover:text-amber-900">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                  </td>
-                </tr>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button class="text-blue-600 hover:text-blue-900 mr-3">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="text-amber-600 hover:text-amber-900">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </td>
+              </tr>
               </tbody>
             </table>
           </div>
@@ -239,7 +239,7 @@ export class ImmeubleDetailsComponent implements OnInit {
   // Suppression d'immeuble
   showDeleteModal: boolean = false;
   isDeleting: boolean = false;
-  
+
   // Gestion du syndic
   showSyndicModal: boolean = false;
   availableSyndics: Syndic[] = [];
@@ -270,7 +270,8 @@ export class ImmeubleDetailsComponent implements OnInit {
     private syndicService: SyndicService,
     private appartementService: AppartementService,
     private fb: FormBuilder
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -324,15 +325,15 @@ export class ImmeubleDetailsComponent implements OnInit {
 
   updateStatistics(): void {
     if (!this.immeuble) return;
-    
+
     // Mettre à jour le nombre total d'appartements
     this.immeuble.nombreAppartements = this.appartements.length;
-    
+
     // Calculer les statistiques
     const occupied = this.getOccupiedAppartements();
     const maintenance = this.getMaintenanceAppartements();
     const available = this.getFreeAppartements();
-    
+
     // Mettre à jour l'affichage des statistiques
     this.stats = {
       total: this.appartements.length,
@@ -358,20 +359,20 @@ export class ImmeubleDetailsComponent implements OnInit {
   }
 
   getOccupancyRate(): number {
-    return this.appartements.length > 0 
-      ? (this.getOccupiedAppartements() / this.appartements.length) * 100 
+    return this.appartements.length > 0
+      ? (this.getOccupiedAppartements() / this.appartements.length) * 100
       : 0;
   }
 
   getAvailabilityRate(): number {
-    return this.appartements.length > 0 
-      ? (this.getFreeAppartements() / this.appartements.length) * 100 
+    return this.appartements.length > 0
+      ? (this.getFreeAppartements() / this.appartements.length) * 100
       : 0;
   }
 
   getMaintenanceRate(): number {
-    return this.appartements.length > 0 
-      ? (this.getMaintenanceAppartements() / this.appartements.length) * 100 
+    return this.appartements.length > 0
+      ? (this.getMaintenanceAppartements() / this.appartements.length) * 100
       : 0;
   }
 
@@ -441,9 +442,9 @@ export class ImmeubleDetailsComponent implements OnInit {
 
   deleteImmeuble(): void {
     if (!this.immeuble) return;
-    
+
     this.isDeleting = true;
-    
+
     this.immeubleService.deleteImmeuble(this.immeuble.id).subscribe({
       next: () => {
         this.toastr.success(`L'immeuble "${this.immeuble?.nom}" a été supprimé avec succès.`);
@@ -464,7 +465,7 @@ export class ImmeubleDetailsComponent implements OnInit {
     this.syndicError = null;
     this.selectedSyndicId = null;
     this.showSyndicModal = true;
-    
+
     this.syndicService.getAllSyndics().subscribe({
       next: (data) => {
         this.availableSyndics = data.filter(s => s.status === 'ACTIF');
@@ -480,9 +481,9 @@ export class ImmeubleDetailsComponent implements OnInit {
 
   confirmAssignerSyndic(): void {
     if (!this.immeuble || !this.selectedSyndicId) return;
-    
+
     this.isSavingSyndic = true;
-    
+
     this.immeubleService.assignerSyndicImmeuble(this.immeuble.id, this.selectedSyndicId).subscribe({
       next: (data) => {
         this.immeuble = data;
@@ -499,9 +500,9 @@ export class ImmeubleDetailsComponent implements OnInit {
 
   retirerSyndic(): void {
     if (!this.immeuble || !this.immeuble.syndic) return;
-    
+
     this.isSavingSyndic = true;
-    
+
     this.immeubleService.retirerSyndicImmeuble(this.immeuble.id).subscribe({
       next: (data) => {
         this.immeuble = data;

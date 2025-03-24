@@ -1,19 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '@core/services/auth.service';
-import { UserService } from '@core/services/user.service';
-import { LoginResponse } from '@core/authentication/models/auth.model';
-import { Router } from '@angular/router';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AuthService} from '@core/services/auth.service';
+import {UserService} from '@core/services/user.service';
+import {LoginResponse} from '@core/authentication/models/auth.model';
+import {Router} from '@angular/router';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
 
 @Component({
   selector: 'app-profil',
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NavbarComponent, FooterComponent],
-  templateUrl: './profil.component.html',
-  styleUrls: ['./profil.component.css']
+  templateUrl: './profil.component.html'
 })
 export class ProfilComponent implements OnInit {
   profilForm!: FormGroup;
@@ -27,7 +26,8 @@ export class ProfilComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private router: Router
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     this.loading = true;

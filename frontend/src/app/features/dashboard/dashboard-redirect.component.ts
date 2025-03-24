@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '@core/services/auth.service';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {AuthService} from '@core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard-redirect',
@@ -11,11 +11,12 @@ export class DashboardRedirectComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
-    
+
     if (user) {
       // Rediriger vers le tableau de bord correspondant au rôle de l'utilisateur
       switch (user.role) {
@@ -37,4 +38,4 @@ export class DashboardRedirectComponent implements OnInit {
       this.router.navigate(['/auth/login']);
     }
   }
-} 
+}

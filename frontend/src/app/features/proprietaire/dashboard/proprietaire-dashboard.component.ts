@@ -6,10 +6,8 @@ import {catchError, forkJoin, map, Observable, of, switchMap, tap} from 'rxjs';
 import {NavbarComponent} from '@shared/components/navbar/navbar.component';
 import {FooterComponent} from '@shared/components/footer/footer.component';
 import {AppartementService} from '@core/services/appartement.service';
-import {PaiementService} from '@core/services/paiement.service';
 import {IncidentService} from '@core/services/incident.service';
 import {Appartement} from '@core/models/appartement.model';
-import {Paiement} from '@core/models/paiement.model';
 import {IncidentWithStatus} from '@core/models/incident.model';
 import {AuthService} from '@core/services/auth.service';
 
@@ -35,7 +33,6 @@ export class ProprietaireDashboardComponent implements OnInit {
 
   // Données
   appartements: Appartement[] = [];
-  paiements: Paiement[] = [];
   incidents: IncidentWithStatus[] = [];
 
   // Filtres
@@ -44,7 +41,6 @@ export class ProprietaireDashboardComponent implements OnInit {
 
   constructor(
     private appartementService: AppartementService,
-    private paiementService: PaiementService,
     private incidentService: IncidentService,
     private authService: AuthService
   ) {
@@ -67,7 +63,6 @@ export class ProprietaireDashboardComponent implements OnInit {
         // Charger toutes les données nécessaires en parallèle
         return forkJoin({
           appartements: this.loadAppartements(),
-          paiements: this.loadPaiements(),
           incidents: this.loadIncidents()
         });
       })
@@ -99,22 +94,6 @@ export class ProprietaireDashboardComponent implements OnInit {
     );
   }
 
-  loadPaiements(): Observable<Paiement[]> {
-    return this.paiementService.getPaiementsByProprietaire(this.userId).pipe(
-      map((data: Paiement[]) => {
-        // Tri des paiements par date (les plus récents d'abord)
-        this.paiements = data.sort((a, b) =>
-          new Date(b.date).getTime() - new Date(a.date).getTime()
-        );
-        return data;
-      }),
-      catchError(error => {
-        console.error('Erreur lors du chargement des paiements:', error);
-        return of([]);
-      })
-    );
-  }
-
   loadIncidents(): Observable<IncidentWithStatus[]> {
     return this.incidentService.getIncidentsByProprietaire(this.userId).pipe(
       map((data: IncidentWithStatus[]) => {
@@ -140,10 +119,6 @@ export class ProprietaireDashboardComponent implements OnInit {
     // Statistiques financières des 12 derniers mois
     const oneYearAgo = new Date();
     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-
-    this.totalRevenue = this.paiements
-      .filter(p => p.status === 'PAYE' && new Date(p.date) >= oneYearAgo)
-      .reduce((total, p) => total + p.montant, 0);
   }
 
   applyFilter(): void {

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 
 @Component({
   selector: 'app-syndics',
@@ -9,4 +9,5 @@ import { RouterOutlet } from '@angular/router';
     <router-outlet></router-outlet>
   `
 })
-export class SyndicsComponent {} 
+export class SyndicsComponent {
+}

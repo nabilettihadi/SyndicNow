@@ -18,7 +18,7 @@ import { RouterLink } from '@angular/router';
               Désolé, la page que vous recherchez n'existe pas.
             </p>
             <div class="mt-6">
-              <a routerLink="/" 
+              <a routerLink="/"
                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                 Retour à l'accueil
               </a>
@@ -29,4 +29,4 @@ import { RouterLink } from '@angular/router';
     </div>
   `
 })
-export class NotFoundComponent {} 
+export class NotFoundComponent {}

@@ -12,13 +12,13 @@ import {CommonModule} from '@angular/common';
 export class AppComponent implements OnInit {
   title = 'SyndicNow';
   showNavbar = true;
-  
-  constructor(private router: Router) {}
-  
+
+  constructor(private router: Router) {
+  }
+
   ngOnInit() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        // Ne pas afficher la navbar sur les pages d'authentification
         this.showNavbar = !event.url.includes('/auth/');
       }
     });

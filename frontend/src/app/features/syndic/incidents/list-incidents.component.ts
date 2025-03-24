@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
-import { IncidentService } from '@core/services/incident.service';
-import { ImmeubleService } from '@core/services/immeuble.service';
-import { AuthService } from '@core/services/auth.service';
-import { IncidentWithStatus } from '@core/models/incident.model';
-import { Immeuble } from '@core/models/immeuble.model';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterModule} from '@angular/router';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {IncidentService} from '@core/services/incident.service';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {AuthService} from '@core/services/auth.service';
+import {IncidentWithStatus} from '@core/models/incident.model';
+import {Immeuble} from '@core/models/immeuble.model';
 
 @Component({
   selector: 'app-list-incidents',
@@ -23,7 +23,7 @@ export class ListIncidentsComponent implements OnInit {
   errorMessage = '';
   showCreateModal = false;
   incidentForm: FormGroup;
-  
+
   incidents: IncidentWithStatus[] = [];
   filteredIncidents: IncidentWithStatus[] = [];
   immeubles: Immeuble[] = [];
@@ -118,14 +118,14 @@ export class ListIncidentsComponent implements OnInit {
       this.filteredIncidents = [...this.incidents];
       return;
     }
-    
+
     let filtered = [...this.incidents];
-    
+
     // Filtre par statut
     if (this.statusFilter !== 'ALL') {
       filtered = filtered.filter(incident => incident.status === this.statusFilter);
     }
-    
+
     // Filtre par priorité
     if (this.priorityFilter !== 'ALL') {
       filtered = filtered.filter(incident => incident.priorite === this.priorityFilter);
@@ -135,23 +135,23 @@ export class ListIncidentsComponent implements OnInit {
     if (this.immeubleFilter !== 'ALL') {
       filtered = filtered.filter(incident => incident.immeubleId === this.immeubleFilter);
     }
-    
+
     // Filtre par texte de recherche
     if (this.searchTerm.trim()) {
       const searchLower = this.searchTerm.toLowerCase();
-      filtered = filtered.filter(incident => 
-        incident.titre.toLowerCase().includes(searchLower) || 
+      filtered = filtered.filter(incident =>
+        incident.titre.toLowerCase().includes(searchLower) ||
         incident.description.toLowerCase().includes(searchLower) ||
         (incident.immeuble?.nom.toLowerCase() || '').includes(searchLower)
       );
     }
-    
+
     this.filteredIncidents = filtered;
   }
 
   updateIncidentStatus(incident: IncidentWithStatus, newStatus: string): void {
     if (!incident.id) return;
-    
+
     this.incidentService.updateIncidentStatus(incident.id, newStatus).subscribe({
       next: (updatedIncident) => {
         const index = this.incidents.findIndex(i => i.id === incident.id);
@@ -180,7 +180,7 @@ export class ListIncidentsComponent implements OnInit {
         return 'bg-gray-100 text-gray-800';
     }
   }
-  
+
   getStatusLabel(status: string): string {
     switch (status) {
       case 'RESOLU':
@@ -206,7 +206,7 @@ export class ListIncidentsComponent implements OnInit {
         return 'text-gray-500';
     }
   }
-  
+
   getPriorityLabel(priorite: string): string {
     switch (priorite) {
       case 'HAUTE':
@@ -219,7 +219,7 @@ export class ListIncidentsComponent implements OnInit {
         return priorite;
     }
   }
-  
+
   deleteIncident(id: number): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet incident ?')) {
       this.incidentService.deleteIncident(id).subscribe({
@@ -289,4 +289,4 @@ export class ListIncidentsComponent implements OnInit {
       });
     }
   }
-} 
+}

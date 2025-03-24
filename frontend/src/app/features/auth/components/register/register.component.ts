@@ -22,12 +22,12 @@ export class RegisterComponent {
     {value: 'SYNDIC', label: 'Syndic'},
     {value: 'PROPRIETAIRE', label: 'Propriétaire'}
   ];
-  
+
   preferenceCommunications = [
     {value: 'EMAIL', label: 'Email'},
     {value: 'TELEPHONE', label: 'Téléphone'}
   ];
-  
+
   typeProprietaires = [
     {value: 'PERSONNE_PHYSIQUE', label: 'Personne physique'},
     {value: 'PERSONNE_MORALE', label: 'Personne morale'}
@@ -73,7 +73,7 @@ export class RegisterComponent {
       this.registerForm.get('numeroLicence')?.setValidators([Validators.required]);
       this.registerForm.get('societe')?.setValidators([Validators.required]);
       this.registerForm.get('dateDebutActivite')?.setValidators([Validators.required]);
-      
+
       // Réinitialiser les contrôles propriétaire
       proprietaireControls.forEach(control => {
         this.registerForm.get(control)?.clearValidators();
@@ -85,7 +85,7 @@ export class RegisterComponent {
         this.registerForm.get(control)?.clearValidators();
         this.registerForm.get(control)?.setValue('');
       });
-      
+
       this.registerForm.get('preferencesCommunication')?.setValue('EMAIL');
       this.registerForm.get('typeProprietaire')?.setValue('PERSONNE_PHYSIQUE');
     }

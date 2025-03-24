@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
-import { IncidentService } from '@core/services/incident.service';
-import { AuthService } from '@core/services/auth.service';
-import { Incident, IncidentWithStatus } from '@core/models/incident.model';
-import { ImmeubleService } from '@core/services/immeuble.service';
-import { AppartementService } from '@core/services/appartement.service';
-import { Immeuble } from '@core/models/immeuble.model';
-import { Appartement } from '@core/models/appartement.model';
+import {Component, OnInit} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {NavbarComponent} from '@shared/components/navbar/navbar.component';
+import {FooterComponent} from '@shared/components/footer/footer.component';
+import {IncidentService} from '@core/services/incident.service';
+import {AuthService} from '@core/services/auth.service';
+import {Incident, IncidentWithStatus} from '@core/models/incident.model';
+import {ImmeubleService} from '@core/services/immeuble.service';
+import {AppartementService} from '@core/services/appartement.service';
+import {Immeuble} from '@core/models/immeuble.model';
+import {Appartement} from '@core/models/appartement.model';
 
 @Component({
   selector: 'app-mes-incidents',
@@ -77,12 +77,12 @@ export class MesIncidentsComponent implements OnInit {
       this.appartementService.getAppartementsByProprietaire(currentUser.userId).subscribe({
         next: (appartements: Appartement[]) => {
           this.appartements = appartements;
-          
+
           // Extraire les immeubles uniques à partir des appartements
           const immeubleIds = new Set(appartements.map(app => app.immeubleId));
           this.immeubles = appartements
             .filter(app => app.immeuble)
-            .filter((app, index, self) => 
+            .filter((app, index, self) =>
               index === self.findIndex(a => a.immeubleId === app.immeubleId)
             )
             .map(app => ({
@@ -96,7 +96,7 @@ export class MesIncidentsComponent implements OnInit {
               status: 'ACTIF' as const,
               syndicId: 0
             }));
-          
+
           // Organiser les appartements par immeuble
           this.appartementsByImmeuble = appartements.reduce((acc, app) => {
             if (!acc[app.immeubleId]) {
@@ -120,14 +120,14 @@ export class MesIncidentsComponent implements OnInit {
   onImmeubleChange(event: any): void {
     console.log('Changement d\'immeuble:', event.target.value);
     const immeubleId = parseInt(event.target.value, 10);
-    this.incidentForm.patchValue({ appartementId: '' });
-    
+    this.incidentForm.patchValue({appartementId: ''});
+
     if (immeubleId) {
       const appartements = this.appartementsByImmeuble[immeubleId] || [];
       console.log('Appartements disponibles:', appartements);
       if (appartements.length === 1) {
         // Si un seul appartement est disponible, le sélectionner automatiquement
-        this.incidentForm.patchValue({ appartementId: appartements[0].id });
+        this.incidentForm.patchValue({appartementId: appartements[0].id});
       }
     }
   }
@@ -135,7 +135,7 @@ export class MesIncidentsComponent implements OnInit {
   private loadIncidents(): void {
     this.loading = true;
     const currentUser = this.authService.getCurrentUser();
-    
+
     if (currentUser?.userId) {
       this.incidentService.getIncidentsByProprietaire(currentUser.userId).subscribe({
         next: (data) => {
@@ -246,7 +246,7 @@ export class MesIncidentsComponent implements OnInit {
 
   updateIncidentStatus(incident: IncidentWithStatus, newStatus: string): void {
     if (!incident.id) return;
-    
+
     this.loading = true;
     this.incidentService.updateIncidentStatus(incident.id, newStatus).subscribe({
       next: (updatedIncident) => {

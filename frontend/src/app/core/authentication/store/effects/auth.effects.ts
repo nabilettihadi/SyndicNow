@@ -11,7 +11,8 @@ export class AuthEffects {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  constructor() {}
+  constructor() {
+  }
 
   readonly login = createEffect(() =>
     this.actions$.pipe(

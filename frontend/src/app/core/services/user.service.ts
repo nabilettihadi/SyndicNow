@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '@env/environment';
-import { AuthService } from './auth.service';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {environment} from '@env/environment';
+import {AuthService} from './auth.service';
 
 export interface ActivityItem {
   type: string;
@@ -20,7 +20,8 @@ export class UserService {
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) {
+  }
 
   getAllUsers(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}`);
@@ -45,7 +46,7 @@ export class UserService {
   getRecentActivities(): Observable<ActivityItem[]> {
     return this.http.get<ActivityItem[]>(`${this.apiUrl}/activities/recent`);
   }
-  
+
   /**
    * Met à jour le profil de l'utilisateur connecté
    * @param userData Les données à mettre à jour
@@ -56,7 +57,7 @@ export class UserService {
     if (!currentUser) {
       throw new Error('Aucun utilisateur connecté');
     }
-    
+
     // Déterminer l'URL en fonction du rôle de l'utilisateur
     let profileUrl = '';
     switch (currentUser.role) {
@@ -72,7 +73,7 @@ export class UserService {
       default:
         throw new Error('Rôle utilisateur non pris en charge');
     }
-    
+
     return this.http.put<any>(profileUrl, userData);
   }
-} 
+}

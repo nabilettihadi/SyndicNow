@@ -39,6 +39,7 @@ export interface AppartementDetails {
   immeubleId: number;
   proprietaireId?: number;
   dateCreation: Date;
+  type: string;
   immeuble?: {
     id: number;
     nom: string;
@@ -57,4 +58,6 @@ export interface AppartementDetails {
     meuble: boolean;
   };
   description?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 } 

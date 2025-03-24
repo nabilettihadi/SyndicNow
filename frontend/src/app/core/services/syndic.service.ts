@@ -109,27 +109,32 @@ export class SyndicService {
       );
   }
 
-  // Ajouter un document à un syndic
-  ajouterDocument(id: number, file: File): Observable<Syndic> {
-    const formData = new FormData();
-    formData.append('file', file);
-    
-    return this.http.post<Syndic>(`${this.apiUrl}/${id}/documents`, formData)
+  // Supprimer un appartement d'un immeuble
+  supprimerAppartement(id: number, appartementId: number): Observable<Syndic> {
+    return this.http.delete<Syndic>(`${this.apiUrl}/${id}/appartements/${appartementId}`)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  // Supprimer un document d'un syndic
-  supprimerDocument(id: number, documentId: number): Observable<Syndic> {
-    return this.http.delete<Syndic>(`${this.apiUrl}/${id}/documents/${documentId}`)
+  // Mettre à jour le profil d'un syndic
+  updateProfil(id: number, data: Partial<Syndic>): Observable<Syndic> {
+    return this.http.put<Syndic>(`${this.apiUrl}/${id}/profil`, data)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  private handleError(error: HttpErrorResponse) {
-    console.error('Une erreur est survenue:', error);
-    return throwError(() => error);
+  // Gérer les erreurs
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'Une erreur est survenue';
+    if (error.error instanceof ErrorEvent) {
+      // Erreur côté client
+      errorMessage = error.error.message;
+    } else {
+      // Erreur côté serveur
+      errorMessage = error.error?.message || error.message;
+    }
+    return throwError(() => new Error(errorMessage));
   }
 }

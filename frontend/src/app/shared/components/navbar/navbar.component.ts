@@ -32,6 +32,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   navItems$: Observable<NavItem[]>;
   currentUser: LoginResponse | null = null;
   isMenuOpen = false;
+  syndicMenu: NavItem[] = [];
+  proprietaireMenu: NavItem[] = [];
 
   constructor(
     private router: Router,
@@ -125,6 +127,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
         this.currentUser = null;
       }
     });
+
+    this.initializeMenus();
   }
 
   ngOnDestroy(): void {
@@ -272,12 +276,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
       icon: 'fas fa-building',
       roles: ['ADMIN']
     },
-    {
-      label: 'Rapports',
-      route: '/admin/rapports',
-      icon: 'fas fa-chart-bar',
-      roles: ['ADMIN']
-    },
     // Syndic navigation items
     {
       label: 'Tableau de bord',
@@ -374,5 +372,73 @@ export class NavbarComponent implements OnInit, OnDestroy {
       default:
         return '/';
     }
+  }
+
+  private initializeMenus(): void {
+    this.syndicMenu = [
+      {
+        label: 'Tableau de bord',
+        route: '/syndic',
+        icon: 'fas fa-chart-line',
+        roles: ['ROLE_SYNDIC']
+      },
+      {
+        label: 'Immeubles',
+        route: '/syndic/immeubles',
+        icon: 'fas fa-building',
+        roles: ['ROLE_SYNDIC']
+      },
+      {
+        label: 'Appartements',
+        route: '/syndic/appartements',
+        icon: 'fas fa-home',
+        roles: ['ROLE_SYNDIC']
+      },
+      {
+        label: 'Paiements',
+        route: '/syndic/paiements',
+        icon: 'fas fa-money-bill-wave',
+        roles: ['ROLE_SYNDIC']
+      },
+      {
+        label: 'Incidents',
+        route: '/syndic/incidents',
+        icon: 'fas fa-exclamation-triangle',
+        roles: ['ROLE_SYNDIC']
+      },
+      {
+        label: 'Propriétaires',
+        route: '/syndic/proprietaires',
+        icon: 'fas fa-users',
+        roles: ['ROLE_SYNDIC']
+      },
+      {
+        label: 'Profil',
+        route: '/syndic/profil',
+        icon: 'fas fa-user-circle',
+        roles: ['ROLE_SYNDIC']
+      }
+    ];
+
+    this.proprietaireMenu = [
+      {
+        label: 'Mes Appartements',
+        route: '/proprietaire/mes-appartements',
+        icon: 'fas fa-home',
+        roles: ['ROLE_PROPRIETAIRE']
+      },
+      {
+        label: 'Mes Paiements',
+        route: '/proprietaire/mes-paiements',
+        icon: 'fas fa-money-bill-wave',
+        roles: ['ROLE_PROPRIETAIRE']
+      },
+      {
+        label: 'Mes Incidents',
+        route: '/proprietaire/mes-incidents',
+        icon: 'fas fa-exclamation-triangle',
+        roles: ['ROLE_PROPRIETAIRE']
+      }
+    ];
   }
 }

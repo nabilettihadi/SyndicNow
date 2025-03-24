@@ -102,7 +102,7 @@ public class AppartementController {
     @Operation(summary = "Create a new apartment for a proprietaire", description = "Creates a new apartment and associates it with the specified proprietaire")
     @ApiResponse(responseCode = "201", description = "Apartment successfully created")
     @ApiResponse(responseCode = "400", description = "Invalid input data")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('PROPRIETAIRE')")
     public ResponseEntity<AppartementResponse> createAppartementForProprietaire(@PathVariable Long proprietaireId, @Valid @RequestBody AppartementRequest dto) {
         log.info("Creating new apartment for proprietaire {} with data: {}", proprietaireId, dto);
         AppartementResponse response = appartementService.createAppartementForProprietaire(proprietaireId, dto);

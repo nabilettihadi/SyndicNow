@@ -14,6 +14,7 @@ import ma.Nabil.SyndicNow.enums.PaiementType;
 import ma.Nabil.SyndicNow.service.PaiementService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -88,12 +89,12 @@ public class PaiementController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all payments", description = "Retrieves a list of all payments in the system")
+    @Operation(summary = "Get all payments", description = "Retrieves a list of all payments")
     @ApiResponse(responseCode = "200", description = "List of payments retrieved successfully")
-    public ResponseEntity<Page<PaiementResponse>> getAllPaiements(Pageable pageable) {
+    public ResponseEntity<List<PaiementResponse>> getAllPaiements() {
         log.debug("Fetching all payments");
-        Page<PaiementResponse> response = paiementService.getAllPaiements(pageable);
-        return ResponseEntity.ok(response);
+        Page<PaiementResponse> page = paiementService.getAllPaiements(PageRequest.of(0, Integer.MAX_VALUE));
+        return ResponseEntity.ok(page.getContent());
     }
 
     @DeleteMapping("/{id}")

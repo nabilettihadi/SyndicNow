@@ -174,13 +174,6 @@ interface DashboardStats {
                 </div>
               </div>
             </div>
-            <div class="bg-gray-50 px-5 py-3">
-              <div class="text-sm">
-                <a routerLink="/admin/rapports" class="font-medium text-primary-600 hover:text-primary-500">
-                  Voir les rapports financiers
-                </a>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -251,21 +244,6 @@ interface DashboardStats {
                 </div>
               </div>
             </div>
-
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-              <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg font-medium leading-6 text-gray-900">Gérer les rapports</h3>
-                <div class="mt-2 max-w-xl text-sm text-gray-500">
-                  <p>Consulter et générer des rapports d'activité.</p>
-                </div>
-                <div class="mt-5">
-                  <a routerLink="/admin/rapports"
-                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
-                    Voir les rapports
-                  </a>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>
@@ -324,12 +302,20 @@ export class AdminDashboardComponent implements OnInit {
       }))
     }).subscribe({
       next: (results) => {
+        console.log('Résultats reçus:', results);
+        let revenueTotal = 0;
+        if (Array.isArray(results.paiements)) {
+          revenueTotal = results.paiements.reduce((sum, paiement) => sum + (paiement.montant || 0), 0);
+        } else {
+          console.warn('Les paiements ne sont pas un tableau:', results.paiements);
+        }
+        
         this.stats = {
-          usersCount: results.users.length,
-          syndicsCount: results.syndics.length,
-          immeublesCount: results.immeubles.length,
-          revenueTotal: results.paiements.reduce((sum, paiement) => sum + paiement.montant, 0),
-          recentActivity: results.activites
+          usersCount: Array.isArray(results.users) ? results.users.length : 0,
+          syndicsCount: Array.isArray(results.syndics) ? results.syndics.length : 0,
+          immeublesCount: Array.isArray(results.immeubles) ? results.immeubles.length : 0,
+          revenueTotal: revenueTotal,
+          recentActivity: Array.isArray(results.activites) ? results.activites : []
         };
         this.isLoading = false;
       },

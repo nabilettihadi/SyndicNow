@@ -65,12 +65,6 @@ export class AuthService {
       route: '/syndics',
       icon: 'fas fa-user-tie',
       roles: ['ADMIN']
-    },
-    {
-      label: 'Rapports',
-      route: '/rapports',
-      icon: 'fas fa-file-pdf',
-      roles: ['ADMIN']
     }
   ];
 
@@ -199,5 +193,72 @@ export class AuthService {
         subscriber.next(authorizedItems);
       });
     });
+  }
+
+  private getMenuItems(role: string): NavItem[] {
+    switch (role) {
+      case 'ROLE_SYNDIC':
+        return [
+          {
+            label: 'Tableau de bord',
+            route: '/syndic',
+            roles: ['ROLE_SYNDIC'],
+            icon: 'fas fa-chart-line'
+          },
+          {
+            label: 'Immeubles',
+            route: '/immeubles',
+            roles: ['ROLE_SYNDIC'],
+            icon: 'fas fa-building'
+          },
+          {
+            label: 'Appartements',
+            route: '/appartements',
+            roles: ['ROLE_SYNDIC'],
+            icon: 'fas fa-home'
+          },
+          {
+            label: 'Paiements',
+            route: '/paiements',
+            roles: ['ROLE_SYNDIC'],
+            icon: 'fas fa-money-bill-wave'
+          },
+          {
+            label: 'Incidents',
+            route: '/incidents',
+            roles: ['ROLE_SYNDIC'],
+            icon: 'fas fa-exclamation-triangle'
+          },
+          {
+            label: 'Propriétaires',
+            route: '/proprietaires',
+            roles: ['ROLE_SYNDIC'],
+            icon: 'fas fa-users'
+          }
+        ];
+      case 'ROLE_PROPRIETAIRE':
+        return [
+          {
+            label: 'Mes Appartements',
+            route: '/mes-appartements',
+            roles: ['ROLE_PROPRIETAIRE'],
+            icon: 'fas fa-home'
+          },
+          {
+            label: 'Mes Paiements',
+            route: '/mes-paiements',
+            roles: ['ROLE_PROPRIETAIRE'],
+            icon: 'fas fa-money-bill-wave'
+          },
+          {
+            label: 'Mes Incidents',
+            route: '/mes-incidents',
+            roles: ['ROLE_PROPRIETAIRE'],
+            icon: 'fas fa-exclamation-triangle'
+          }
+        ];
+      default:
+        return [];
+    }
   }
 }

@@ -68,43 +68,12 @@
           </div>
           
           <div class="form-group">
-            <label for="surface" class="block mb-2 text-sm font-medium text-gray-700">Surface (m²)</label>
-            <input type="number" id="surface" formControlName="surface"
+            <label for="superficie" class="block mb-2 text-sm font-medium text-gray-700">Superficie (m²)</label>
+            <input type="number" id="superficie" formControlName="superficie"
                    class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
-            <div *ngIf="appartementForm.get('surface')?.invalid && appartementForm.get('surface')?.touched" class="text-sm text-red-600 mt-1">
-              Surface requise (entre 1 et 1000 m²)
+            <div *ngIf="appartementForm.get('superficie')?.invalid && appartementForm.get('superficie')?.touched" class="text-sm text-red-600 mt-1">
+              Superficie requise (entre 1 et 1000 m²)
             </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="nombrePieces" class="block mb-2 text-sm font-medium text-gray-700">Nombre de pièces</label>
-            <input type="number" id="nombrePieces" formControlName="nombrePieces"
-                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
-            <div *ngIf="appartementForm.get('nombrePieces')?.invalid && appartementForm.get('nombrePieces')?.touched" class="text-sm text-red-600 mt-1">
-              Nombre de pièces requis (entre 1 et 20)
-            </div>
-          </div>
-          
-          <div class="form-group">
-            <label for="loyer" class="block mb-2 text-sm font-medium text-gray-700">Loyer (€/mois)</label>
-            <input type="number" id="loyer" formControlName="loyer"
-                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
-          </div>
-          
-          <div class="form-group">
-            <label for="charges" class="block mb-2 text-sm font-medium text-gray-700">Charges (€/mois)</label>
-            <input type="number" id="charges" formControlName="charges"
-                   class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5" />
-          </div>
-          
-          <div class="form-group">
-            <label for="status" class="block mb-2 text-sm font-medium text-gray-700">Statut</label>
-            <select id="status" formControlName="status"
-                    class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
-              <option value="LIBRE">Libre</option>
-              <option value="OCCUPE">Occupé</option>
-              <option value="EN_TRAVAUX">En travaux</option>
-            </select>
           </div>
           
           <div class="form-group">
@@ -112,7 +81,9 @@
             <select id="immeubleId" formControlName="immeubleId"
                     class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
               <option [ngValue]="null" disabled>Sélectionnez un immeuble</option>
-              <!-- Ajoutez ici les options pour les immeubles disponibles -->
+              <option *ngFor="let immeuble of immeubles" [value]="immeuble.id">
+                {{immeuble.nom}} - {{immeuble.adresse}}
+              </option>
             </select>
             <div *ngIf="appartementForm.get('immeubleId')?.invalid && appartementForm.get('immeubleId')?.touched" class="text-sm text-red-600 mt-1">
               Immeuble requis
@@ -173,7 +144,7 @@
               </div>
               <div>
                 <p class="text-xs text-gray-500">Surface</p>
-                <p class="text-sm font-medium">{{ appartement.surface }} m²</p>
+                <p class="text-sm font-medium">{{ appartement.superficie }} m²</p>
               </div>
               <div>
                 <p class="text-xs text-gray-500">Pièces</p>

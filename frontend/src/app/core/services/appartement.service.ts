@@ -28,8 +28,12 @@ export class AppartementService {
     return this.http.get<Appartement>(`${this.apiUrl}/${id}`);
   }
 
-  createAppartement(appartement: Partial<Appartement>): Observable<Appartement> {
-    return this.http.post<Appartement>(this.apiUrl, appartement);
+  createAppartement(appartement: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, appartement);
+  }
+
+  createAppartementForProprietaire(proprietaireId: number, appartement: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/proprietaire/${proprietaireId}`, appartement);
   }
 
   updateAppartement(id: number, appartement: Partial<Appartement>): Observable<Appartement> {

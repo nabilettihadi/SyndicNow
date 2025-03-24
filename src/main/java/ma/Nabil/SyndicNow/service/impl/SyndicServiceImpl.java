@@ -3,7 +3,6 @@ package ma.Nabil.SyndicNow.service.impl;
 import lombok.RequiredArgsConstructor;
 import ma.Nabil.SyndicNow.dto.syndic.SyndicRequest;
 import ma.Nabil.SyndicNow.dto.syndic.SyndicResponse;
-import ma.Nabil.SyndicNow.entity.Immeuble;
 import ma.Nabil.SyndicNow.entity.Syndic;
 import ma.Nabil.SyndicNow.enums.Role;
 import ma.Nabil.SyndicNow.exception.ResourceNotFoundException;

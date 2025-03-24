@@ -25,10 +25,6 @@ export const ADMIN_ROUTES: Routes = [
         path: 'immeubles',
         loadComponent: () => import('./immeubles/immeubles.component').then(m => m.ImmeublesComponent),
         loadChildren: () => import('./immeubles/immeubles.routes').then(m => m.IMMEUBLES_ROUTES)
-      },
-      {
-        path: 'rapports',
-        loadComponent: () => import('./reports/reports.component').then(m => m.ReportsComponent)
       }
     ]
   }

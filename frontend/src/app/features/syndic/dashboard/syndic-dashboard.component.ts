@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { catchError, forkJoin, map, Observable, of } from 'rxjs';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
 import { FooterComponent } from '@shared/components/footer/footer.component';
 import { SyndicService } from '@core/services/syndic.service';
 import { ImmeubleService } from '@core/services/immeuble.service';
@@ -17,7 +16,7 @@ import { AuthService } from '@core/services/auth.service';
 @Component({
   selector: 'app-syndic-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent, FooterComponent, RouterModule, FormsModule],
+  imports: [CommonModule, FooterComponent, RouterModule, FormsModule],
   templateUrl: './syndic-dashboard.component.html'
 })
 export class SyndicDashboardComponent implements OnInit {

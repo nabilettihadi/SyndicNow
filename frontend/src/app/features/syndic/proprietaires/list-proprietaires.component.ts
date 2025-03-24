@@ -2,17 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { NavbarComponent } from '@shared/components/navbar/navbar.component';
-import { FooterComponent } from '@shared/components/footer/footer.component';
 import { ProprietaireService } from '@core/services/proprietaire.service';
 import { Proprietaire } from '@core/models/proprietaire.model';
 
 @Component({
   selector: 'app-list-proprietaires',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, NavbarComponent, FooterComponent],
-  templateUrl: './list-proprietaires.component.html',
-  styleUrls: []
+  imports: [CommonModule, RouterModule, FormsModule],
+  templateUrl: './list-proprietaires.component.html'
 })
 export class ListProprietairesComponent implements OnInit {
   syndicId: number = 1; // À remplacer par l'ID du syndic actuel

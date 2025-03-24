@@ -5,16 +5,18 @@ import {FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators} fr
 import {NavbarComponent} from '@shared/components/navbar/navbar.component';
 import {FooterComponent} from '@shared/components/footer/footer.component';
 import {AppartementService} from '@core/services/appartement.service';
+import {ImmeubleService} from '@core/services/immeuble.service';
 import {AuthService} from '@core/services/auth.service';
 import {finalize} from 'rxjs';
 import {AppartementDetails} from '@core/models/appartement.model';
+import {Immeuble} from '@core/models/immeuble.model';
 
-// Interface pour étendre le modèle AppartementDetails du backend avec des propriétés supplémentaires pour l'UI
-interface AppartementUI extends AppartementDetails {
+interface AppartementUI extends Omit<AppartementDetails, 'createdAt' | 'updatedAt'> {
   immeubleName?: string;
   proprietaireName?: string;
   createdAt?: string;
   updatedAt?: string;
+  superficie?: number;
 }
 
 @Component({
@@ -26,6 +28,7 @@ interface AppartementUI extends AppartementDetails {
 export class MesAppartementsComponent implements OnInit {
   appartements: AppartementUI[] = [];
   filteredAppartements: AppartementUI[] = [];
+  immeubles: Immeuble[] = [];
   loading = false;
   error: string | null = null;
   searchTerm: string = '';
@@ -50,34 +53,35 @@ export class MesAppartementsComponent implements OnInit {
 
   constructor(
     private appartementService: AppartementService,
+    private immeubleService: ImmeubleService,
     private authService: AuthService,
     private fb: FormBuilder
   ) {
     this.appartementForm = this.fb.group({
       numero: ['', [Validators.required, Validators.maxLength(10)]],
       etage: [0, [Validators.required, Validators.min(-5), Validators.max(100)]],
-      surface: [0, [Validators.required, Validators.min(1), Validators.max(1000)]],
-      nombrePieces: [1, [Validators.required, Validators.min(1), Validators.max(20)]],
-      loyer: [0, [Validators.min(0)]],
-      charges: [0, [Validators.min(0)]],
+      superficie: [0, [Validators.required, Validators.min(1), Validators.max(1000)]],
       description: [''],
-      immeubleId: [null, Validators.required],
-      status: ['LIBRE', Validators.required]
+      immeubleId: [null, Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.loadAppartements();
+    this.loadImmeubles();
   }
 
   private loadAppartements(): void {
-    const userId = this.authService.currentUserValue?.userId;
-    if (!userId) return;
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser?.userId) {
+      this.error = "Erreur d'identification de l'utilisateur";
+      return;
+    }
 
     this.loading = true;
     this.error = null;
     
-    this.appartementService.getAppartementsProprietaire(userId).subscribe({
+    this.appartementService.getAppartementsProprietaire(currentUser.userId).subscribe({
       next: (data: AppartementDetails[]) => {
         // Mapper les données pour ajouter les propriétés UI
         this.appartements = data.map(app => {
@@ -85,8 +89,9 @@ export class MesAppartementsComponent implements OnInit {
             ...app,
             immeubleName: app.immeuble?.nom || 'Non défini',
             proprietaireName: app.proprietaire ? `${app.proprietaire.nom} ${app.proprietaire.prenom}` : 'Non défini',
-            createdAt: app.dateCreation.toString(),
-            updatedAt: new Date().toString()
+            createdAt: (app.createdAt || app.dateCreation || new Date()).toString(),
+            updatedAt: (app.updatedAt || new Date()).toString(),
+            superficie: app.surface
           };
           return appUI;
         });
@@ -95,6 +100,22 @@ export class MesAppartementsComponent implements OnInit {
       },
       error: (err: Error) => {
         this.error = `Erreur lors du chargement des appartements: ${err.message}`;
+        this.loading = false;
+      }
+    });
+  }
+
+  private loadImmeubles(): void {
+    this.loading = true;
+    this.error = null;
+    
+    this.immeubleService.getAllImmeubles().subscribe({
+      next: (data) => {
+        this.immeubles = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.error = `Erreur lors du chargement des immeubles: ${err.message}`;
         this.loading = false;
       }
     });
@@ -153,13 +174,9 @@ export class MesAppartementsComponent implements OnInit {
     this.appartementForm.patchValue({
       numero: appartement.numero,
       etage: appartement.etage,
-      surface: appartement.surface,
-      nombrePieces: appartement.nombrePieces,
-      loyer: appartement.loyer,
-      charges: appartement.charges,
+      superficie: appartement.superficie || appartement.surface,
       description: appartement.description || '',
-      immeubleId: appartement.immeubleId,
-      status: appartement.status
+      immeubleId: appartement.immeubleId
     });
   }
   
@@ -173,13 +190,9 @@ export class MesAppartementsComponent implements OnInit {
     this.appartementForm.reset({
       numero: '',
       etage: 0,
-      surface: 0,
-      nombrePieces: 1,
-      loyer: 0,
-      charges: 0,
+      superficie: 0,
       description: '',
-      immeubleId: null,
-      status: 'LIBRE'
+      immeubleId: null
     });
   }
   
@@ -189,15 +202,14 @@ export class MesAppartementsComponent implements OnInit {
       return;
     }
     
-    const userId = this.authService.currentUserValue?.userId;
-    if (!userId) {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser?.userId) {
       this.error = "Erreur d'identification de l'utilisateur";
       return;
     }
     
     const appartementData = {
-      ...this.appartementForm.value,
-      proprietaireId: userId
+      ...this.appartementForm.value
     };
     
     this.loading = true;
@@ -218,7 +230,7 @@ export class MesAppartementsComponent implements OnInit {
         });
     } else {
       // Ajout d'un nouvel appartement
-      this.appartementService.createAppartement(appartementData)
+      this.appartementService.createAppartementForProprietaire(currentUser.userId, appartementData)
         .pipe(finalize(() => this.loading = false))
         .subscribe({
           next: () => {

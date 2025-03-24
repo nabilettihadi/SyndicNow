@@ -50,6 +50,9 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
     @Query("SELECT p FROM Paiement p WHERE p.datePaiement BETWEEN :debut AND :fin")
     List<Paiement> findByPeriode(@Param("debut") LocalDateTime debut, @Param("fin") LocalDateTime fin);
 
+    @Query("SELECT p FROM Paiement p WHERE DATE(p.datePaiement) BETWEEN :debut AND :fin")
+    List<Paiement> findByPeriodeLocalDate(@Param("debut") LocalDate debut, @Param("fin") LocalDate fin);
+
     @Query("SELECT SUM(p.montant) FROM Paiement p WHERE p.appartement.immeuble.id = :immeubleId")
     Double getTotalPaiementsByImmeuble(@Param("immeubleId") Long immeubleId);
 

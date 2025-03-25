@@ -14,6 +14,9 @@ export interface Incident {
   resolution?: string;
   appartementId: number;
   immeubleId: number;
+  immeubleName?: string;
+  immeubleAdresse?: string;
+  immeubleVille?: string;
   attachmentUrls?: string;
   createdBy: string;
   createdAt: string;
@@ -30,7 +33,10 @@ export interface IncidentWithStatus extends Incident {
   titre: string;
   date: string;
   immeuble?: {
+    id: number;
     nom: string;
+    adresse: string;
+    ville: string;
   };
 }
 
@@ -41,7 +47,14 @@ export function addStatusAlias(incident: Incident): IncidentWithStatus {
     statut: incident.status,
     priorite: incident.priority,
     titre: incident.title,
-    date: incident.reportedDate
+    date: incident.reportedDate,
+    // Création d'un objet immeuble par défaut basé sur l'ID
+    immeuble: {
+      id: incident.immeubleId,
+      nom: 'Immeuble #' + incident.immeubleId,
+      adresse: 'Adresse non spécifiée',
+      ville: 'Ville non spécifiée'
+    }
   };
 }
 

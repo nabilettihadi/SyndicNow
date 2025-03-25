@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AppartementService } from '@core/services/appartement.service';
 import { ImmeubleService } from '@core/services/immeuble.service';
+import { AuthService } from '@core/services/auth.service';
 import { Immeuble } from '@core/models/immeuble.model';
 import { finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -24,11 +25,13 @@ export class EditAppartementComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
   appartementId: number;
+  proprietaireId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private appartementService: AppartementService,
     private immeubleService: ImmeubleService,
+    private authService: AuthService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -42,6 +45,14 @@ export class EditAppartementComponent implements OnInit {
     });
 
     this.appartementId = +this.route.snapshot.params['id'];
+    
+    // Récupérer l'ID du propriétaire connecté
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.userId) {
+      this.proprietaireId = currentUser.userId;
+    } else {
+      this.error = "Utilisateur non authentifié";
+    }
   }
 
   ngOnInit(): void {
@@ -86,7 +97,7 @@ export class EditAppartementComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.appartementForm.valid) {
+    if (this.appartementForm.valid && this.proprietaireId) {
       this.isLoading = true;
       this.error = null;
 
@@ -95,7 +106,8 @@ export class EditAppartementComponent implements OnInit {
         surface: Number(this.appartementForm.value.surface),
         nombrePieces: Number(this.appartementForm.value.nombrePieces),
         etage: Number(this.appartementForm.value.etage),
-        immeubleId: Number(this.appartementForm.value.immeubleId)
+        immeubleId: Number(this.appartementForm.value.immeubleId),
+        proprietaireIds: [this.proprietaireId] // Ajouter l'ID du propriétaire
       };
 
       this.appartementService.updateAppartement(this.appartementId, formData)
@@ -109,6 +121,8 @@ export class EditAppartementComponent implements OnInit {
             this.error = `Erreur lors de la modification de l'appartement: ${err.message}`;
           }
         });
+    } else if (!this.proprietaireId) {
+      this.error = "Erreur d'identification du propriétaire";
     }
   }
 } 

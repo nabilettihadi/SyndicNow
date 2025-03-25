@@ -29,6 +29,13 @@ public class SyndicServiceImpl implements SyndicService {
     @Override
     @Transactional
     public SyndicResponse createSyndic(SyndicRequest request) {
+        // Vérifier si le CIN existe déjà
+        if (request.getCin() != null && !request.getCin().isEmpty()) {
+            if (syndicRepository.findByCin(request.getCin()).isPresent()) {
+                throw new IllegalArgumentException("CIN déjà utilisé");
+            }
+        }
+        
         Syndic syndic = syndicMapper.toEntity(request);
 
         // Encoder le mot de passe

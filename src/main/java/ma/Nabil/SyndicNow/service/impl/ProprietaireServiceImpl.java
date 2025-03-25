@@ -29,6 +29,13 @@ public class ProprietaireServiceImpl implements ProprietaireService {
     @Override
     @Transactional
     public ProprietaireResponse createProprietaire(ProprietaireRequest request) {
+        // Vérifier si le CIN existe déjà
+        if (request.getCin() != null && !request.getCin().isEmpty()) {
+            if (proprietaireRepository.findByCin(request.getCin()).isPresent()) {
+                throw new IllegalArgumentException("CIN déjà utilisé");
+            }
+        }
+        
         Proprietaire proprietaire = proprietaireMapper.toEntity(request);
 
         // Encoder le mot de passe

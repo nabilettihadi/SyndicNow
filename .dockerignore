@@ -1,0 +1,89 @@
+# Maven
+target/
+!target/*.jar
+*.class
+*.jar
+mvnw
+mvnw.cmd
+.mvn/
+
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+.vscode/
+*.sublime-workspace
+.factorypath
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Système d'exploitation
+.DS_Store
+Thumbs.db
+.directory
+*~
+
+# Tests
+/coverage/
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+junit-*.xml
+
+# Docker
+.dockerignore
+**/Dockerfile
+**/docker-compose*.yml
+
+# Git
+.git/
+.github/
+.gitattributes
+.gitignore
+
+# Node.js
+node_modules/
+bower_components/
+dist/
+tmp/
+
+# Documentation
+README.md
+CHANGELOG.md
+LICENSE
+docs/
+
+# Backend spécifique
+application-*.yml
+application-*.properties
+!application-prod.yml
+!application-prod.properties
+
+# Frontend spécifique
+# Ne rien exclure ici car le frontend est construit dans un autre Dockerfile
+
+# Autres
+*.swp
+*.swo
+*.bak
+*.tmp
+**/backup/
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local 

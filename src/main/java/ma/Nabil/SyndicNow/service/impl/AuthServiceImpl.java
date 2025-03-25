@@ -83,6 +83,13 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new InvalidOperationException("Email déjà utilisé");
         }
+        
+        // Vérifier si le CIN existe déjà - Utilisation de la méthode existsByCin
+        if (request.getCin() != null && !request.getCin().isEmpty()) {
+            if (userRepository.existsByCin(request.getCin())) {
+                throw new InvalidOperationException("CIN déjà utilisé");
+            }
+        }
 
         // Vérifier que le rôle est valide pour l'inscription
         if (request.getRole() == Role.ADMIN) {

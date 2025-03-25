@@ -16,8 +16,11 @@ public class AppartementResponse {
     private String numero;
     private Integer etage;
     private Double surface;
+    private Integer nombrePieces;
     private Long immeubleId;
     private String immeubleName;
+    private String immeubleAdresse;
+    private String immeubleVille;
     private Long proprietaireId;
     private String proprietaireName;
     private String description;

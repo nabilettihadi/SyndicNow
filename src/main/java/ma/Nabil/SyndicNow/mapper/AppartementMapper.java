@@ -26,6 +26,9 @@ public interface AppartementMapper {
 
     @Mapping(target = "immeubleName", source = "immeuble.nom")
     @Mapping(target = "immeubleId", source = "immeuble.id")
+    @Mapping(target = "immeubleAdresse", source = "immeuble.adresse")
+    @Mapping(target = "immeubleVille", source = "immeuble.ville")
+    @Mapping(target = "nombrePieces", source = "nombrePieces")
     @Mapping(target = "proprietaireId", source = "proprietaire.id")
     @Mapping(target = "proprietaireName", expression = "java(appartement.getProprietaire().getNom() + \" \" + appartement.getProprietaire().getPrenom())")
     AppartementResponse toResponseDto(Appartement appartement);

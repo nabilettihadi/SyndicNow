@@ -34,7 +34,21 @@ export class IncidentService {
 
   getIncidentsBySyndic(syndicId: number): Observable<IncidentWithStatus[]> {
     return this.http.get<Incident[]>(`${this.apiUrl}/syndic/${syndicId}`).pipe(
-      map(incidents => incidents.map(incident => addStatusAlias(incident)))
+      map(incidents => incidents.map(incident => {
+        const incidentWithStatus = addStatusAlias(incident);
+        
+        // Mettre à jour l'immeuble avec les données du backend
+        if (incident.immeubleId) {
+          incidentWithStatus.immeuble = {
+            id: incident.immeubleId,
+            nom: incident.immeubleName || `Immeuble #${incident.immeubleId}`,
+            adresse: incident.immeubleAdresse || 'Adresse non spécifiée',
+            ville: incident.immeubleVille || 'Ville non spécifiée'
+          };
+        }
+        
+        return incidentWithStatus;
+      }))
     );
   }
 

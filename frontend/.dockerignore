@@ -1,0 +1,38 @@
+# Node.js et dépendances
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environnement
+.env
+.env.local
+.env.*.local
+
+# Fichiers de build
+/dist/
+/.angular/cache/
+
+# Système
+.DS_Store
+Thumbs.db
+
+# IDE
+/.idea/
+/.vscode/
+*.sublime-*
+*.code-workspace
+
+# Tests
+/coverage/
+/e2e/*.js
+/e2e/*.map
+
+# Divers
+/.git/
+/.github/
+/docs/
+README.md
+CHANGELOG.md
+*.md
+*.log 

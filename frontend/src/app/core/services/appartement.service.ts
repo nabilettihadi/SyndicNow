@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {environment} from '@env/environment';
 import {Appartement, AppartementDetails, AppartementStats} from '../models/appartement.model';
 
@@ -42,7 +42,19 @@ export class AppartementService {
   }
 
   updateAppartement(id: number, appartement: any): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, appartement).pipe(
+    console.log('Mise à jour de l\'appartement:', id, appartement);
+    
+    // Assurer que toutes les valeurs numériques sont bien des nombres
+    const updatedAppartement = {
+      ...appartement,
+      immeubleId: Number(appartement.immeubleId),
+      etage: Number(appartement.etage),
+      surface: Number(appartement.surface),
+      nombrePieces: Number(appartement.nombrePieces)
+    };
+    
+    return this.http.put<void>(`${this.apiUrl}/${id}`, updatedAppartement).pipe(
+      tap(response => console.log('Réponse de mise à jour:', response)),
       catchError((error) => {
         console.error('Erreur lors de la mise à jour:', error);
         return this.handleError(error);
@@ -85,19 +97,27 @@ export class AppartementService {
         console.log('Réponse API brute:', appartements);
         return appartements.map(app => {
           console.log('Mapping appartement:', app);
+          
+          // Vérifier dans la console toutes les propriétés disponibles
+          console.log('Propriétés de l\'appartement reçu:', Object.keys(app));
+          
           return {
             ...app,
-            surface: app.surface || 0,
-            nombrePieces: app.nombrePieces || 0,
+            // Conversion explicite pour s'assurer que les valeurs numériques sont bien définies
+            surface: app.surface !== null && app.surface !== undefined ? Number(app.surface) : 0,
+            // Si nombrePieces n'existe pas dans la réponse API, on utilise la valeur par défaut 1
+            nombrePieces: app.nombrePieces !== null && app.nombrePieces !== undefined ? 
+                          Number(app.nombrePieces) : 1,
+            etage: app.etage !== null && app.etage !== undefined ? Number(app.etage) : 0,
             immeuble: {
-              id: app.immeubleId,
-              nom: app.immeubleName,
-              adresse: app.immeubleAdresse,
-              ville: app.immeubleVille,
+              id: app.immeubleId || 0,
+              nom: app.immeubleName || 'Immeuble sans nom',
+              adresse: app.immeubleAdresse || '',
+              ville: app.immeubleVille || '',
               syndic: app.syndicId ? {
-                id: Number(app.syndicId), // Conversion explicite en nombre
-                nom: app.syndicName,
-                email: app.syndicEmail
+                id: Number(app.syndicId),
+                nom: app.syndicName || '',
+                email: app.syndicEmail || ''
               } : null
             }
           };

@@ -28,6 +28,7 @@ export class MesAppartementsComponent implements OnInit {
   error: string | null = null;
   showForm = false;
   appartementForm: FormGroup;
+  proprietaireId: number | null = null;
 
   constructor(
     private appartementService: AppartementService,
@@ -44,16 +45,25 @@ export class MesAppartementsComponent implements OnInit {
       description: [''],
       immeubleId: [null, Validators.required]
     });
+
+    // Récupérer l'ID de l'utilisateur connecté
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser?.userId) {
+      this.proprietaireId = currentUser.userId;
+    } else {
+      this.error = "Erreur d'identification de l'utilisateur";
+    }
   }
 
   ngOnInit(): void {
-    this.loadAppartements();
-    this.loadImmeubles();
+    if (this.proprietaireId) {
+      this.loadAppartements();
+      this.loadImmeubles();
+    }
   }
 
   private loadAppartements(): void {
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser?.userId) {
+    if (!this.proprietaireId) {
       this.error = "Erreur d'identification de l'utilisateur";
       return;
     }
@@ -61,13 +71,18 @@ export class MesAppartementsComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.appartementService.getAppartementsProprietaire(currentUser.userId)
+    this.appartementService.getAppartementsProprietaire(this.proprietaireId)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (data) => {
           console.log('Données reçues du backend:', data);
           this.appartements = data;
-          console.log('Données stockées dans le composant:', this.appartements);
+          
+          if (this.appartements.length === 0) {
+            console.log('Aucun appartement trouvé pour cet utilisateur');
+          } else {
+            console.log('Données stockées dans le composant:', this.appartements);
+          }
         },
         error: (err) => {
           console.error('Erreur détaillée:', err);
@@ -85,7 +100,7 @@ export class MesAppartementsComponent implements OnInit {
           console.log('Immeubles chargés:', data);
           this.immeubles = data;
           if (this.immeubles.length === 0) {
-            this.error = 'Aucun immeuble disponible';
+            console.log('Aucun immeuble disponible');
           }
         },
         error: (err) => {
@@ -119,15 +134,14 @@ export class MesAppartementsComponent implements OnInit {
       return;
     }
 
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser?.userId) {
+    if (!this.proprietaireId) {
       this.error = "Erreur d'identification de l'utilisateur";
       return;
     }
 
     const formData = {
       ...this.appartementForm.value,
-      proprietaireIds: [currentUser.userId],
+      proprietaireIds: [this.proprietaireId],
       nombrePieces: Number(this.appartementForm.value.nombrePieces),
       immeubleId: Number(this.appartementForm.value.immeubleId),
       etage: Number(this.appartementForm.value.etage),
@@ -139,7 +153,7 @@ export class MesAppartementsComponent implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.appartementService.createAppartementForProprietaire(currentUser.userId, formData)
+    this.appartementService.createAppartementForProprietaire(this.proprietaireId, formData)
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: () => {
@@ -154,13 +168,12 @@ export class MesAppartementsComponent implements OnInit {
   }
 
   editAppartement(appartementId: number): void {
-    this.router.navigate(['appartements', appartementId, 'edit'], { relativeTo: this.router.routerState.root.firstChild });
+    this.router.navigate(['/proprietaire/appartements', appartementId, 'edit']);
   }
 
   deleteAppartement(appartementId: number): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet appartement ?')) {
-      const currentUser = this.authService.getCurrentUser();
-      if (!currentUser?.userId) {
+      if (!this.proprietaireId) {
         this.error = "Erreur d'identification de l'utilisateur";
         return;
       }
@@ -168,7 +181,7 @@ export class MesAppartementsComponent implements OnInit {
       this.isLoading = true;
       this.error = null;
 
-      this.appartementService.deleteAppartementForProprietaire(currentUser.userId, appartementId)
+      this.appartementService.deleteAppartementForProprietaire(this.proprietaireId, appartementId)
         .pipe(finalize(() => this.isLoading = false))
         .subscribe({
           next: () => {

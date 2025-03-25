@@ -31,6 +31,10 @@ public class IncidentResponse {
     private String assignedToName;
     private Long appartementId;
     private String appartementNumero;
+    
+    // Informations sur l'immeuble
     private Long immeubleId;
     private String immeubleName;
+    private String immeubleAdresse;
+    private String immeubleVille;
 } 

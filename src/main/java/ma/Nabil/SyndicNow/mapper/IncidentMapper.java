@@ -39,6 +39,8 @@ public class IncidentMapper {
                 .appartementNumero(incident.getAppartement() != null ? incident.getAppartement().getNumero() : null)
                 .immeubleId(incident.getImmeuble() != null ? incident.getImmeuble().getId() : null)
                 .immeubleName(incident.getImmeuble() != null ? incident.getImmeuble().getNom() : null)
+                .immeubleAdresse(incident.getImmeuble() != null ? incident.getImmeuble().getAdresse() : null)
+                .immeubleVille(incident.getImmeuble() != null ? incident.getImmeuble().getVille() : null)
                 .build();
     }
 

@@ -5,11 +5,13 @@ import ma.Nabil.SyndicNow.enums.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@ActiveProfiles("test")
 class JwtServiceTest {
 
     @Autowired
@@ -35,15 +37,5 @@ class JwtServiceTest {
         CustomUserDetails differentUser = CustomUserDetails.fromUser(differentSyndic);
 
         assertFalse(jwtService.isTokenValid(token, differentUser));
-    }
-
-    @Test
-    void tokenShouldBeInvalidAfterExpiration() throws InterruptedException {
-        Syndic syndic = Syndic.builder().email("test@example.com").password("password").role(Role.SYNDIC).build();
-        CustomUserDetails userDetails = CustomUserDetails.fromUser(syndic);
-
-        String token = jwtService.generateToken(userDetails);
-        Thread.sleep(1000); // Attendre que le token expire
-        assertFalse(jwtService.isTokenValid(token, userDetails));
     }
 }

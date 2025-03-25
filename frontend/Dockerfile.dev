@@ -1,0 +1,21 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Installer les dépendances globales
+RUN npm install -g @angular/cli@latest
+
+# Copier les fichiers package.json et package-lock.json
+COPY package*.json ./
+
+# Installer les dépendances du projet
+RUN npm install
+
+# Copier le reste des fichiers du projet
+COPY . .
+
+# Exposer le port pour le serveur de développement Angular
+EXPOSE 4200
+
+# Commande par défaut pour démarrer le serveur de développement
+CMD ["ng", "serve", "--host", "0.0.0.0", "--poll", "2000"] 

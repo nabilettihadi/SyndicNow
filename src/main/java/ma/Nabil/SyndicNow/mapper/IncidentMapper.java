@@ -35,14 +35,10 @@ public class IncidentMapper {
                 .assignedToId(incident.getAssignedTo() != null ? incident.getAssignedTo().getId() : null)
                 .assignedToName(incident.getAssignedTo() != null ? incident.getAssignedTo().getNom() + " " + incident.getAssignedTo().getPrenom() : null)
                 .resolutionDate(incident.getResolutionDate())
-                .resolution(incident.getResolution())
                 .appartementId(incident.getAppartement() != null ? incident.getAppartement().getId() : null)
                 .appartementNumero(incident.getAppartement() != null ? incident.getAppartement().getNumero() : null)
                 .immeubleId(incident.getImmeuble() != null ? incident.getImmeuble().getId() : null)
                 .immeubleName(incident.getImmeuble() != null ? incident.getImmeuble().getNom() : null)
-                .attachmentUrls(incident.getAttachmentUrls())
-                .createdAt(incident.getCreatedAt())
-                .updatedAt(incident.getUpdatedAt())
                 .build();
     }
 
@@ -55,7 +51,6 @@ public class IncidentMapper {
                 .reportedDate(LocalDateTime.now())
                 .reportedBy(reportedBy)
                 .category(request.getCategory())
-                .attachmentUrls(request.getAttachmentUrls())
                 .build();
 
         setRelatedEntities(request, incident);
@@ -67,7 +62,6 @@ public class IncidentMapper {
         incident.setDescription(request.getDescription());
         incident.setPriority(request.getPriority());
         incident.setCategory(request.getCategory());
-        incident.setAttachmentUrls(request.getAttachmentUrls());
 
         setRelatedEntities(request, incident);
     }

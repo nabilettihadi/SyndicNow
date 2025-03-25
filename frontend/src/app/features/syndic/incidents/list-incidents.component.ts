@@ -177,6 +177,8 @@ export class ListIncidentsComponent implements OnInit {
       return;
     }
 
+    console.log(`Tentative de mise à jour du statut de l'incident ${incident.id} de ${incident.status} à ${newStatus}`);
+
     const updatedIncident: Partial<IncidentWithStatus> = {
       ...incident,
       status: newStatus,
@@ -187,6 +189,7 @@ export class ListIncidentsComponent implements OnInit {
 
     this.incidentService.updateIncidentStatus(incident.id, newStatus).subscribe({
       next: (updated) => {
+        console.log(`Statut mis à jour avec succès:`, updated);
         const index = this.incidents.findIndex(i => i.id === incident.id);
         if (index !== -1) {
           this.incidents[index] = {
@@ -200,7 +203,7 @@ export class ListIncidentsComponent implements OnInit {
       },
       error: (error) => {
         console.error('Erreur lors de la mise à jour du statut:', error);
-        this.errorMessage = 'Une erreur est survenue lors de la mise à jour du statut';
+        this.errorMessage = `Erreur lors de la mise à jour du statut: ${error.error?.message || 'Erreur inconnue'}`;
       }
     });
   }

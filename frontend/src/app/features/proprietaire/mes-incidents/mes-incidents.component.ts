@@ -426,4 +426,49 @@ export class MesIncidentsComponent implements OnInit {
         });
     }
   }
+
+  deleteIncident(id: number): void {
+    if (!id) return;
+    
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser?.userId) {
+      this.error = 'Utilisateur non connecté';
+      return;
+    }
+    
+    // Vérifier si l'incident appartient à l'utilisateur actuel
+    const incident = this.incidents.find(inc => inc.id === id);
+    if (!incident) {
+      this.error = 'Incident non trouvé';
+      return;
+    }
+    
+    // Vérifier si l'utilisateur est le propriétaire de l'incident
+    if (incident.reportedBy !== currentUser.userId) {
+      this.error = 'Vous n\'avez pas les droits pour supprimer cet incident';
+      return;
+    }
+    
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet incident ?')) {
+      this.loading = true;
+      this.incidentService.deleteIncident(id).subscribe({
+        next: () => {
+          this.incidents = this.incidents.filter(incident => incident.id !== id);
+          this.filterIncidents();
+          this.updateStatistics();
+          this.loading = false;
+          this.error = null; // Effacer les erreurs précédentes en cas de succès
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression de l\'incident:', error);
+          if (error.error?.message === 'Access Denied') {
+            this.error = 'Vous n\'avez pas les droits pour supprimer cet incident';
+          } else {
+            this.error = 'Erreur lors de la suppression de l\'incident';
+          }
+          this.loading = false;
+        }
+      });
+    }
+  }
 }

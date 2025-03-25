@@ -22,11 +22,7 @@ public class IncidentResponse {
     private IncidentPriority priority;
     private LocalDateTime reportedDate;
     private IncidentCategory category;
-    private String resolution;
     private LocalDateTime resolutionDate;
-    private String attachmentUrls;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
     // Informations liées
     private Long reportedById;

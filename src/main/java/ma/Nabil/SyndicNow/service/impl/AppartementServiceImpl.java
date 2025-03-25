@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -118,5 +119,19 @@ public class AppartementServiceImpl implements AppartementService {
         
         appartement = appartementRepository.save(appartement);
         return appartementMapper.toResponseDto(appartement);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAppartementForProprietaire(Long proprietaireId, Long appartementId) {
+        Appartement appartement = appartementRepository.findById(appartementId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appartement non trouvé avec l'id: " + appartementId));
+
+        // Vérifier que l'appartement appartient bien au propriétaire
+        if (!appartement.getProprietaire().getId().equals(proprietaireId)) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à supprimer cet appartement");
+        }
+
+        appartementRepository.delete(appartement);
     }
 }

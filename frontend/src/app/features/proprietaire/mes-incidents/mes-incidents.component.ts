@@ -6,10 +6,12 @@ import {FooterComponent} from '@shared/components/footer/footer.component';
 import {IncidentService} from '@core/services/incident.service';
 import {AuthService} from '@core/services/auth.service';
 import {Incident, IncidentWithStatus} from '@core/models/incident.model';
-import {ImmeubleService} from '@core/services/immeuble.service';
 import {AppartementService} from '@core/services/appartement.service';
-import {Immeuble} from '@core/models/immeuble.model';
 import {Appartement} from '@core/models/appartement.model';
+import {SyndicService} from '@core/services/syndic.service';
+import {catchError, finalize, switchMap} from 'rxjs/operators';
+import {of} from 'rxjs';
+import {ImmeubleService} from '@core/services/immeuble.service';
 
 @Component({
   selector: 'app-mes-incidents',
@@ -22,9 +24,7 @@ export class MesIncidentsComponent implements OnInit {
   filteredIncidents: IncidentWithStatus[] = [];
   selectedStatus: 'NOUVEAU' | 'EN_COURS' | 'RESOLU' | '' = '';
   selectedPriority: 'HAUTE' | 'MOYENNE' | 'BASSE' | '' = '';
-  immeubles: Immeuble[] = [];
   appartements: Appartement[] = [];
-  appartementsByImmeuble: { [key: number]: Appartement[] } = {};
   showCreateModal = false;
   showEditModal = false;
   incidentForm: FormGroup;
@@ -44,15 +44,15 @@ export class MesIncidentsComponent implements OnInit {
   constructor(
     private incidentService: IncidentService,
     private authService: AuthService,
-    private immeubleService: ImmeubleService,
     private appartementService: AppartementService,
-    private fb: FormBuilder
+    private syndicService: SyndicService,
+    private fb: FormBuilder,
+    private immeubleService: ImmeubleService
   ) {
     this.incidentForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       priority: ['MOYENNE', Validators.required],
-      immeubleId: ['', Validators.required],
       appartementId: ['', Validators.required],
       category: ['', Validators.required]
     });
@@ -67,68 +67,132 @@ export class MesIncidentsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadIncidents();
-    this.loadImmeubles();
+    this.loadAppartements();
   }
 
-  private loadImmeubles(): void {
+  private loadAppartements(): void {
     const currentUser = this.authService.getCurrentUser();
     if (currentUser?.userId) {
-      // D'abord, chargeons les appartements du propriétaire
-      this.appartementService.getAppartementsByProprietaire(currentUser.userId).subscribe({
-        next: (appartements: Appartement[]) => {
+      this.loading = true;
+      this.appartementService.getAppartementsProprietaire(currentUser.userId).subscribe({
+        next: (appartements) => {
           this.appartements = appartements;
-
-          // Extraire les immeubles uniques à partir des appartements
-          const immeubleIds = new Set(appartements.map(app => app.immeubleId));
-          this.immeubles = appartements
-            .filter(app => app.immeuble)
-            .filter((app, index, self) =>
-              index === self.findIndex(a => a.immeubleId === app.immeubleId)
-            )
-            .map(app => ({
-              id: app.immeubleId,
-              nom: app.immeuble?.nom || 'Immeuble inconnu',
-              adresse: app.immeuble?.adresse || '',
-              codePostal: '',
-              ville: app.immeuble?.ville || '',
-              nombreEtages: 0,
-              nombreAppartements: 0,
-              status: 'ACTIF' as const,
-              syndicId: 0
-            }));
-
-          // Organiser les appartements par immeuble
-          this.appartementsByImmeuble = appartements.reduce((acc, app) => {
-            if (!acc[app.immeubleId]) {
-              acc[app.immeubleId] = [];
-            }
-            acc[app.immeubleId].push(app);
-            return acc;
-          }, {} as { [key: number]: Appartement[] });
-
-          console.log('Immeubles chargés:', this.immeubles);
-          console.log('Appartements par immeuble:', this.appartementsByImmeuble);
+          this.loading = false;
         },
         error: (error) => {
           console.error('Erreur lors du chargement des appartements:', error);
           this.error = 'Erreur lors du chargement des appartements';
+          this.loading = false;
         }
       });
     }
   }
 
-  onImmeubleChange(event: any): void {
-    console.log('Changement d\'immeuble:', event.target.value);
-    const immeubleId = parseInt(event.target.value, 10);
-    this.incidentForm.patchValue({appartementId: ''});
-
-    if (immeubleId) {
-      const appartements = this.appartementsByImmeuble[immeubleId] || [];
-      console.log('Appartements disponibles:', appartements);
-      if (appartements.length === 1) {
-        // Si un seul appartement est disponible, le sélectionner automatiquement
-        this.incidentForm.patchValue({appartementId: appartements[0].id});
+  onSubmit() {
+    if (this.incidentForm.valid) {
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser?.userId) {
+        this.error = 'Utilisateur non connecté';
+        return;
       }
+
+      const formValue = this.incidentForm.value;
+      const selectedAppartement = this.appartements.find(app => app.id === Number(formValue.appartementId));
+      
+      if (!selectedAppartement) {
+        this.error = 'Appartement non trouvé';
+        return;
+      }
+
+      if (!selectedAppartement.immeubleId) {
+        this.error = 'Immeuble non trouvé';
+        return;
+      }
+
+      this.loading = true;
+
+      // Récupérer les informations de l'immeuble avec son syndic
+      this.immeubleService.getImmeubleById(selectedAppartement.immeubleId).subscribe({
+        next: (immeuble) => {
+          console.log('Immeuble récupéré:', immeuble);
+          
+          if (!immeuble.syndic?.id) {
+            this.error = 'Aucun syndic associé à cet immeuble';
+            this.loading = false;
+            return;
+          }
+
+          const syndicId = Number(immeuble.syndic.id);
+          console.log('ID du syndic (avant conversion):', immeuble.syndic.id);
+          console.log('ID du syndic (après conversion):', syndicId);
+
+          if (isNaN(syndicId)) {
+            this.error = 'ID du syndic invalide';
+            this.loading = false;
+            return;
+          }
+
+          const now = new Date().toISOString();
+          const incident = {
+            title: formValue.title,
+            description: formValue.description,
+            priority: formValue.priority,
+            status: 'NOUVEAU' as const,
+            immeubleId: Number(selectedAppartement.immeubleId),
+            appartementId: Number(formValue.appartementId),
+            reportedDate: now,
+            category: formValue.category,
+            reportedBy: Number(currentUser.userId),
+            assignedToId: syndicId,
+            createdBy: currentUser.email,
+            createdAt: now,
+            updatedBy: currentUser.email,
+            updatedAt: now
+          };
+
+          console.log('Incident à créer:', incident);
+
+          this.incidentService.createIncident(incident)
+            .pipe(
+              catchError(error => {
+                console.error('Erreur lors de la création de l\'incident:', error);
+                this.error = 'Erreur lors de la création de l\'incident';
+                return of(null);
+              }),
+              finalize(() => this.loading = false)
+            )
+            .subscribe({
+              next: (newIncident) => {
+                if (newIncident) {
+                  console.log('Incident créé:', newIncident);
+                  const incidentWithStatus = {
+                    ...newIncident,
+                    statut: newIncident.status,
+                    priorite: newIncident.priority,
+                    titre: newIncident.title,
+                    date: newIncident.reportedDate
+                  };
+                  this.incidents.unshift(incidentWithStatus);
+                  this.filterIncidents();
+                  this.updateStatistics();
+                  this.closeCreateModal();
+                }
+              }
+            });
+        },
+        error: (error) => {
+          console.error('Erreur lors de la récupération de l\'immeuble:', error);
+          this.error = 'Erreur lors de la récupération de l\'immeuble';
+          this.loading = false;
+        }
+      });
+    } else {
+      Object.keys(this.incidentForm.controls).forEach(key => {
+        const control = this.incidentForm.get(key);
+        if (control?.invalid) {
+          control.markAsTouched();
+        }
+      });
     }
   }
 
@@ -176,51 +240,6 @@ export class MesIncidentsComponent implements OnInit {
     this.incidentForm.reset({
       priority: 'MOYENNE'
     });
-  }
-
-  onSubmit() {
-    if (this.incidentForm.valid) {
-      const currentUser = this.authService.getCurrentUser();
-      if (!currentUser?.userId) {
-        this.error = 'Utilisateur non connecté';
-        return;
-      }
-
-      const formValue = this.incidentForm.value;
-      const incident: Partial<Incident> = {
-        title: formValue.title,
-        description: formValue.description,
-        priority: formValue.priority,
-        status: 'NOUVEAU',
-        immeubleId: formValue.immeubleId,
-        appartementId: formValue.appartementId,
-        reportedDate: new Date(),
-        category: formValue.category
-      };
-
-      this.loading = true;
-      this.incidentService.createIncident(incident as Incident).subscribe({
-        next: (newIncident) => {
-          this.incidents.unshift(newIncident);
-          this.filterIncidents();
-          this.updateStatistics();
-          this.closeCreateModal();
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Erreur lors de la création:', error);
-          this.error = 'Erreur lors de la création de l\'incident';
-          this.loading = false;
-        }
-      });
-    } else {
-      Object.keys(this.incidentForm.controls).forEach(key => {
-        const control = this.incidentForm.get(key);
-        if (control?.invalid) {
-          control.markAsTouched();
-        }
-      });
-    }
   }
 
   updateIncident(incident: IncidentWithStatus): void {
@@ -340,33 +359,71 @@ export class MesIncidentsComponent implements OnInit {
 
   submitEdit() {
     if (this.editForm.valid && this.selectedIncident?.id) {
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser?.userId) {
+        this.error = 'Utilisateur non connecté';
+        return;
+      }
+
+      // Vérification supplémentaire pour s'assurer que selectedIncident n'est pas null
+      if (!this.selectedIncident?.immeubleId || !this.selectedIncident?.appartementId) {
+        this.error = 'Données de l\'incident incomplètes';
+        return;
+      }
+
+      const selectedAppartement = this.appartements.find(app => app.id === this.selectedIncident!.appartementId);
+      if (!selectedAppartement) {
+        this.error = 'Appartement non trouvé';
+        return;
+      }
+
       const formValue = this.editForm.value;
+      this.loading = true;
+
+      // À ce stade, selectedIncident est garanti non-null et a un id
+      const incident = this.selectedIncident! as Required<Pick<IncidentWithStatus, 'id' | 'immeubleId' | 'appartementId' | 'status'>>;
       const updatedIncident: Partial<Incident> = {
+        ...this.selectedIncident,  // Garder toutes les propriétés existantes
         title: formValue.title,
         description: formValue.description,
         priority: formValue.priority,
         category: formValue.category,
-        immeubleId: this.selectedIncident.immeubleId
+        reportedDate: this.selectedIncident.reportedDate,  // Garder la date originale
+        reportedBy: this.selectedIncident.reportedBy,  // Garder le propriétaire original
+        assignedTo: selectedAppartement.immeuble?.syndic?.id,
+        immeubleId: incident.immeubleId,
+        appartementId: incident.appartementId,
+        updatedBy: currentUser.email,
+        updatedAt: new Date().toISOString()
       };
 
-      this.loading = true;
-      this.incidentService.updateIncident(this.selectedIncident.id, updatedIncident as Incident).subscribe({
-        next: (updated) => {
-          const index = this.incidents.findIndex(i => i.id === this.selectedIncident?.id);
-          if (index !== -1) {
-            this.incidents[index] = updated;
-            this.filterIncidents();
-            this.updateStatistics();
+      this.incidentService.updateIncident(incident.id, updatedIncident)
+        .pipe(
+          catchError(error => {
+            console.error('Erreur lors de la mise à jour de l\'incident:', error);
+            this.error = 'Erreur lors de la mise à jour de l\'incident';
+            return of(null);
+          }),
+          finalize(() => this.loading = false)
+        )
+        .subscribe({
+          next: (updated) => {
+            if (updated) {
+              const index = this.incidents.findIndex(i => i.id === this.selectedIncident?.id);
+              if (index !== -1) {
+                this.incidents[index] = {
+                  ...updated,
+                  statut: updated.status,
+                  priorite: updated.priority,
+                  titre: updated.title,
+                  date: updated.reportedDate
+                };
+                this.filterIncidents();
+              }
+              this.closeEditModal();
+            }
           }
-          this.closeEditModal();
-          this.loading = false;
-        },
-        error: (error) => {
-          console.error('Erreur de mise à jour:', error);
-          this.error = 'Erreur lors de la mise à jour de l\'incident';
-          this.loading = false;
-        }
-      });
+        });
     }
   }
 }

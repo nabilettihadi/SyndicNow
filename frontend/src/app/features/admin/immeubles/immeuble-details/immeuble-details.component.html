@@ -186,9 +186,9 @@
             <td class="px-6 py-4 whitespace-nowrap">{{ appartement.etage }}</td>
             <td class="px-6 py-4 whitespace-nowrap">{{ appartement.surface }} m²</td>
             <td class="px-6 py-4 whitespace-nowrap">
-                <span [ngClass]="getAppartementStatusClass(appartement.status)"
+                <span [ngClass]="getAppartementStatusClass(appartement.status || 'LIBRE')"
                       class="px-2 py-1 text-xs rounded-full">
-                  {{ appartement.status }}
+                  {{ appartement.status || 'LIBRE' }}
                 </span>
             </td>
           </tr>

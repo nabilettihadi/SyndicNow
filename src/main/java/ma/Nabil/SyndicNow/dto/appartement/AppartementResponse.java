@@ -15,7 +15,7 @@ public class AppartementResponse {
     private Long id;
     private String numero;
     private Integer etage;
-    private Double superficie;
+    private Double surface;
     private Long immeubleId;
     private String immeubleName;
     private Long proprietaireId;

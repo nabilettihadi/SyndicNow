@@ -1,18 +1,25 @@
-import {Component, OnInit} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {AppartementService} from '@core/services/appartement.service';
-import {ImmeubleService} from '@core/services/immeuble.service';
-import {AuthService} from '@core/services/auth.service';
-import {finalize} from 'rxjs';
-import {AppartementDetails} from '@core/models/appartement.model';
-import {Immeuble} from '@core/models/immeuble.model';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AppartementService } from '@core/services/appartement.service';
+import { ImmeubleService } from '@core/services/immeuble.service';
+import { AuthService } from '@core/services/auth.service';
+import { finalize } from 'rxjs';
+import { AppartementDetails } from '@core/models/appartement.model';
+import { Immeuble } from '@core/models/immeuble.model';
+import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-mes-appartements',
+  templateUrl: './mes-appartements.component.html',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './mes-appartements.component.html'
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    NgClass
+  ]
 })
 export class MesAppartementsComponent implements OnInit {
   appartements: AppartementDetails[] = [];
@@ -26,12 +33,13 @@ export class MesAppartementsComponent implements OnInit {
     private appartementService: AppartementService,
     private immeubleService: ImmeubleService,
     private authService: AuthService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.appartementForm = this.fb.group({
       numero: ['', [Validators.required, Validators.maxLength(10)]],
       etage: [0, [Validators.required, Validators.min(-5), Validators.max(100)]],
-      superficie: [0, [Validators.required, Validators.min(1), Validators.max(1000)]],
+      surface: [null, [Validators.required, Validators.min(1), Validators.max(1000)]],
       nombrePieces: [1, [Validators.required, Validators.min(1), Validators.max(20)]],
       description: [''],
       immeubleId: [null, Validators.required]
@@ -57,9 +65,12 @@ export class MesAppartementsComponent implements OnInit {
       .pipe(finalize(() => this.isLoading = false))
       .subscribe({
         next: (data) => {
+          console.log('Données reçues du backend:', data);
           this.appartements = data;
+          console.log('Données stockées dans le composant:', this.appartements);
         },
         error: (err) => {
+          console.error('Erreur détaillée:', err);
           this.error = `Erreur lors du chargement des appartements: ${err.message}`;
         }
       });
@@ -95,7 +106,7 @@ export class MesAppartementsComponent implements OnInit {
     this.appartementForm.reset({
       numero: '',
       etage: 0,
-      superficie: 0,
+      surface: null,
       nombrePieces: 1,
       description: '',
       immeubleId: null
@@ -114,19 +125,16 @@ export class MesAppartementsComponent implements OnInit {
       return;
     }
 
-    const formData = this.appartementForm.value;
-    console.log('Données du formulaire:', formData);
-    console.log('immeubleId:', formData.immeubleId);
+    const formData = {
+      ...this.appartementForm.value,
+      proprietaireIds: [currentUser.userId],
+      nombrePieces: Number(this.appartementForm.value.nombrePieces),
+      immeubleId: Number(this.appartementForm.value.immeubleId),
+      etage: Number(this.appartementForm.value.etage),
+      surface: Number(this.appartementForm.value.surface)
+    };
 
-    // S'assurer que immeubleId est un nombre
-    formData.immeubleId = Number(formData.immeubleId);
-
-    // Vérifier que l'immeuble existe
-    const selectedImmeuble = this.immeubles.find(i => i.id === formData.immeubleId);
-    if (!selectedImmeuble) {
-      this.error = "L'immeuble sélectionné n'existe pas";
-      return;
-    }
+    console.log('Données du formulaire à envoyer:', formData);
 
     this.isLoading = true;
     this.error = null;
@@ -139,8 +147,38 @@ export class MesAppartementsComponent implements OnInit {
           this.toggleForm();
         },
         error: (err) => {
+          console.error('Erreur lors de la création:', err);
           this.error = `Erreur lors de l'ajout de l'appartement: ${err.message}`;
         }
       });
+  }
+
+  editAppartement(appartementId: number): void {
+    this.router.navigate(['appartements', appartementId, 'edit'], { relativeTo: this.router.routerState.root.firstChild });
+  }
+
+  deleteAppartement(appartementId: number): void {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet appartement ?')) {
+      const currentUser = this.authService.getCurrentUser();
+      if (!currentUser?.userId) {
+        this.error = "Erreur d'identification de l'utilisateur";
+        return;
+      }
+
+      this.isLoading = true;
+      this.error = null;
+
+      this.appartementService.deleteAppartementForProprietaire(currentUser.userId, appartementId)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: () => {
+            this.loadAppartements();
+          },
+          error: (err) => {
+            console.error('Erreur lors de la suppression:', err);
+            this.error = `Erreur lors de la suppression de l'appartement: ${err.message}`;
+          }
+        });
+    }
   }
 }

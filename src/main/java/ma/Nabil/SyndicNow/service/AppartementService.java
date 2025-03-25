@@ -29,4 +29,13 @@ public interface AppartementService {
     List<AppartementResponse> getAppartementsByImmeuble(Long immeubleId);
 
     AppartementResponse createAppartementForProprietaire(Long proprietaireId, AppartementRequest dto);
+
+    /**
+     * Supprime un appartement pour un propriétaire spécifique
+     * Vérifie que l'appartement appartient bien au propriétaire avant la suppression
+     *
+     * @param proprietaireId l'identifiant du propriétaire
+     * @param appartementId l'identifiant de l'appartement à supprimer
+     */
+    void deleteAppartementForProprietaire(Long proprietaireId, Long appartementId);
 }

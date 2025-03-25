@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {environment} from '@env/environment';
 import {Appartement, AppartementDetails, AppartementStats} from '../models/appartement.model';
 
@@ -24,8 +24,13 @@ export class AppartementService {
     );
   }
 
-  getAppartementById(id: number): Observable<Appartement> {
-    return this.http.get<Appartement>(`${this.apiUrl}/${id}`);
+  getAppartementById(id: number): Observable<AppartementDetails> {
+    return this.http.get<AppartementDetails>(`${this.apiUrl}/${id}`).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la récupération:', error);
+        return this.handleError(error);
+      })
+    );
   }
 
   createAppartement(appartement: any): Observable<any> {
@@ -36,8 +41,13 @@ export class AppartementService {
     return this.http.post<any>(`${this.apiUrl}/proprietaire/${proprietaireId}`, appartement);
   }
 
-  updateAppartement(id: number, appartement: Partial<Appartement>): Observable<Appartement> {
-    return this.http.put<Appartement>(`${this.apiUrl}/${id}`, appartement);
+  updateAppartement(id: number, appartement: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, appartement).pipe(
+      catchError((error) => {
+        console.error('Erreur lors de la mise à jour:', error);
+        return this.handleError(error);
+      })
+    );
   }
 
   deleteAppartement(id: number): Observable<void> {
@@ -69,8 +79,34 @@ export class AppartementService {
   }
 
   getAppartementsProprietaire(proprietaireId: number): Observable<AppartementDetails[]> {
-    return this.http.get<AppartementDetails[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`).pipe(
-      catchError(this.handleError)
+    console.log('Appel API pour proprietaire:', proprietaireId);
+    return this.http.get<any[]>(`${this.apiUrl}/proprietaire/${proprietaireId}`).pipe(
+      map(appartements => {
+        console.log('Réponse API brute:', appartements);
+        return appartements.map(app => {
+          console.log('Mapping appartement:', app);
+          return {
+            ...app,
+            surface: app.surface || 0,
+            nombrePieces: app.nombrePieces || 0,
+            immeuble: {
+              id: app.immeubleId,
+              nom: app.immeubleName,
+              adresse: app.immeubleAdresse,
+              ville: app.immeubleVille,
+              syndic: app.syndicId ? {
+                id: Number(app.syndicId), // Conversion explicite en nombre
+                nom: app.syndicName,
+                email: app.syndicEmail
+              } : null
+            }
+          };
+        });
+      }),
+      catchError((error) => {
+        console.error('Erreur dans le service:', error);
+        return this.handleError(error);
+      })
     );
   }
 
@@ -78,6 +114,10 @@ export class AppartementService {
     return this.http.get<AppartementDetails>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
+  }
+
+  deleteAppartementForProprietaire(proprietaireId: number, appartementId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/proprietaire/${proprietaireId}/${appartementId}`);
   }
 
   private handleError(error: HttpErrorResponse) {

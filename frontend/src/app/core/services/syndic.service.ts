@@ -93,7 +93,7 @@ export class SyndicService {
 
   // Récupérer les syndics par immeuble
   getSyndicsByImmeuble(immeubleId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/immeuble/${immeubleId}`)
+    return this.http.get<any[]>(`${this.apiUrl}/immeubles/${immeubleId}`)
       .pipe(
         catchError(this.handleError)
       );

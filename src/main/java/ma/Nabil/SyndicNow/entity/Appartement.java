@@ -23,8 +23,10 @@ public class Appartement {
     @Column(nullable = false)
     private Integer etage;
 
+    @Column(nullable = false)
     private Double surface;
 
+    @Column(nullable = false)
     private Integer nombrePieces;
 
     @Column(length = 1000)

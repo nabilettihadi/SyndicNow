@@ -119,4 +119,19 @@ public class AppartementController {
         List<AppartementResponse> response = appartementService.getAppartementsByImmeuble(immeubleId);
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/proprietaire/{proprietaireId}/{appartementId}")
+    @Operation(summary = "Delete an apartment for a proprietaire", description = "Deletes an apartment owned by the specified proprietaire")
+    @ApiResponse(responseCode = "204", description = "Apartment successfully deleted")
+    @ApiResponse(responseCode = "404", description = "Apartment not found")
+    @ApiResponse(responseCode = "403", description = "Not authorized to delete this apartment")
+    @PreAuthorize("hasRole('PROPRIETAIRE')")
+    public ResponseEntity<Void> deleteAppartementForProprietaire(
+            @PathVariable Long proprietaireId,
+            @PathVariable Long appartementId) {
+        log.info("Deleting apartment {} for proprietaire {}", appartementId, proprietaireId);
+        appartementService.deleteAppartementForProprietaire(proprietaireId, appartementId);
+        log.info("Successfully deleted apartment {} for proprietaire {}", appartementId, proprietaireId);
+        return ResponseEntity.noContent().build();
+    }
 }

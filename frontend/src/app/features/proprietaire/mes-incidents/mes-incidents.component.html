@@ -189,44 +189,37 @@
         </div>
 
         <form [formGroup]="incidentForm" (ngSubmit)="onSubmit()" class="space-y-6">
-          <!-- Debug info -->
-          <div class="bg-gray-100 p-4 rounded-lg text-sm">
-            <p>État du formulaire : {{ incidentForm.valid ? 'Valide' : 'Invalide' }}</p>
-            <p>Loading : {{ loading }}</p>
-            <p>Bouton désactivé : {{ incidentForm.invalid || loading }}</p>
-          </div>
-
-          <!-- Immeuble -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Immeuble</label>
-            <select formControlName="immeubleId" (change)="onImmeubleChange($event)"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
-              <option value="">Sélectionnez un immeuble</option>
-              <option *ngFor="let immeuble of immeubles" [value]="immeuble.id">
-                {{ immeuble.nom }}
-              </option>
-            </select>
-            <div *ngIf="incidentForm.get('immeubleId')?.invalid && incidentForm.get('immeubleId')?.touched"
-                 class="mt-1 text-sm text-red-600">
-              Veuillez sélectionner un immeuble
-            </div>
-          </div>
-
           <!-- Appartement -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Appartement</label>
             <select formControlName="appartementId"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                    [attr.disabled]="!incidentForm.get('immeubleId')?.value">
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
               <option value="">Sélectionnez un appartement</option>
-              <option *ngFor="let appartement of appartementsByImmeuble[incidentForm.get('immeubleId')?.value] || []"
-                      [value]="appartement.id">
-                {{ appartement.numero }} (Étage {{ appartement.etage }})
+              <option *ngFor="let appartement of appartements" [value]="appartement.id">
+                {{ appartement.immeuble?.nom }} - Appartement {{ appartement.numero }} (Étage {{ appartement.etage }})
               </option>
             </select>
             <div *ngIf="incidentForm.get('appartementId')?.invalid && incidentForm.get('appartementId')?.touched"
                  class="mt-1 text-sm text-red-600">
               Veuillez sélectionner un appartement
+            </div>
+          </div>
+
+          <!-- Catégorie -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+            <select formControlName="category"
+                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+              <option value="">Sélectionnez une catégorie</option>
+              <option value="PLOMBERIE">Plomberie</option>
+              <option value="ELECTRICITE">Électricité</option>
+              <option value="CHAUFFAGE">Chauffage</option>
+              <option value="MENUISERIE">Menuiserie</option>
+              <option value="AUTRE">Autre</option>
+            </select>
+            <div *ngIf="incidentForm.get('category')?.invalid && incidentForm.get('category')?.touched"
+                 class="mt-1 text-sm text-red-600">
+              Veuillez sélectionner une catégorie
             </div>
           </div>
 
@@ -254,29 +247,6 @@
             </div>
           </div>
 
-          <!-- Catégorie -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
-            <select formControlName="category"
-                    class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
-              <option value="">Sélectionnez une catégorie</option>
-              <option value="PLOMBERIE">Plomberie</option>
-              <option value="ELECTRICITE">Électricité</option>
-              <option value="CHAUFFAGE">Chauffage</option>
-              <option value="CLIMATISATION">Climatisation</option>
-              <option value="ASCENSEUR">Ascenseur</option>
-              <option value="SERRURERIE">Serrurerie</option>
-              <option value="TOITURE">Toiture</option>
-              <option value="PARTIES_COMMUNES">Parties communes</option>
-              <option value="INFILTRATION">Infiltration</option>
-              <option value="AUTRE">Autre</option>
-            </select>
-            <div *ngIf="incidentForm.get('category')?.invalid && incidentForm.get('category')?.touched"
-                 class="mt-1 text-sm text-red-600">
-              Veuillez sélectionner une catégorie
-            </div>
-          </div>
-
           <!-- Priorité -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Priorité</label>
@@ -288,16 +258,16 @@
             </select>
           </div>
 
-          <!-- Boutons -->
+          <!-- Boutons d'action -->
           <div class="flex justify-end gap-4">
             <button type="button" (click)="closeCreateModal()"
-                    class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
               Annuler
             </button>
             <button type="submit"
                     [disabled]="incidentForm.invalid || loading"
-                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
-              <i class="fas fa-spinner fa-spin mr-2" *ngIf="loading"></i>
+                    class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+              <i *ngIf="loading" class="fas fa-spinner fa-spin mr-2"></i>
               Signaler l'incident
             </button>
           </div>

@@ -7,7 +7,7 @@ import {FooterComponent} from '@shared/components/footer/footer.component';
 import {IncidentService} from '@core/services/incident.service';
 import {ImmeubleService} from '@core/services/immeuble.service';
 import {AuthService} from '@core/services/auth.service';
-import {IncidentWithStatus} from '@core/models/incident.model';
+import {Incident, IncidentStatus, IncidentWithStatus} from '@core/models/incident.model';
 import {Immeuble} from '@core/models/immeuble.model';
 
 @Component({
@@ -22,7 +22,10 @@ export class ListIncidentsComponent implements OnInit {
   hasError = false;
   errorMessage = '';
   showCreateModal = false;
+  showEditModal = false;
   incidentForm: FormGroup;
+  editForm: FormGroup;
+  selectedIncident: IncidentWithStatus | null = null;
 
   incidents: IncidentWithStatus[] = [];
   filteredIncidents: IncidentWithStatus[] = [];
@@ -46,11 +49,19 @@ export class ListIncidentsComponent implements OnInit {
     private fb: FormBuilder
   ) {
     this.incidentForm = this.fb.group({
-      titre: ['', [Validators.required, Validators.minLength(3)]],
+      title: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      priorite: ['MOYENNE', Validators.required],
+      priority: ['MOYENNE', Validators.required],
       immeubleId: ['', Validators.required],
-      categorie: ['', Validators.required]
+      category: ['', Validators.required]
+    });
+
+    this.editForm = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.minLength(10)]],
+      priority: ['MOYENNE', Validators.required],
+      category: ['', Validators.required],
+      status: ['', Validators.required]
     });
   }
 
@@ -128,7 +139,7 @@ export class ListIncidentsComponent implements OnInit {
 
     // Filtre par priorité
     if (this.priorityFilter !== 'ALL') {
-      filtered = filtered.filter(incident => incident.priorite === this.priorityFilter);
+      filtered = filtered.filter(incident => incident.priority === this.priorityFilter);
     }
 
     // Filtre par immeuble
@@ -140,7 +151,7 @@ export class ListIncidentsComponent implements OnInit {
     if (this.searchTerm.trim()) {
       const searchLower = this.searchTerm.toLowerCase();
       filtered = filtered.filter(incident =>
-        incident.titre.toLowerCase().includes(searchLower) ||
+        incident.title.toLowerCase().includes(searchLower) ||
         incident.description.toLowerCase().includes(searchLower) ||
         (incident.immeuble?.nom.toLowerCase() || '').includes(searchLower)
       );
@@ -149,14 +160,40 @@ export class ListIncidentsComponent implements OnInit {
     this.filteredIncidents = filtered;
   }
 
-  updateIncidentStatus(incident: IncidentWithStatus, newStatus: string): void {
+  updateIncidentStatus(incident: IncidentWithStatus, newStatus: IncidentStatus): void {
     if (!incident.id) return;
 
+    // Vérifier la progression valide des statuts
+    if ((incident.status === 'NOUVEAU' && newStatus !== 'EN_COURS') ||
+        (incident.status === 'EN_COURS' && newStatus !== 'RESOLU') ||
+        (incident.status === 'RESOLU')) {
+      this.errorMessage = 'Progression de statut invalide';
+      return;
+    }
+
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser?.userId) {
+      this.errorMessage = 'Utilisateur non connecté';
+      return;
+    }
+
+    const updatedIncident: Partial<IncidentWithStatus> = {
+      ...incident,
+      status: newStatus,
+      statut: newStatus,
+      updatedBy: currentUser.email,
+      updatedAt: new Date().toISOString()
+    };
+
     this.incidentService.updateIncidentStatus(incident.id, newStatus).subscribe({
-      next: (updatedIncident) => {
+      next: (updated) => {
         const index = this.incidents.findIndex(i => i.id === incident.id);
         if (index !== -1) {
-          this.incidents[index] = updatedIncident;
+          this.incidents[index] = {
+            ...this.incidents[index],
+            ...updated,
+            statut: updated.status
+          };
           this.applyFilter();
           this.updateStatistics();
         }
@@ -168,8 +205,8 @@ export class ListIncidentsComponent implements OnInit {
     });
   }
 
-  getStatusBadgeClass(statut: string): string {
-    switch (statut) {
+  getStatusBadgeClass(status: IncidentStatus): string {
+    switch (status) {
       case 'RESOLU':
         return 'bg-green-100 text-green-800';
       case 'EN_COURS':
@@ -181,7 +218,7 @@ export class ListIncidentsComponent implements OnInit {
     }
   }
 
-  getStatusLabel(status: string): string {
+  getStatusLabel(status: IncidentStatus): string {
     switch (status) {
       case 'RESOLU':
         return 'Résolu';
@@ -207,8 +244,8 @@ export class ListIncidentsComponent implements OnInit {
     }
   }
 
-  getPriorityLabel(priorite: string): string {
-    switch (priorite) {
+  getPriorityLabel(priority: string): string {
+    switch (priority) {
       case 'HAUTE':
         return 'Haute';
       case 'MOYENNE':
@@ -216,7 +253,7 @@ export class ListIncidentsComponent implements OnInit {
       case 'BASSE':
         return 'Basse';
       default:
-        return priorite;
+        return priority;
     }
   }
 
@@ -243,7 +280,7 @@ export class ListIncidentsComponent implements OnInit {
   closeCreateModal() {
     this.showCreateModal = false;
     this.incidentForm.reset({
-      priorite: 'MOYENNE'
+      priority: 'MOYENNE'
     });
   }
 
@@ -257,13 +294,16 @@ export class ListIncidentsComponent implements OnInit {
 
       const formValue = this.incidentForm.value;
       const incident: Partial<IncidentWithStatus> = {
-        titre: formValue.titre,
+        title: formValue.title,
         description: formValue.description,
-        priorite: formValue.priorite,
-        statut: 'NOUVEAU',
+        priority: formValue.priority,
+        status: 'NOUVEAU',
         immeubleId: formValue.immeubleId,
-        date: new Date(),
-        categorie: formValue.categorie
+        date: new Date().toISOString().split('T')[0],
+        category: formValue.category,
+        statut: 'NOUVEAU',
+        priorite: formValue.priority,
+        titre: formValue.title
       };
 
       this.isLoading = true;
@@ -285,6 +325,65 @@ export class ListIncidentsComponent implements OnInit {
         const control = this.incidentForm.get(key);
         if (control?.invalid) {
           control.markAsTouched();
+        }
+      });
+    }
+  }
+
+  openEditModal(incident: IncidentWithStatus) {
+    this.selectedIncident = incident;
+    this.editForm.patchValue({
+      title: incident.title,
+      description: incident.description,
+      priority: incident.priority,
+      category: incident.category,
+      status: incident.status
+    });
+    this.showEditModal = true;
+  }
+
+  closeEditModal() {
+    this.showEditModal = false;
+    this.selectedIncident = null;
+    this.editForm.reset();
+  }
+
+  submitEdit() {
+    if (this.editForm.valid && this.selectedIncident?.id) {
+      const formValue = this.editForm.value;
+      const updatedIncident: Partial<IncidentWithStatus> = {
+        title: formValue.title,
+        description: formValue.description,
+        priority: formValue.priority,
+        category: formValue.category,
+        status: formValue.status,
+        date: new Date().toISOString().split('T')[0],
+        statut: formValue.status,
+        priorite: formValue.priority,
+        titre: formValue.title
+      };
+
+      this.isLoading = true;
+      this.incidentService.updateIncident(this.selectedIncident.id, updatedIncident as IncidentWithStatus).subscribe({
+        next: (updated) => {
+          const index = this.incidents.findIndex(i => i.id === this.selectedIncident?.id);
+          if (index !== -1) {
+            this.incidents[index] = {
+              ...updated,
+              statut: updated.status,
+              priorite: updated.priority,
+              titre: updated.title,
+              date: updated.reportedDate
+            };
+            this.applyFilter();
+          }
+          this.closeEditModal();
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Erreur lors de la mise à jour:', error);
+          this.errorMessage = 'Erreur lors de la mise à jour de l\'incident';
+          this.isLoading = false;
         }
       });
     }

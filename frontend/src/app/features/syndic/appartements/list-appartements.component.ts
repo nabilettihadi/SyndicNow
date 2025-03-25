@@ -85,16 +85,14 @@ export class ListAppartementsComponent implements OnInit {
     }
   }
 
-  getStatusBadgeClass(statut: string): string {
-    switch (statut) {
+  getStatusBadgeClass(status: string): string {
+    switch (status) {
       case 'OCCUPE':
         return 'bg-green-100 text-green-800';
       case 'LIBRE':
         return 'bg-blue-100 text-blue-800';
       case 'EN_TRAVAUX':
-        return 'bg-amber-100 text-amber-800';
-      case 'RESERVE':
-        return 'bg-purple-100 text-purple-800';
+        return 'bg-yellow-100 text-yellow-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }

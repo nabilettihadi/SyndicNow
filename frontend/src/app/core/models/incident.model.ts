@@ -1,26 +1,37 @@
+export type IncidentCategory = 'PLOMBERIE' | 'TOITURE' | 'AUTRE' | 'CHAUFFAGE' | 'SERRURERIE' | 'ASCENSEUR' | 'CLIMATISATION' | 'ELECTRICITE' | 'PARTIES_COMMUNES' | 'INFILTRATION';
+
 export interface Incident {
   id?: number;
   title: string;
   description: string;
-  priority: 'HAUTE' | 'MOYENNE' | 'BASSE';
   status: 'NOUVEAU' | 'EN_COURS' | 'RESOLU';
-  reportedDate?: Date;
-  immeubleId: number;
+  priority: 'HAUTE' | 'MOYENNE' | 'BASSE';
+  reportedDate: string;
+  reportedBy: number;
+  category: IncidentCategory;
+  assignedTo?: number;
+  resolutionDate?: string;
+  resolution?: string;
   appartementId: number;
-  category: 'PLOMBERIE' | 'ELECTRICITE' | 'CHAUFFAGE' | 'CLIMATISATION' | 'ASCENSEUR' | 'SERRURERIE' | 'TOITURE' | 'PARTIES_COMMUNES' | 'INFILTRATION' | 'AUTRE';
-  immeuble?: {
-    id: number;
-    nom: string;
-  };
+  immeubleId: number;
+  attachmentUrls?: string;
+  createdBy: string;
+  createdAt: string;
+  updatedBy: string;
+  updatedAt: string;
 }
+
+export type IncidentStatus = 'NOUVEAU' | 'EN_COURS' | 'RESOLU';
 
 // Interface étendue qui ajoute la propriété status comme alias de statut
 export interface IncidentWithStatus extends Incident {
-  statut: string;
-  titre: string;
+  statut: IncidentStatus;
   priorite: string;
-  categorie: string;
-  date?: Date;
+  titre: string;
+  date: string;
+  immeuble?: {
+    nom: string;
+  };
 }
 
 // Cette fonction convertit un Incident en IncidentWithStatus
@@ -28,9 +39,8 @@ export function addStatusAlias(incident: Incident): IncidentWithStatus {
   return {
     ...incident,
     statut: incident.status,
-    titre: incident.title,
     priorite: incident.priority,
-    categorie: incident.category,
+    titre: incident.title,
     date: incident.reportedDate
   };
 }
